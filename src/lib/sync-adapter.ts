@@ -4,6 +4,7 @@
 import { flushQueue, readQueue, clearQueue, SyncOperation } from "@/lib/offline-sync";
 
 const API_BASE = import.meta.env.VITE_SYNC_API ?? ""; // e.g., https://your-api.com
+const API_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ""; // Supabase anon key for auth
 
 type Snapshot = {
   config?: any;
@@ -17,7 +18,17 @@ async function safeFetch(url: string, opts: RequestInit = {}) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), 15000);
   try {
-    const res = await fetch(url, { ...opts, signal: controller.signal });
+    const baseHeaders: Record<string, string> = {};
+    if (API_KEY) {
+      baseHeaders["apikey"] = API_KEY;
+      baseHeaders["Authorization"] = `Bearer ${API_KEY}`;
+    }
+
+    const res = await fetch(url, {
+      ...opts,
+      headers: { ...baseHeaders, ...(opts.headers || {}), "Content-Type": "application/json" },
+      signal: controller.signal,
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.json();
   } finally {
