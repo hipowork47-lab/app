@@ -1,5 +1,5 @@
 // src/store/store.tsx
-import React, { createContext, useContext, useEffect, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useReducer, useRef } from "react";
 import type {
   Product,
   Category,
@@ -8,7 +8,7 @@ import type {
   AppConfig,
   PurchaseInvoice,
 } from "./store-types";
-import { loadOfflineState, saveOfflineState } from "@/lib/offline-sync";
+import { enqueueOperation, loadOfflineState, saveOfflineState } from "@/lib/offline-sync";
 import { syncNow } from "@/lib/sync-adapter";
 
 type State = {
@@ -230,7 +230,7 @@ case "ADD_PURCHASE": {
 const StoreContext = createContext<{ state: State; dispatch: React.Dispatch<Action> } | null>(null);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState, (init) => {
+  const [state, baseDispatch] = useReducer(reducer, initialState, (init) => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const parsed = raw ? JSON.parse(raw) : init;
@@ -330,6 +330,59 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       cancelled = true;
     };
   }, []);
+
+  const prevSalesCount = useRef(normalizedState.sales.length);
+  const prevPurchasesCount = useRef(normalizedState.purchases.length);
+
+  // Enqueue new sales/purchases when they grow (offline outbox)
+  useEffect(() => {
+    if (normalizedState.sales.length > prevSalesCount.current) {
+      const newSale = normalizedState.sales[normalizedState.sales.length - 1];
+      enqueueOperation({ type: "SELL_ITEMS", payload: newSale });
+      prevSalesCount.current = normalizedState.sales.length;
+    }
+  }, [normalizedState.sales]);
+
+  useEffect(() => {
+    if (normalizedState.purchases.length > prevPurchasesCount.current) {
+      const newPurchase = normalizedState.purchases[normalizedState.purchases.length - 1];
+      enqueueOperation({ type: "ADD_PURCHASE", payload: newPurchase });
+      prevPurchasesCount.current = normalizedState.purchases.length;
+    }
+  }, [normalizedState.purchases]);
+
+  const dispatch = React.useCallback(
+    (action: Action) => {
+      // Queue operations that have enough payload context before reducing
+      switch (action.type) {
+        case "ADD_PRODUCT":
+        case "UPDATE_PRODUCT":
+          enqueueOperation({ type: action.type, payload: action.payload });
+          break;
+        case "UPDATE_PRODUCT_PRICE": {
+          const prod = normalizedState.products.find((p) => p.id === action.payload.productId);
+          if (prod) {
+            enqueueOperation({
+              type: "UPDATE_PRODUCT",
+              payload: { ...prod, price: action.payload.price },
+            });
+          }
+          break;
+        }
+        case "ADD_CATEGORY":
+        case "UPDATE_CATEGORY":
+          enqueueOperation({ type: action.type, payload: action.payload });
+          break;
+        case "DELETE_CATEGORY":
+          enqueueOperation({ type: "DELETE_CATEGORY", payload: { id: action.payload } });
+          break;
+        default:
+          break;
+      }
+      baseDispatch(action);
+    },
+    [normalizedState.products, baseDispatch]
+  );
 
   return <StoreContext.Provider value={{ state: normalizedState, dispatch }}>{children}</StoreContext.Provider>;
 }
