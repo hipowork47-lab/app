@@ -1,0 +1,341 @@
+// src/store/store.tsx
+import React, { createContext, useContext, useEffect, useReducer } from "react";
+import type {
+  Product,
+  Category,
+  SaleItem,
+  SaleInvoice,
+  AppConfig,
+  PurchaseInvoice,
+} from "./store-types";
+import { loadOfflineState, saveOfflineState } from "@/lib/offline-sync";
+import { syncNow } from "@/lib/sync-adapter";
+
+type State = {
+  config: AppConfig;
+  products: Product[];
+  categories: Category[];
+  sales: SaleInvoice[];
+  purchases: PurchaseInvoice[]; // فواتير المشتريات
+};
+
+type Action =
+  | { type: "SET_CURRENCY"; payload: string }
+  | { type: "ADD_PRODUCT"; payload: Product }
+  | { type: "SET_EXCHANGE_RATE"; payload: number }
+  | { type: "UPDATE_PRODUCT"; payload: Product }
+  | { type: "UPDATE_PRODUCT_PRICE"; payload: { productId: string; price: number } }
+  | { type: "ADD_CATEGORY"; payload: Category }
+  | { type: "UPDATE_CATEGORY"; payload: Category }
+  | { type: "DELETE_CATEGORY"; payload: string }
+  | {
+      type: "SELL_ITEMS";
+      payload: {
+        items: { productId: string; quantity: number }[];
+        cashier: string;
+        paymentMethod: "cash" | "card" | "transfer";
+        exchangeRate?: number;
+      };
+    }
+  | {
+      type: "ADD_PURCHASE";
+      payload: {
+        supplier: string;
+        items: { productId: string; quantity: number; price: number }[];
+        invoiceMeta?: { invoiceNumber?: string; date?: string; time?: string };
+      };
+    }
+  | { type: "LOAD_STATE"; payload: State };
+
+const initialState: State = {
+  config: {
+   storeName: "المتجر الرئيسي",
+    currency: "$",
+    exchangeRate: 40, // مثال مبدئي
+  },
+  categories: [
+    { id: "1", name: "مشروبات", color: "#3B82F6", description: "" },
+    { id: "2", name: "وجبات خفيفة", color: "#10B981", description: "" },
+    { id: "3", name: "حلويات", color: "#F59E0B", description: "" },
+  ],
+  products: [
+    { id: "1", name: "كوكا كولا", price: 2.5, stock: 100, barcode: "12345", categoryId: "1", image: null },
+    { id: "2", name: "شيبس", price: 1.5, stock: 50, barcode: "67890", categoryId: "2", image: null },
+    { id: "3", name: "شوكولاتة", price: 3.0, stock: 80, barcode: "11111", categoryId: "3", image: null },
+    { id: "4", name: "عصير برتقال", price: 4.0, stock: 60, barcode: "22222", categoryId: "1", image: null },
+  ],
+  sales: [],
+  purchases: [],
+};
+
+const STORAGE_KEY = "pos_app_state_v1";
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "SET_CURRENCY":
+      return { ...state, config: { ...state.config, currency: action.payload } };  
+   case "SET_EXCHANGE_RATE": {
+  const newState = {
+    ...state,
+    config: { ...state.config, exchangeRate: action.payload },
+  };
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newState)); // حفظ مباشر
+  } catch (e) {
+    console.error("فشل حفظ سعر الصرف:", e);
+  }
+
+  return newState;
+}
+
+
+
+    case "ADD_PRODUCT":
+      return { ...state, products: [...state.products, action.payload] };
+
+    case "UPDATE_PRODUCT":
+      return {
+        ...state,
+        products: state.products.map((p) => (p.id === action.payload.id ? action.payload : p)),
+      };
+
+    case "UPDATE_PRODUCT_PRICE":
+      return {
+        ...state,
+        products: state.products.map((p) =>
+          p.id === action.payload.productId ? { ...p, price: action.payload.price } : p
+        ),
+      };
+
+    case "ADD_CATEGORY":
+      return { ...state, categories: [...state.categories, action.payload] };
+
+    case "UPDATE_CATEGORY":
+      return {
+        ...state,
+        categories: state.categories.map((c) => (c.id === action.payload.id ? action.payload : c)),
+      };
+
+    case "DELETE_CATEGORY":
+      return { ...state, categories: state.categories.filter((c) => c.id !== action.payload) };
+
+    case "SELL_ITEMS": {
+      const { items, cashier, paymentMethod, exchangeRate } = action.payload;
+
+     // ✅ عند البيع يجب إنقاص المخزون
+const updatedProducts = state.products.map((p) => {
+  const sold = items.find((it) => it.productId === p.id);
+  if (sold) {
+    return { ...p, stock: Math.max(p.stock - sold.quantity, 0) }; // عدم السماح بالسالب
+  }
+  return p;
+});
+
+
+
+      const total = items.reduce((sum, it) => {
+        const prod = state.products.find((p) => p.id === it.productId);
+        return sum + (prod ? prod.price * it.quantity : 0);
+      }, 0);
+
+      const now = new Date();
+      const invoice: SaleInvoice = {
+        id: Date.now().toString(),
+        invoiceNumber: `INV-${now.toISOString().slice(0, 10).replace(/-/g, "")}-${now.getTime().toString().slice(-4)}`,
+        date: now.toISOString().slice(0, 10),
+        time: now.toLocaleTimeString(),
+        items: items.map((i) => {
+          const prod = state.products.find((p) => p.id === i.productId);
+          return {
+            productId: i.productId,
+            name: prod ? prod.name : i.productId,
+            price: prod ? prod.price : 0,
+            quantity: i.quantity,
+          } as SaleItem;
+        }),
+        total,
+        cashier,
+        paymentMethod,
+        // Capture the exchange rate at invoice creation time to keep historical Bs amounts stable.
+        exchangeRate: exchangeRate ?? state.config.exchangeRate,
+      };
+
+      return { ...state, products: updatedProducts, sales: [...state.sales, invoice] };
+    }
+
+case "ADD_PURCHASE": {
+  const { supplier, items, invoiceMeta } = action.payload;
+
+  // ✅ تحديث المنتجات: فقط زيادة المخزون بدون تعديل السعر نهائيًا
+  const updatedProducts = state.products.map((p) => {
+    const purchased = items.find((it) => it.productId === p.id);
+    if (purchased) {
+      return { ...p, stock: p.stock + purchased.quantity }; // بدون تغيير السعر
+    }
+    return p;
+  });
+
+  // ✅ لو المنتج جديد وغير موجود بالمخزون، نضيفه كمنتج جديد بسعره الخاص (ما بيأثر على الموجودين)
+  const existingIds = new Set(state.products.map((p) => p.id));
+  const newProductsToAdd = items
+    .filter((it) => !existingIds.has(it.productId) && it.name !== "(منتج غير محدد)")
+    .map((it) => ({
+      id: it.productId,
+      name: it.name ?? "منتج جديد",
+      price: it.price, // هذا فقط للمنتج الجديد
+      stock: it.quantity,
+      barcode: "",
+      categoryId: "",
+      image: null,
+    }));
+
+  const finalProducts = [...updatedProducts, ...newProductsToAdd];
+
+  const total = items.reduce((sum, it) => sum + it.price * it.quantity, 0);
+  const now = new Date();
+
+  const invoice: PurchaseInvoice = {
+    id: Date.now().toString(),
+    invoiceNumber:
+      invoiceMeta?.invoiceNumber ??
+      `PUR-${now.toISOString().slice(0, 10).replace(/-/g, "")}-${now.getTime().toString().slice(-4)}`,
+    supplier,
+    date: invoiceMeta?.date ?? now.toISOString().slice(0, 10),
+    time: invoiceMeta?.time ?? now.toLocaleTimeString(),
+    items: items.map((it) => ({
+      productId: it.productId,
+      name:
+        it.name ??
+        state.products.find((p) => p.id === it.productId)?.name ??
+        "غير معروف",
+      price: it.price,
+      quantity: it.quantity,
+    })),
+    total,
+    exchangeRate: invoiceMeta?.exchangeRate ?? state.config.exchangeRate,
+  };
+
+  return { ...state, products: finalProducts, purchases: [...state.purchases, invoice] };
+}
+
+    case "LOAD_STATE":
+      return action.payload;
+
+    default:
+      return state;
+  }
+}
+
+const StoreContext = createContext<{ state: State; dispatch: React.Dispatch<Action> } | null>(null);
+
+export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, initialState, (init) => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : init;
+      return {
+        ...init,
+        ...parsed,
+        config: {
+          ...init.config,
+          ...parsed?.config,
+          // Always persist/display the dollar symbol, even if old storage had a word value.
+          currency: "$",
+        },
+      };
+    } catch {
+      return init;
+    }
+  });
+
+  // Avoid mutating the reducer state directly. Create a normalized state object for consumers.
+  const normalizedState: State = {
+    ...state,
+    config: {
+      ...state.config,
+      // Force display/persistence of the dollar symbol and keep a sensible exchange rate default.
+      currency: "$",
+      exchangeRate: Number.isFinite(state.config?.exchangeRate)
+        ? state.config.exchangeRate
+        : initialState.config.exchangeRate,
+    },
+    purchases: Array.isArray(state.purchases) ? state.purchases : [],
+    products: Array.isArray(state.products) ? state.products : [],
+    sales: Array.isArray(state.sales)
+      ? state.sales.map((inv) => ({
+          ...inv,
+          // Preserve historical rate; if missing (old invoices), snapshot current rate once.
+          exchangeRate: Number.isFinite(inv?.exchangeRate) ? inv.exchangeRate : state.config.exchangeRate,
+        }))
+      : [],
+    categories: Array.isArray(state.categories) ? state.categories : [],
+  };
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
+    } catch {}
+    saveOfflineState(normalizedState);
+
+    // Trigger background sync when online; optional and no-op if API_BASE not set.
+    if (typeof window !== "undefined" && navigator.onLine) {
+      syncNow((snapshot) => {
+        if (snapshot) {
+          dispatch({
+            type: "LOAD_STATE",
+            payload: {
+              ...normalizedState,
+              ...snapshot,
+              config: {
+                ...normalizedState.config,
+                ...snapshot.config,
+              },
+            },
+          });
+        }
+      });
+    }
+  }, [normalizedState]);
+
+  // Lazy load persisted state from IndexedDB (if available) to support offline-first storage across devices.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const offline = await loadOfflineState<State>();
+      if (offline && !cancelled) {
+        dispatch({ type: "LOAD_STATE", payload: offline });
+      }
+
+      // Initial online sync (pull + push) if API_BASE configured.
+      if (!cancelled && typeof window !== "undefined" && navigator.onLine) {
+        syncNow((snapshot) => {
+          if (snapshot) {
+            dispatch({
+              type: "LOAD_STATE",
+              payload: {
+                ...normalizedState,
+                ...snapshot,
+                config: {
+                  ...normalizedState.config,
+                  ...snapshot.config,
+                },
+              },
+            });
+          }
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return <StoreContext.Provider value={{ state: normalizedState, dispatch }}>{children}</StoreContext.Provider>;
+}
+
+export function useStore() {
+  const ctx = useContext(StoreContext);
+  if (!ctx) throw new Error("useStore must be used ضمن StoreProvider");
+  return ctx;
+}
