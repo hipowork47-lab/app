@@ -16,8 +16,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <StoreProvider>
-        {/* ✅ بدون basename أبداً */}
-        <BrowserRouter>
+        {/* Use basename for GitHub Pages deployments */}
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="*" element={<NotFound />} />
