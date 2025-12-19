@@ -65,8 +65,6 @@ const SalesInterface = () => {
       });
       return;
     }
-    
-    const existingItem = cart.find((item) => item.id === product.id);
     if (existingItem) {
       setCart(
         cart.map((item) =>
