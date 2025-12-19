@@ -294,18 +294,27 @@ const SalesInterface = ({ userRole }: SalesInterfaceProps) => {
                       <p className="text-lg font-bold text-blue-600 mb-2">
                         {product.price} {config.currency}
                       </p>
-                      {(
-                        // العمال لا يرون الكمية إلا إذا كانت أقل من 20، وتكون باللون الأحمر
-                        userRole !== "employee" ||
-                        product.stock < 20
-                      ) && (
-                        <Badge
-                          variant={product.stock < 20 ? "destructive" : "secondary"}
-                          className="text-xs"
-                        >
-                          {t("available")}: {product.stock}
-                        </Badge>
-                      )}
+                      {(() => {
+                        const isEmployee = userRole === "employee";
+                        const lowStock = product.stock < 20;
+                        if (isEmployee && !lowStock) {
+                          // للعامل: إخفاء الكمية واستبدالها بنجوم عندما يكون المخزون 20+
+                          return (
+                            <Badge variant="secondary" className="text-xs">
+                              {t("available")}: ***
+                            </Badge>
+                          );
+                        }
+                        // إظهار الرقم؛ إذا أقل من 20 باللون الأحمر
+                        return (
+                          <Badge
+                            variant={lowStock ? "destructive" : "secondary"}
+                            className="text-xs"
+                          >
+                            {t("available")}: {product.stock}
+                          </Badge>
+                        );
+                      })()}
                     </CardContent>
                   </Card>
                 ))}
