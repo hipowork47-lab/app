@@ -77,15 +77,20 @@ const Index = () => {
             </div>
 
             {/* أزرار التحكم */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3 text-right sm:text-left">
               {userRole === "admin" && (
-                <Button variant="outline" size="sm" onClick={handleAddAccount}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                  onClick={handleAddAccount}
+                >
                   إنشاء حساب
                 </Button>
               )}
               {/* اختيار اللغة */}
               <Select value={i18n.language} onValueChange={(val) => i18n.changeLanguage(val)}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <div className="flex items-center gap-2">
                     <span>{langLabel[currentLangKey]?.flag ?? "🌐"}</span>
                     <span className="truncate">{langLabel[currentLangKey]?.text ?? ""}</span>
