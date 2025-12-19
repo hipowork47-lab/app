@@ -43,6 +43,14 @@ export async function pullSnapshot(): Promise<Snapshot | null> {
     // Map snake_case from Supabase to camelCase used in the app.
     return {
       ...raw,
+      config: raw?.config
+        ? {
+            ...raw.config,
+            storeName: raw.config.store_name ?? raw.config.storeName,
+            currency: raw.config.currency,
+            exchangeRate: raw.config.exchange_rate ?? raw.config.exchangeRate,
+          }
+        : raw?.config,
       products: (raw?.products || []).map((p: any) => ({
         ...p,
         categoryId: p.category_id ?? p.categoryId ?? "",
@@ -95,6 +103,14 @@ function mapOutbound(op: SyncOperation): SyncOperation {
       break;
     case "DELETE_CATEGORY":
       cloned.payload = { id: op.payload.id ?? op.payload };
+      break;
+    case "UPDATE_CONFIG":
+      cloned.payload = {
+        id: op.payload.id ?? "singleton",
+        store_name: op.payload.storeName ?? "",
+        currency: op.payload.currency ?? "",
+        exchange_rate: op.payload.exchangeRate ?? null,
+      };
       break;
     case "SELL_ITEMS":
       cloned.payload = {

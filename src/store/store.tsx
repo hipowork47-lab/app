@@ -370,6 +370,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         case "DELETE_PRODUCT":
           enqueueOperation({ type: "DELETE_PRODUCT", payload: { id: action.payload } });
           break;
+        case "SET_EXCHANGE_RATE":
+        case "SET_CURRENCY": {
+          // Persist config changes to backend
+          const cfg = {
+            id: "singleton",
+            storeName: normalizedState.config.storeName,
+            currency:
+              action.type === "SET_CURRENCY" ? action.payload : normalizedState.config.currency,
+            exchangeRate:
+              action.type === "SET_EXCHANGE_RATE"
+                ? action.payload
+                : normalizedState.config.exchangeRate,
+          };
+          enqueueOperation({ type: "UPDATE_CONFIG", payload: cfg });
+          break;
+        }
         case "UPDATE_PRODUCT_PRICE": {
           const prod = normalizedState.products.find((p) => p.id === action.payload.productId);
           if (prod) {
