@@ -18,7 +18,11 @@ interface CartItemLocal {
   categoryId?: string;
 }
 
-const SalesInterface = () => {
+type SalesInterfaceProps = {
+  userRole: string | null;
+};
+
+const SalesInterface = ({ userRole }: SalesInterfaceProps) => {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
   const { products, categories, config } = state;
@@ -290,9 +294,18 @@ const SalesInterface = () => {
                       <p className="text-lg font-bold text-blue-600 mb-2">
                         {product.price} {config.currency}
                       </p>
-                      <Badge variant="secondary" className="text-xs">
-                        {t("available")}: {product.stock}
-                      </Badge>
+                      {(
+                        // العمال لا يرون الكمية إلا إذا كانت أقل من 20، وتكون باللون الأحمر
+                        userRole !== "employee" ||
+                        product.stock < 20
+                      ) && (
+                        <Badge
+                          variant={product.stock < 20 ? "destructive" : "secondary"}
+                          className="text-xs"
+                        >
+                          {t("available")}: {product.stock}
+                        </Badge>
+                      )}
                     </CardContent>
                   </Card>
                 ))}

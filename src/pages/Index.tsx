@@ -192,7 +192,7 @@ const Index = () => {
 
           {/* المحتوى */}
           <TabsContent value="sales">
-            <SalesInterface />
+            <SalesInterface userRole={userRole} />
           </TabsContent>
           <TabsContent value="sales-invoices">
             <SalesInvoices />
