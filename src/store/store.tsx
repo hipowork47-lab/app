@@ -341,6 +341,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const prevSalesCount = useRef(normalizedState.sales.length);
   const prevPurchasesCount = useRef(normalizedState.purchases.length);
+  const prevProductsRef = useRef<Record<string, Product>>(
+    Object.fromEntries((normalizedState.products || []).map((p) => [p.id, p]))
+  );
 
   // Enqueue new sales/purchases when they grow (offline outbox)
   useEffect(() => {
@@ -358,6 +361,28 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       prevPurchasesCount.current = normalizedState.purchases.length;
     }
   }, [normalizedState.purchases]);
+
+  // Enqueue product stock/price/name/category changes (e.g., after sales or purchases).
+  useEffect(() => {
+    const prev = prevProductsRef.current;
+    const nextMap: Record<string, Product> = {};
+    for (const p of normalizedState.products) {
+      nextMap[p.id] = p;
+      const prevP = prev[p.id];
+      if (
+        !prevP ||
+        prevP.stock !== p.stock ||
+        prevP.price !== p.price ||
+        prevP.name !== p.name ||
+        prevP.categoryId !== p.categoryId ||
+        prevP.barcode !== p.barcode ||
+        prevP.image !== p.image
+      ) {
+        enqueueOperation({ type: "UPDATE_PRODUCT", payload: p });
+      }
+    }
+    prevProductsRef.current = nextMap;
+  }, [normalizedState.products]);
 
   const dispatch = React.useCallback(
     (action: Action) => {
