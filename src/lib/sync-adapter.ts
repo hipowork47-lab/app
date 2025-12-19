@@ -29,8 +29,17 @@ async function safeFetch(url: string, opts: RequestInit = {}) {
       headers: { ...baseHeaders, ...(opts.headers || {}), "Content-Type": "application/json" },
       signal: controller.signal,
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
+    if (!res.ok) {
+      const bodyText = await res.text();
+      const errMsg = `HTTP ${res.status} ${bodyText}`;
+      console.error("Sync request failed:", errMsg);
+      throw new Error(errMsg);
+    }
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      return res.json();
+    }
+    return res.text();
   } finally {
     clearTimeout(id);
   }
@@ -157,6 +166,7 @@ export async function pushOutbox(handler?: (ops: SyncOperation[]) => void) {
     await clearQueue();
   } catch {
     // keep queue; retry later
+    console.error("pushOutbox failed; will retry later");
   }
 }
 
