@@ -108,12 +108,6 @@ const ProductManagement = () => {
  const handleDelete = (id: string) => {
   if (!confirm(t("productDeleteConfirm"))) return;
 
-  const product = products.find(p => p.id === id);
-  if (!product) return;
-
-  // نعلّم عليه أنه محذوف بدل ما نحذفه فعلاً
-  const updatedProduct = { ...product, deleted: true };
-
   dispatch({ type: "DELETE_PRODUCT", payload: id });
   toast({ title: t("productDeletedTitle"), description: t("productDeletedDesc") });
 };
