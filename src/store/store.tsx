@@ -278,6 +278,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     latestStateRef.current = normalizedState;
   }, [normalizedState]);
 
+  // Track when a mutation happened so we can trigger an immediate sync once state is updated.
+  const syncRequestedRef = useRef(false);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
@@ -350,34 +353,37 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           break;
       }
       baseDispatch(action);
+
+      // Request an immediate sync for any mutating action except LOAD_STATE.
+      if (action.type !== "LOAD_STATE") {
+        syncRequestedRef.current = true;
+      }
     },
     [normalizedState.products, baseDispatch]
   );
 
-  // Auto-sync every 20s when online (pull + push)
+  // Immediate sync after each mutation (push outbox then pull snapshot) when online.
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const id = window.setInterval(() => {
-      if (!navigator.onLine) return;
-      syncNow((snapshot) => {
-        if (snapshot) {
-          const current = latestStateRef.current;
-          dispatch({
-            type: "LOAD_STATE",
-            payload: {
-              ...current,
-              ...snapshot,
-              config: {
-                ...current.config,
-                ...snapshot.config,
-              },
-            },
-          });
-        }
+    if (!syncRequestedRef.current) return;
+    syncRequestedRef.current = false;
+    if (typeof window === "undefined" || !navigator.onLine) return;
+
+    syncNow((snapshot) => {
+      if (!snapshot) return;
+      const current = latestStateRef.current;
+      baseDispatch({
+        type: "LOAD_STATE",
+        payload: {
+          ...current,
+          ...snapshot,
+          config: {
+            ...current.config,
+            ...snapshot.config,
+          },
+        },
       });
-    }, 20000);
-    return () => window.clearInterval(id);
-  }, [dispatch]);
+    });
+  }, [normalizedState, baseDispatch]);
 
   return <StoreContext.Provider value={{ state: normalizedState, dispatch }}>{children}</StoreContext.Provider>;
 }

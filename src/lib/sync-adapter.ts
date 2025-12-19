@@ -64,7 +64,8 @@ export async function pushOutbox(handler?: (ops: SyncOperation[]) => void) {
 
 // High-level: pull then push queue (or vice-versa). Call on online event or “Sync now”.
 export async function syncNow(onPulled: (snapshot: Snapshot) => void) {
+  // Push local outbox first so we don't lose freshly added items when we pull.
+  await pushOutbox();
   const snap = await pullSnapshot();
   if (snap) onPulled(snap);
-  await pushOutbox();
 }
