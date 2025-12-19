@@ -22,7 +22,6 @@ import { useTranslation } from "react-i18next";
 import { syncNow } from "@/lib/sync-adapter";
 import { useStore } from "@/store/store";
 import { addAccount } from "@/lib/accounts";
-import { addAccount } from "@/lib/accounts";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("sales");
@@ -79,6 +78,11 @@ const Index = () => {
 
             {/* أزرار التحكم */}
             <div className="flex items-center gap-3">
+              {userRole === "admin" && (
+                <Button variant="outline" size="sm" onClick={handleAddAccount}>
+                  إنشاء حساب
+                </Button>
+              )}
               {/* اختيار اللغة */}
               <Select value={i18n.language} onValueChange={(val) => i18n.changeLanguage(val)}>
                 <SelectTrigger className="w-40">
