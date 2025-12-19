@@ -307,7 +307,7 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
     </Select>
 
     {/* زر إضافة فئة جديدة */}
-    <Dialog>
+    <Dialog modal={false}>
       <DialogTrigger asChild>
         <Button type="button" variant="outline" size="sm">
           <Plus className="w-4 h-4 mr-1" />
@@ -324,7 +324,7 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
     </Dialog>
 
 {/* إدارة الفئات */}
-<Dialog>
+    <Dialog modal={false}>
   <DialogTrigger asChild>
     <Button type="button" variant="outline" size="sm" className="mt-2">
       ⚙️ {t("manageCategories")}
