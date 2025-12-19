@@ -114,16 +114,26 @@ function mapOutbound(op: SyncOperation): SyncOperation {
       break;
     case "SELL_ITEMS":
       cloned.payload = {
-        ...op.payload,
+        id: op.payload.id,
         invoice_number: op.payload.invoiceNumber ?? op.payload.invoice_number,
+        date: op.payload.date,
+        time: op.payload.time,
+        items: op.payload.items ?? [],
+        total: op.payload.total ?? 0,
+        cashier: op.payload.cashier,
         payment_method: op.payload.paymentMethod ?? op.payload.payment_method,
         exchange_rate: op.payload.exchangeRate ?? op.payload.exchange_rate,
       };
       break;
     case "ADD_PURCHASE":
       cloned.payload = {
-        ...op.payload,
+        id: op.payload.id,
         invoice_number: op.payload.invoiceNumber ?? op.payload.invoice_number,
+        supplier: op.payload.supplier ?? "",
+        date: op.payload.date,
+        time: op.payload.time,
+        items: op.payload.items ?? [],
+        total: op.payload.total ?? 0,
         exchange_rate: op.payload.exchangeRate ?? op.payload.exchange_rate,
       };
       break;
