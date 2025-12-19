@@ -40,3 +40,9 @@ export interface AppConfig {
   currency: string; // e.g. "دولار"
    exchangeRate: number; // سعر صرف البوليفار مقابل الدولار
 }
+
+export interface Account {
+  username: string;
+  password: string;
+  role: "admin" | "employee";
+}
