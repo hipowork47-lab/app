@@ -46,6 +46,26 @@ const SalesInterface = () => {
   ];
 
   const addToCart = (product: any) => {
+    if (!product || product.stock <= 0) {
+      toast({
+        title: t("notFoundTitle"),
+        description: t("notFoundDesc"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const existingItem = cart.find((item) => item.id === product.id);
+    const nextQty = (existingItem?.quantity ?? 0) + 1;
+    if (nextQty > product.stock) {
+      toast({
+        title: t("notFoundTitle"),
+        description: t("notFoundDesc"),
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const existingItem = cart.find((item) => item.id === product.id);
     if (existingItem) {
       setCart(
@@ -74,6 +94,16 @@ const SalesInterface = () => {
   };
 
   const updateQuantity = (id: string, newQuantity: number) => {
+    const product = products.find((p) => p.id === id);
+    if (product && newQuantity > product.stock) {
+      toast({
+        title: t("notFoundTitle"),
+        description: t("notFoundDesc"),
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (newQuantity <= 0) {
       setCart(cart.filter((item) => item.id !== id));
     } else {
@@ -125,6 +155,19 @@ const SalesInterface = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // Prevent checkout if any item exceeds available stock
+    for (const item of cart) {
+      const product = products.find((p) => p.id === item.id);
+      if (!product || product.stock < item.quantity) {
+        toast({
+          title: t("notFoundTitle"),
+          description: t("notFoundDesc"),
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     const itemsForSell = cart.map((it) => ({
