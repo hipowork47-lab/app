@@ -22,6 +22,7 @@ type State = {
 type Action =
   | { type: "SET_CURRENCY"; payload: string }
   | { type: "ADD_PRODUCT"; payload: Product }
+  | { type: "DELETE_PRODUCT"; payload: string }
   | { type: "SET_EXCHANGE_RATE"; payload: number }
   | { type: "UPDATE_PRODUCT"; payload: Product }
   | { type: "UPDATE_PRODUCT_PRICE"; payload: { productId: string; price: number } }
@@ -99,6 +100,9 @@ function reducer(state: State, action: Action): State {
         ...state,
         products: state.products.map((p) => (p.id === action.payload.id ? action.payload : p)),
       };
+
+    case "DELETE_PRODUCT":
+      return { ...state, products: state.products.filter((p) => p.id !== action.payload) };
 
     case "UPDATE_PRODUCT_PRICE":
       return {
@@ -281,6 +285,38 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   // Track when a mutation happened so we can trigger an immediate sync once state is updated.
   const syncRequestedRef = useRef(false);
 
+  // Merge helper to avoid losing local records if the server snapshot is behind.
+  function mergeById<T extends { id: string }>(current: T[], incoming: T[] = []): T[] {
+    const merged = new Map<string, T>();
+    current.forEach((item) => merged.set(item.id, item));
+    incoming.forEach((item) => merged.set(item.id, item));
+    return Array.from(merged.values());
+  }
+
+  const applySnapshot = React.useCallback(
+    (snapshot: Partial<State>) => {
+      if (!snapshot) return;
+      const current = latestStateRef.current;
+      baseDispatch({
+        type: "LOAD_STATE",
+        payload: {
+          ...current,
+          ...snapshot,
+          config: {
+            ...current.config,
+            ...snapshot.config,
+          },
+          // Merge to keep locally-added rows that may not yet exist on the snapshot.
+          products: mergeById(current.products, snapshot.products ?? []),
+          categories: mergeById(current.categories, snapshot.categories ?? []),
+          sales: mergeById(current.sales, snapshot.sales ?? []),
+          purchases: mergeById(current.purchases, snapshot.purchases ?? []),
+        },
+      });
+    },
+    [baseDispatch]
+  );
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
@@ -332,6 +368,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         case "UPDATE_PRODUCT":
           enqueueOperation({ type: action.type, payload: action.payload });
           break;
+        case "DELETE_PRODUCT":
+          enqueueOperation({ type: "DELETE_PRODUCT", payload: { id: action.payload } });
+          break;
         case "UPDATE_PRODUCT_PRICE": {
           const prod = normalizedState.products.find((p) => p.id === action.payload.productId);
           if (prod) {
@@ -369,21 +408,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (typeof window === "undefined" || !navigator.onLine) return;
 
     syncNow((snapshot) => {
-      if (!snapshot) return;
-      const current = latestStateRef.current;
-      baseDispatch({
-        type: "LOAD_STATE",
-        payload: {
-          ...current,
-          ...snapshot,
-          config: {
-            ...current.config,
-            ...snapshot.config,
-          },
-        },
-      });
+      applySnapshot(snapshot as Partial<State>);
     });
-  }, [normalizedState, baseDispatch]);
+  }, [normalizedState, applySnapshot]);
+
+  // One-time sync on mount to fetch latest snapshot and persist it for future sessions/devices.
+  useEffect(() => {
+    if (typeof window === "undefined" || !navigator.onLine) return;
+    syncNow((snapshot) => applySnapshot(snapshot as Partial<State>));
+  }, [applySnapshot]);
 
   return <StoreContext.Provider value={{ state: normalizedState, dispatch }}>{children}</StoreContext.Provider>;
 }
