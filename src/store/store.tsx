@@ -278,24 +278,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     } catch {}
     saveOfflineState(normalizedState);
 
-    // Trigger background sync when online; optional and no-op if API_BASE not set.
-    if (typeof window !== "undefined" && navigator.onLine) {
-      syncNow((snapshot) => {
-        if (snapshot) {
-          dispatch({
-            type: "LOAD_STATE",
-            payload: {
-              ...normalizedState,
-              ...snapshot,
-              config: {
-                ...normalizedState.config,
-                ...snapshot.config,
-              },
-            },
-          });
-        }
-      });
-    }
   }, [normalizedState]);
 
   // Lazy load persisted state from IndexedDB (if available) to support offline-first storage across devices.
@@ -307,24 +289,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         dispatch({ type: "LOAD_STATE", payload: offline });
       }
 
-      // Initial online sync (pull + push) if API_BASE configured.
-      if (!cancelled && typeof window !== "undefined" && navigator.onLine) {
-        syncNow((snapshot) => {
-          if (snapshot) {
-            dispatch({
-              type: "LOAD_STATE",
-              payload: {
-                ...normalizedState,
-                ...snapshot,
-                config: {
-                  ...normalizedState.config,
-                  ...snapshot.config,
-                },
-              },
-            });
-          }
-        });
-      }
     })();
     return () => {
       cancelled = true;
