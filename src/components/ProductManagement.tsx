@@ -114,7 +114,7 @@ const ProductManagement = () => {
   // نعلّم عليه أنه محذوف بدل ما نحذفه فعلاً
   const updatedProduct = { ...product, deleted: true };
 
-  dispatch({ type: "UPDATE_PRODUCT", payload: updatedProduct });
+  dispatch({ type: "DELETE_PRODUCT", payload: id });
   toast({ title: t("productDeletedTitle"), description: t("productDeletedDesc") });
 };
 
