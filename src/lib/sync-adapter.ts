@@ -39,15 +39,87 @@ async function safeFetch(url: string, opts: RequestInit = {}) {
 export async function pullSnapshot(): Promise<Snapshot | null> {
   if (!API_BASE) return null;
   try {
-    return await safeFetch(`${API_BASE}/sync/snapshot`);
+    const raw = await safeFetch(`${API_BASE}/sync/snapshot`);
+    // Map snake_case from Supabase to camelCase used in the app.
+    return {
+      ...raw,
+      products: (raw?.products || []).map((p: any) => ({
+        ...p,
+        categoryId: p.category_id ?? p.categoryId ?? "",
+      })),
+      categories: raw?.categories || [],
+      sales: (raw?.sales || []).map((s: any) => ({
+        ...s,
+        invoiceNumber: s.invoice_number ?? s.invoiceNumber,
+        paymentMethod: s.payment_method ?? s.paymentMethod,
+        exchangeRate: s.exchange_rate ?? s.exchangeRate,
+      })),
+      purchases: (raw?.purchases || []).map((p: any) => ({
+        ...p,
+        invoiceNumber: p.invoice_number ?? p.invoiceNumber,
+        exchangeRate: p.exchange_rate ?? p.exchangeRate,
+      })),
+    };
   } catch {
     return null;
   }
 }
 
+// Convert camelCase payloads to the snake_case columns expected by Supabase tables.
+function mapOutbound(op: SyncOperation): SyncOperation {
+  const cloned = { ...op, payload: { ...(op as any).payload } };
+  switch (op.type) {
+    case "ADD_PRODUCT":
+    case "UPDATE_PRODUCT":
+      cloned.payload = {
+        id: op.payload.id,
+        name: op.payload.name,
+        price: op.payload.price,
+        stock: op.payload.stock,
+        barcode: op.payload.barcode ?? "",
+        category_id: op.payload.categoryId ?? null,
+        image: op.payload.image ?? null,
+      };
+      break;
+    case "DELETE_PRODUCT":
+      cloned.payload = { id: op.payload.id ?? op.payload };
+      break;
+    case "ADD_CATEGORY":
+    case "UPDATE_CATEGORY":
+      cloned.payload = {
+        id: op.payload.id,
+        name: op.payload.name,
+        color: op.payload.color ?? "",
+        description: op.payload.description ?? "",
+      };
+      break;
+    case "DELETE_CATEGORY":
+      cloned.payload = { id: op.payload.id ?? op.payload };
+      break;
+    case "SELL_ITEMS":
+      cloned.payload = {
+        ...op.payload,
+        invoice_number: op.payload.invoiceNumber ?? op.payload.invoice_number,
+        payment_method: op.payload.paymentMethod ?? op.payload.payment_method,
+        exchange_rate: op.payload.exchangeRate ?? op.payload.exchange_rate,
+      };
+      break;
+    case "ADD_PURCHASE":
+      cloned.payload = {
+        ...op.payload,
+        invoice_number: op.payload.invoiceNumber ?? op.payload.invoice_number,
+        exchange_rate: op.payload.exchangeRate ?? op.payload.exchange_rate,
+      };
+      break;
+    default:
+      break;
+  }
+  return cloned;
+}
+
 export async function pushOutbox(handler?: (ops: SyncOperation[]) => void) {
   if (!API_BASE) return;
-  const ops = await readQueue();
+  const ops = (await readQueue()).map(mapOutbound);
   if (!ops.length) return;
   try {
     await safeFetch(`${API_BASE}/sync/apply`, {
