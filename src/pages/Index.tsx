@@ -21,6 +21,8 @@ import SalesInvoices from "@/components/SalesInvoices";
 import { useTranslation } from "react-i18next";
 import { syncNow } from "@/lib/sync-adapter";
 import { useStore } from "@/store/store";
+import { addAccount } from "@/lib/accounts";
+import { addAccount } from "@/lib/accounts";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("sales");
@@ -35,6 +37,17 @@ const Index = () => {
   const currentLangKey = (i18n.language || "").slice(0, 2) as keyof typeof langLabel;
 
   const handleLogout = () => setUserRole(null);
+  const handleAddAccount = () => {
+    if (userRole !== "admin") return;
+    const username = prompt("اسم المستخدم الجديد");
+    if (!username) return;
+    const password = prompt("كلمة المرور");
+    if (!password) return;
+    const roleInput = prompt('الدور (admin أو employee)', "employee") || "employee";
+    const role = roleInput === "admin" ? "admin" : "employee";
+    addAccount({ username, password, role });
+    alert("تم إنشاء الحساب");
+  };
 
   // إذا لم يسجل الدخول بعد
   if (!userRole) {

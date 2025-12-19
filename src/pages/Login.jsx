@@ -1,27 +1,38 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next"; // 👈 إضافة الترجمة
+import { useTranslation } from "react-i18next";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, User } from "lucide-react";
+import { loadAccounts } from "@/lib/accounts";
 
 const Login = ({ onLogin }) => {
-  const { t } = useTranslation(); // 🧠 استدعاء الدالة t للترجمة
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [accounts, setAccounts] = useState([]);
+
+  useEffect(() => {
+    setAccounts(loadAccounts());
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
 
-    if (username === "Admin" && password === "admin425") {
-      onLogin("admin");
-    } else if (username === "Worker" && password === "1234") {
-      onLogin("employee");
-    } else {
-      setError(t("login.invalidCredentials")); // ✅ ترجمة الخطأ
+    const found = accounts.find(
+      (acc) =>
+        acc.username.toLowerCase() === username.toLowerCase() &&
+        acc.password === password
+    );
+
+    if (found) {
+      onLogin(found.role);
+      return;
     }
+
+    setError(t("login.invalidCredentials"));
   };
 
   return (
@@ -38,7 +49,6 @@ const Login = ({ onLogin }) => {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* اسم المستخدم */}
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-gray-500" />
               <Input
@@ -49,7 +59,6 @@ const Login = ({ onLogin }) => {
               />
             </div>
 
-            {/* كلمة المرور */}
             <div className="flex items-center gap-2">
               <Lock className="w-5 h-5 text-gray-500" />
               <Input
@@ -61,12 +70,10 @@ const Login = ({ onLogin }) => {
               />
             </div>
 
-            {/* رسالة الخطأ */}
             {error && (
               <p className="text-red-500 text-sm text-center font-medium">{error}</p>
             )}
 
-            {/* زر الدخول */}
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition"
@@ -74,7 +81,6 @@ const Login = ({ onLogin }) => {
               {t("login.button")}
             </Button>
 
-            {/* نص توضيحي */}
             <p className="text-center text-gray-500 text-xs mt-3">
               {t("login.adminAccount")}: <b>Admin / admin425</b> <br />
               {t("login.workerAccount")}: <b>Worker / 1234</b>
