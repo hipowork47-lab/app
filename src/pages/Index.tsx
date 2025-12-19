@@ -128,26 +128,7 @@ const Index = () => {
               onClick={() => {
                 syncNow((snapshot) => {
                   if (!snapshot) return;
-                  // Merge by id so local records are not lost if the server snapshot is behind.
-                  const mergeById = <T extends { id: string }>(current: T[], incoming: T[] = []) => {
-                    const merged = new Map<string, T>();
-                    current.forEach((item) => merged.set(item.id, item));
-                    incoming.forEach((item) => merged.set(item.id, item));
-                    return Array.from(merged.values());
-                  };
-
-                  dispatch({
-                    type: "LOAD_STATE",
-                    payload: {
-                      ...state,
-                      ...snapshot,
-                      config: { ...state.config, ...snapshot.config },
-                      products: mergeById(state.products, snapshot.products ?? []),
-                      categories: mergeById(state.categories, snapshot.categories ?? []),
-                      sales: mergeById(state.sales, snapshot.sales ?? []),
-                      purchases: mergeById(state.purchases, snapshot.purchases ?? []),
-                    },
-                  });
+                  dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as any });
                 });
               }}
             >

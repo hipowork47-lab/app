@@ -11,6 +11,13 @@ import type {
 import { enqueueOperation, loadOfflineState, saveOfflineState } from "@/lib/offline-sync";
 import { syncNow } from "@/lib/sync-adapter";
 
+function mergeById<T extends { id: string }>(current: T[], incoming: T[] = []): T[] {
+  const merged = new Map<string, T>();
+  current.forEach((item) => merged.set(item.id, item));
+  incoming.forEach((item) => merged.set(item.id, item));
+  return Array.from(merged.values());
+}
+
 type State = {
   config: AppConfig;
   products: Product[];
@@ -46,7 +53,8 @@ type Action =
         invoiceMeta?: { invoiceNumber?: string; date?: string; time?: string };
       };
     }
-  | { type: "LOAD_STATE"; payload: State };
+  | { type: "LOAD_STATE"; payload: State }
+  | { type: "APPLY_SNAPSHOT"; payload: Partial<State> };
 
 const initialState: State = {
   config: {
@@ -226,6 +234,19 @@ case "ADD_PURCHASE": {
     case "LOAD_STATE":
       return action.payload;
 
+    case "APPLY_SNAPSHOT": {
+      const snap = action.payload as Partial<State>;
+      return {
+        ...state,
+        ...snap,
+        config: { ...state.config, ...snap.config },
+        products: mergeById(state.products, snap.products ?? []),
+        categories: mergeById(state.categories, snap.categories ?? []),
+        sales: mergeById(state.sales, snap.sales ?? []),
+        purchases: mergeById(state.purchases, snap.purchases ?? []),
+      };
+    }
+
     default:
       return state;
   }
@@ -276,12 +297,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     categories: Array.isArray(state.categories) ? state.categories : [],
   };
 
-  // Keep a ref with the latest normalized state so interval callbacks always see fresh data.
-  const latestStateRef = useRef<State>(normalizedState);
-  useEffect(() => {
-    latestStateRef.current = normalizedState;
-  }, [normalizedState]);
-
   // Track when a mutation happened so we can trigger an immediate sync once state is updated.
   const syncRequestedRef = useRef(false);
 
@@ -296,23 +311,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const applySnapshot = React.useCallback(
     (snapshot: Partial<State>) => {
       if (!snapshot) return;
-      const current = latestStateRef.current;
-      baseDispatch({
-        type: "LOAD_STATE",
-        payload: {
-          ...current,
-          ...snapshot,
-          config: {
-            ...current.config,
-            ...snapshot.config,
-          },
-          // Merge to keep locally-added rows that may not yet exist on the snapshot.
-          products: mergeById(current.products, snapshot.products ?? []),
-          categories: mergeById(current.categories, snapshot.categories ?? []),
-          sales: mergeById(current.sales, snapshot.sales ?? []),
-          purchases: mergeById(current.purchases, snapshot.purchases ?? []),
-        },
-      });
+      baseDispatch({ type: "APPLY_SNAPSHOT", payload: snapshot });
     },
     [baseDispatch]
   );
@@ -394,7 +393,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       baseDispatch(action);
 
       // Request an immediate sync for any mutating action except LOAD_STATE.
-      if (action.type !== "LOAD_STATE") {
+      if (action.type !== "LOAD_STATE" && action.type !== "APPLY_SNAPSHOT") {
         syncRequestedRef.current = true;
       }
     },
