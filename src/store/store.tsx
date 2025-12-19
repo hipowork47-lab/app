@@ -272,6 +272,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     categories: Array.isArray(state.categories) ? state.categories : [],
   };
 
+  // Keep a ref with the latest normalized state so interval callbacks always see fresh data.
+  const latestStateRef = useRef<State>(normalizedState);
+  useEffect(() => {
+    latestStateRef.current = normalizedState;
+  }, [normalizedState]);
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedState));
@@ -347,6 +353,31 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     },
     [normalizedState.products, baseDispatch]
   );
+
+  // Auto-sync every 20s when online (pull + push)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const id = window.setInterval(() => {
+      if (!navigator.onLine) return;
+      syncNow((snapshot) => {
+        if (snapshot) {
+          const current = latestStateRef.current;
+          dispatch({
+            type: "LOAD_STATE",
+            payload: {
+              ...current,
+              ...snapshot,
+              config: {
+                ...current.config,
+                ...snapshot.config,
+              },
+            },
+          });
+        }
+      });
+    }, 20000);
+    return () => window.clearInterval(id);
+  }, [dispatch]);
 
   return <StoreContext.Provider value={{ state: normalizedState, dispatch }}>{children}</StoreContext.Provider>;
 }
