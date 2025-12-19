@@ -45,6 +45,7 @@ const Index = () => {
     const roleInput = prompt('الدور (admin أو employee)', "employee") || "employee";
     const role = roleInput === "admin" ? "admin" : "employee";
     addAccount({ username, password, role });
+    syncNow(() => {});
     alert("تم إنشاء الحساب");
   };
 

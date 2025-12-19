@@ -1,6 +1,7 @@
 // Simple localStorage-based account store for demo use.
 export type AccountRole = "admin" | "employee";
 export type Account = { username: string; password: string; role: AccountRole };
+import { enqueueOperation } from "@/lib/offline-sync";
 
 const KEY = "pos_accounts_v1";
 
@@ -39,7 +40,21 @@ export function addAccount(account: Account): Account[] {
       )
     : [...existing, account];
   saveAccounts(next);
+  enqueueOperation({ type: "ADD_ACCOUNT", payload: account });
   return next;
+}
+
+export function deleteAccount(username: string): Account[] {
+  const existing = loadAccounts().filter(
+    (a) => a.username.toLowerCase() !== username.toLowerCase()
+  );
+  saveAccounts(existing);
+  enqueueOperation({ type: "DELETE_ACCOUNT", payload: { username } });
+  return existing;
+}
+
+export function applyAccountsSnapshot(accounts: Account[]) {
+  saveAccounts(accounts);
 }
 
 function defaultAccounts(): Account[] {

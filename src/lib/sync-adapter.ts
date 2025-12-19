@@ -12,6 +12,7 @@ type Snapshot = {
   categories?: any[];
   sales?: any[];
   purchases?: any[];
+  accounts?: any[];
 };
 
 async function safeFetch(url: string, opts: RequestInit = {}) {
@@ -76,6 +77,7 @@ export async function pullSnapshot(): Promise<Snapshot | null> {
         invoiceNumber: p.invoice_number ?? p.invoiceNumber,
         exchangeRate: p.exchange_rate ?? p.exchangeRate,
       })),
+      accounts: raw?.accounts || [],
     };
   } catch {
     return null;
@@ -145,6 +147,17 @@ function mapOutbound(op: SyncOperation): SyncOperation {
         total: op.payload.total ?? 0,
         exchange_rate: op.payload.exchangeRate ?? op.payload.exchange_rate,
       };
+      break;
+    case "ADD_ACCOUNT":
+    case "UPDATE_ACCOUNT":
+      cloned.payload = {
+        username: op.payload.username,
+        password: op.payload.password,
+        role: op.payload.role,
+      };
+      break;
+    case "DELETE_ACCOUNT":
+      cloned.payload = { username: op.payload.username ?? op.payload };
       break;
     default:
       break;

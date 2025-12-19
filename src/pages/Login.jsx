@@ -4,7 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, User } from "lucide-react";
-import { loadAccounts } from "@/lib/accounts";
+import { applyAccountsSnapshot, loadAccounts } from "@/lib/accounts";
+import { pullSnapshot } from "@/lib/sync-adapter";
 
 const Login = ({ onLogin }) => {
   const { t } = useTranslation();
@@ -15,6 +16,13 @@ const Login = ({ onLogin }) => {
 
   useEffect(() => {
     setAccounts(loadAccounts());
+    // حاول جلب أحدث الحسابات من المزامنة إذا توفرت
+    pullSnapshot().then((snap) => {
+      if (snap?.accounts) {
+        applyAccountsSnapshot(snap.accounts);
+        setAccounts(loadAccounts());
+      }
+    });
   }, []);
 
   const handleSubmit = (e) => {
