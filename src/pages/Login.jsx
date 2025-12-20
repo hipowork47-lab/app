@@ -45,10 +45,10 @@ const Login = ({ onLogin }) => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4"
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-3 sm:px-4 py-8"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      <Card className="relative w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
+      <Card className="relative w-full max-w-md mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
         <CardHeader className="space-y-2 pb-2">
           <div className="flex items-center justify-center gap-2 text-blue-700">
             <ShieldCheck className="w-5 h-5" />
