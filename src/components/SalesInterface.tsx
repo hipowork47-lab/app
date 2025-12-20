@@ -292,7 +292,6 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                     <Card
                       key={product.id}
                       className="relative cursor-pointer hover:shadow-lg transition-all duration-200 border-blue-100 hover:border-blue-300"
-                      style={{ borderTop: `4px solid ${catColor}` }}
                       onClick={() => addToCart(product)}
                     >
                       <span
