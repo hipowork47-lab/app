@@ -163,7 +163,11 @@ const Index = () => {
             </Button>
           </div>
           <TabsList
-            className="flex w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto gap-2 px-2 scroll-smooth"
+            className="flex md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto md:overflow-visible gap-2 px-2 md:px-0 scroll-smooth"
+            style={{
+              gridTemplateColumns:
+                userRole === "admin" ? "repeat(5, 1fr)" : "repeat(2, 1fr)",
+            }}
             dir={i18n.language === "ar" ? "rtl" : "ltr"}
           >
             {/* التبويبات حسب نوع المستخدم */}
@@ -171,7 +175,7 @@ const Index = () => {
               <>
                 <TabsTrigger
                   value="reports"
-                  className="flex-col gap-1 min-w-[140px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+                  className="flex-col gap-1 min-w-[140px] md:min-w-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
                 >
                   <BarChart3 className="w-5 h-5" />
                   <span className="text-xs">{t("reports")}</span>
@@ -179,7 +183,7 @@ const Index = () => {
 
                 <TabsTrigger
                   value="invoices"
-                  className="flex-col gap-1 min-w-[140px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+                  className="flex-col gap-1 min-w-[150px] md:min-w-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
                 >
                   <FileText className="w-5 h-5" />
                   <span className="text-xs">{t("purchaseInvoices")}</span>
@@ -187,7 +191,7 @@ const Index = () => {
 
                 <TabsTrigger
                   value="products"
-                  className="flex-col gap-1 min-w-[140px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+                  className="flex-col gap-1 min-w-[140px] md:min-w-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
                 >
                   <Package className="w-5 h-5" />
                   <span className="text-xs">{t("products")}</span>
@@ -198,7 +202,7 @@ const Index = () => {
             {/* تبويبات مشتركة بين المدير والعامل */}
             <TabsTrigger
               value="sales-invoices"
-              className="flex-col gap-1 min-w-[150px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+              className="flex-col gap-1 min-w-[150px] md:min-w-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
             >
               <Receipt className="w-5 h-5" />
               <span className="text-xs">{t("salesInvoices")}</span>
@@ -206,7 +210,7 @@ const Index = () => {
 
             <TabsTrigger
               value="sales"
-              className="flex-col gap-1 min-w-[140px] data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
+              className="flex-col gap-1 min-w-[140px] md:min-w-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white"
             >
               <ShoppingCart className="w-5 h-5" />
               <span className="text-xs">{t("addInvoice")}</span>
