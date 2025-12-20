@@ -259,21 +259,27 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
               </CardTitle>
 
               <div className="flex flex-wrap gap-2">
-                {categoriesList.map((cat) => (
-                  <Button
-                    key={cat}
-                    size="sm"
-                    variant={selectedCategory === cat ? "default" : "outline"}
-                    className={
-                      selectedCategory === cat
-                        ? "bg-blue-500 hover:bg-blue-600 text-white"
-                        : ""
-                    }
-                    onClick={() => setSelectedCategory(cat)}
-                  >
-                    {cat}
-                  </Button>
-                ))}
+                {categoriesList.map((cat) => {
+                  const catObj = categories.find((c) => c.name === cat);
+                  const color = catObj?.color ?? "#3B82F6";
+                  const isSelected = selectedCategory === cat;
+                  return (
+                    <Button
+                      key={cat}
+                      size="sm"
+                      variant="outline"
+                      className={isSelected ? "text-white" : ""}
+                      style={{
+                        borderColor: color,
+                        color: isSelected ? "#fff" : color,
+                        backgroundColor: isSelected ? color : "transparent",
+                      }}
+                      onClick={() => setSelectedCategory(cat)}
+                    >
+                      {cat}
+                    </Button>
+                  );
+                })}
               </div>
 
               <Input
