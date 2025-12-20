@@ -14,6 +14,7 @@ export interface Product {
   barcode?: string;
   categoryId?: string; // category id
   image?: string | null;
+  deleted?: boolean;
 }
 
 export interface SaleItem {

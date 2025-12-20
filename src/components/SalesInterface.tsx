@@ -318,7 +318,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                         </span>
                       </span>
                       <CardContent className="p-4 text-center space-y-2">
-                        <h3 className="font-semibold text-gray-800">
+                        <h3 className="text-base md:text-lg font-bold text-gray-900">
                           {product.name}
                         </h3>
                         <p className="text-lg font-bold text-blue-600">
