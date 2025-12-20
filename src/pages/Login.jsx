@@ -17,7 +17,6 @@ const Login = ({ onLogin }) => {
 
   useEffect(() => {
     setAccounts(loadAccounts());
-    // حاول جلب أحدث الحسابات من المزامنة إذا توفرت
     pullSnapshot().then((snap) => {
       if (snap?.accounts) {
         applyAccountsSnapshot(snap.accounts);
@@ -56,10 +55,10 @@ const Login = ({ onLogin }) => {
         <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-blue-500/10 to-transparent" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-10">
-        <div className="grid w-full max-w-5xl gap-8 items-center justify-center lg:grid-cols-2">
-          {/* Brand / intro side */}
-          <div className="text-white space-y-6 hidden lg:block">
+      <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col lg:flex-row items-center justify-center gap-8 px-4 py-10">
+        {/* Brand / intro side (hidden on mobile) */}
+        <div className="flex-1 w-full hidden lg:block">
+          <div className="text-white space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
               <ShieldCheck className="w-4 h-4" />
               <span className="text-sm font-medium">{t("welcome")}</span>
@@ -87,67 +86,66 @@ const Login = ({ onLogin }) => {
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Login card */}
-          <div className="flex justify-center">
-            <Card className="relative w-full max-w-md mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
-              <CardHeader className="space-y-1 pb-2">
-                <CardTitle className="text-2xl font-bold text-slate-900 text-center">
-                  {t("login.title")}
-                </CardTitle>
-                <p className="text-center text-sm text-slate-600">
-                  {t("login.adminAccount")}: <b>Admin / admin425</b> · {t("login.workerAccount")}:{" "}
-                  <b>Worker / 1234</b>
-                </p>
-              </CardHeader>
+        {/* Login card */}
+        <div className="flex flex-1 w-full justify-center">
+          <Card className="relative w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
+            <CardHeader className="space-y-1 pb-2">
+              <CardTitle className="text-2xl font-bold text-slate-900 text-center">
+                {t("login.title")}
+              </CardTitle>
+              <p className="text-center text-sm text-slate-600">
+                {t("login.adminAccount")}: <b>Admin / admin425</b> · {t("login.workerAccount")}: <b>Worker / 1234</b>
+              </p>
+            </CardHeader>
 
-              <CardContent className="pt-4">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                      <User className="w-4 h-4 text-blue-600" />
-                      {t("login.username")}
-                    </label>
-                    <Input
-                      placeholder={t("login.username")}
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
-                      required
-                    />
+            <CardContent className="pt-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <User className="w-4 h-4 text-blue-600" />
+                    {t("login.username")}
+                  </label>
+                  <Input
+                    placeholder={t("login.username")}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-blue-600" />
+                    {t("login.password")}
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder={t("login.password")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
+                    required
+                  />
+                </div>
+
+                {error && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                    {error}
                   </div>
+                )}
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-blue-600" />
-                      {t("login.password")}
-                    </label>
-                    <Input
-                      type="password"
-                      placeholder={t("login.password")}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
-                      required
-                    />
-                  </div>
-
-                  {error && (
-                    <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-                      {error}
-                    </div>
-                  )}
-
-                  <Button
-                    type="submit"
-                    className="w-full h-11 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:from-blue-700 hover:to-indigo-700"
-                  >
-                    {t("login.button")}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
+                <Button
+                  type="submit"
+                  className="w-full h-11 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:from-blue-700 hover:to-indigo-700"
+                >
+                  {t("login.button")}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
