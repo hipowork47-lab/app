@@ -56,8 +56,8 @@ const Login = ({ onLogin }) => {
         <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-blue-500/10 to-transparent" />
       </div>
 
-      <div className="container relative mx-auto px-4 py-10">
-        <div className="grid gap-8 lg:grid-cols-2 items-center justify-center">
+      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-10">
+        <div className="grid w-full max-w-5xl gap-8 items-center justify-center lg:grid-cols-2">
           {/* Brand / intro side */}
           <div className="text-white space-y-6 hidden lg:block">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
@@ -90,7 +90,7 @@ const Login = ({ onLogin }) => {
 
           {/* Login card */}
           <div className="flex justify-center">
-            <Card className="relative w-full max-w-md bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
+            <Card className="relative w-full max-w-md mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
               <CardHeader className="space-y-1 pb-2">
                 <CardTitle className="text-2xl font-bold text-slate-900 text-center">
                   {t("login.title")}
