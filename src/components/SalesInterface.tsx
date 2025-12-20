@@ -368,14 +368,14 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                 </p>
               ) : (
                 <>
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                  <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
                     {cart.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between p-3 bg-blue-50 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-blue-50 rounded-lg shadow-sm"
                       >
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-800">
+                          <h4 className="font-bold text-gray-900 text-sm md:text-base">
                             {item.name}
                           </h4>
                           <p className="text-sm text-blue-600">
