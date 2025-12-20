@@ -285,43 +285,53 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {filteredProducts.map((product) => (
-                  <Card
-                    key={product.id}
-                    className="cursor-pointer hover:shadow-lg transition-all duration-200 border-blue-100 hover:border-blue-300"
-                    onClick={() => addToCart(product)}
-                  >
-                    <CardContent className="p-4 text-center">
-                      <h3 className="font-semibold text-gray-800 mb-2">
-                        {product.name}
-                      </h3>
-                      <p className="text-lg font-bold text-blue-600 mb-2">
-                        {product.price} {config.currency}
-                      </p>
-                      {(() => {
-                        const isEmployee = userRole === "employee";
-                        const lowStock = product.stock < 20;
-                        if (isEmployee && !lowStock) {
-                          // للعامل: إخفاء الكمية واستبدالها بنجوم عندما يكون المخزون 20+
+                {filteredProducts.map((product) => {
+                  const category = categories.find((c) => c.id === product.categoryId);
+                  const catColor = category?.color ?? "#E0E7FF";
+                  return (
+                    <Card
+                      key={product.id}
+                      className="cursor-pointer hover:shadow-lg transition-all duration-200 border-blue-100 hover:border-blue-300"
+                      style={{ borderTop: `4px solid ${catColor}` }}
+                      onClick={() => addToCart(product)}
+                    >
+                      <CardContent className="p-4 text-center space-y-2">
+                        <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+                          <span
+                            className="inline-block h-3 w-3 rounded-full border border-white/70 shadow-sm"
+                            style={{ backgroundColor: catColor }}
+                          />
+                          <span className="truncate">{category?.name ?? t("allCategories")}</span>
+                        </div>
+                        <h3 className="font-semibold text-gray-800">
+                          {product.name}
+                        </h3>
+                        <p className="text-lg font-bold text-blue-600">
+                          {product.price} {config.currency}
+                        </p>
+                        {(() => {
+                          const isEmployee = userRole === "employee";
+                          const lowStock = product.stock < 20;
+                          if (isEmployee && !lowStock) {
+                            return (
+                              <Badge variant="secondary" className="text-xs">
+                                {t("available")}: ***
+                              </Badge>
+                            );
+                          }
                           return (
-                            <Badge variant="secondary" className="text-xs">
-                              {t("available")}: ***
+                            <Badge
+                              variant={lowStock ? "destructive" : "secondary"}
+                              className="text-xs"
+                            >
+                              {t("available")}: {product.stock}
                             </Badge>
                           );
-                        }
-                        // إظهار الرقم؛ إذا أقل من 20 باللون الأحمر
-                        return (
-                          <Badge
-                            variant={lowStock ? "destructive" : "secondary"}
-                            className="text-xs"
-                          >
-                            {t("available")}: {product.stock}
-                          </Badge>
-                        );
-                      })()}
-                    </CardContent>
-                  </Card>
-                ))}
+                        })()}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
