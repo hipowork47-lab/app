@@ -48,22 +48,6 @@ const Login = ({ onLogin }) => {
       className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
       dir={isRTL ? "rtl" : "ltr"}
     >
-      {/* Background accents */}
-      <div className="pointer-events-none absolute inset-0">
-        {/* soft blobs */}
-        <div className="absolute -left-24 -top-24 h-64 w-64 rounded-full bg-blue-200/60 blur-3xl" />
-        <div className="absolute right-10 top-10 h-72 w-72 rounded-full bg-purple-200/60 blur-3xl" />
-        <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-white/60 to-transparent" />
-        {/* fine grid pattern */}
-        <div
-          className="absolute inset-0 opacity-25"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, rgba(59,130,246,0.18) 1px, transparent 0)",
-            backgroundSize: "26px 26px",
-          }}
-        />
-      </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col lg:flex-row items-center justify-center gap-8 px-4 py-10">
         {/* Brand / intro side (hidden on mobile) */}
