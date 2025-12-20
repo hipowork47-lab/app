@@ -57,9 +57,9 @@ const Login = ({ onLogin }) => {
       </div>
 
       <div className="container relative mx-auto px-4 py-10">
-        <div className="grid gap-8 lg:grid-cols-2 items-center">
+        <div className="grid gap-8 lg:grid-cols-2 items-center justify-center">
           {/* Brand / intro side */}
-          <div className="text-white space-y-6">
+          <div className="text-white space-y-6 hidden lg:block">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
               <ShieldCheck className="w-4 h-4" />
               <span className="text-sm font-medium">{t("welcome")}</span>
@@ -89,63 +89,65 @@ const Login = ({ onLogin }) => {
           </div>
 
           {/* Login card */}
-          <Card className="relative bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
-            <CardHeader className="space-y-1 pb-2">
-              <CardTitle className="text-2xl font-bold text-slate-900 text-center">
-                {t("login.title")}
-              </CardTitle>
-              <p className="text-center text-sm text-slate-600">
-                {t("login.adminAccount")}: <b>Admin / admin425</b> · {t("login.workerAccount")}:{" "}
-                <b>Worker / 1234</b>
-              </p>
-            </CardHeader>
+          <div className="flex justify-center">
+            <Card className="relative w-full max-w-md bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
+              <CardHeader className="space-y-1 pb-2">
+                <CardTitle className="text-2xl font-bold text-slate-900 text-center">
+                  {t("login.title")}
+                </CardTitle>
+                <p className="text-center text-sm text-slate-600">
+                  {t("login.adminAccount")}: <b>Admin / admin425</b> · {t("login.workerAccount")}:{" "}
+                  <b>Worker / 1234</b>
+                </p>
+              </CardHeader>
 
-            <CardContent className="pt-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                    <User className="w-4 h-4 text-blue-600" />
-                    {t("login.username")}
-                  </label>
-                  <Input
-                    placeholder={t("login.username")}
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-blue-600" />
-                    {t("login.password")}
-                  </label>
-                  <Input
-                    type="password"
-                    placeholder={t("login.password")}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
-                    required
-                  />
-                </div>
-
-                {error && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-                    {error}
+              <CardContent className="pt-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <User className="w-4 h-4 text-blue-600" />
+                      {t("login.username")}
+                    </label>
+                    <Input
+                      placeholder={t("login.username")}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
+                      required
+                    />
                   </div>
-                )}
 
-                <Button
-                  type="submit"
-                  className="w-full h-11 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:from-blue-700 hover:to-indigo-700"
-                >
-                  {t("login.button")}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-blue-600" />
+                      {t("login.password")}
+                    </label>
+                    <Input
+                      type="password"
+                      placeholder={t("login.password")}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-blue-500/60"
+                      required
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                      {error}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full h-11 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:from-blue-700 hover:to-indigo-700"
+                  >
+                    {t("login.button")}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
