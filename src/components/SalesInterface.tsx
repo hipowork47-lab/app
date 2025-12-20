@@ -291,18 +291,28 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                   return (
                     <Card
                       key={product.id}
-                      className="cursor-pointer hover:shadow-lg transition-all duration-200 border-blue-100 hover:border-blue-300"
+                      className="relative cursor-pointer hover:shadow-lg transition-all duration-200 border-blue-100 hover:border-blue-300"
                       style={{ borderTop: `4px solid ${catColor}` }}
                       onClick={() => addToCart(product)}
                     >
+                      <span
+                        className="absolute rounded-full px-2 py-1 text-[11px] font-medium text-gray-700 flex items-center gap-1"
+                        style={{
+                          backgroundColor: `${catColor}20`,
+                          border: `1px solid ${catColor}`,
+                          top: 8,
+                          insetInlineEnd: 8,
+                        }}
+                      >
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: catColor }}
+                        />
+                        <span className="max-w-[120px] truncate">
+                          {category?.name ?? t("allCategories")}
+                        </span>
+                      </span>
                       <CardContent className="p-4 text-center space-y-2">
-                        <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-                          <span
-                            className="inline-block h-3 w-3 rounded-full border border-white/70 shadow-sm"
-                            style={{ backgroundColor: catColor }}
-                          />
-                          <span className="truncate">{category?.name ?? t("allCategories")}</span>
-                        </div>
                         <h3 className="font-semibold text-gray-800">
                           {product.name}
                         </h3>
