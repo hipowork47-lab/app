@@ -24,13 +24,13 @@ type SalesInterfaceProps = {
   userRole?: string | null;
 };
 
-const SalesInterface = ({ currentUser, userRole }: SalesInterfaceProps) => {
+const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceProps) => {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
   const { products, categories, config } = state;
   const { toast } = useToast();
 
-  const userRole = userRole ?? currentUser?.role ?? null;
+  const userRole = userRoleProp ?? currentUser?.role ?? null;
 
   const [barcode, setBarcode] = useState("");
   const [cart, setCart] = useState<CartItemLocal[]>([]);
