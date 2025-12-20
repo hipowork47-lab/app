@@ -19,14 +19,18 @@ interface CartItemLocal {
 }
 
 type SalesInterfaceProps = {
-  userRole: string | null;
+  currentUser?: { username: string; role: "admin" | "employee" } | null;
+  // Keep compatibility if any callers still pass userRole directly.
+  userRole?: string | null;
 };
 
-const SalesInterface = ({ userRole }: SalesInterfaceProps) => {
+const SalesInterface = ({ currentUser, userRole }: SalesInterfaceProps) => {
   const { t } = useTranslation();
   const { state, dispatch } = useStore();
   const { products, categories, config } = state;
   const { toast } = useToast();
+
+  const userRole = userRole ?? currentUser?.role ?? null;
 
   const [barcode, setBarcode] = useState("");
   const [cart, setCart] = useState<CartItemLocal[]>([]);
@@ -181,14 +185,14 @@ const SalesInterface = ({ userRole }: SalesInterfaceProps) => {
       type: "SELL_ITEMS",
       payload: {
         items: itemsForSell,
-        cashier: t("mainCashier"),
+        cashier: currentUser?.username ?? t("mainCashier"),
         paymentMethod:
           paymentMethod === t("cash")
             ? "cash"
             : paymentMethod === t("card")
             ? "card"
             : "transfer",
-	 exchangeRate: config.exchangeRate, // ✅ تخزين سعر الصرف وقت إنشاء الفاتورة
+        exchangeRate: config.exchangeRate, // keep rate snapshot for Bs calc
       },
     });
 

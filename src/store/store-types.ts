@@ -9,10 +9,10 @@ export interface Category {
 export interface Product {
   id: string;
   name: string;
-  price: number;       // سعر الوحدة
-  stock: number;       // الكمية المتوفرة
+  price: number; // unit price
+  stock: number; // available stock
   barcode?: string;
-  categoryId?: string; // id الفئة
+  categoryId?: string; // category id
   image?: string | null;
 }
 
@@ -31,18 +31,37 @@ export interface SaleInvoice {
   items: SaleItem[];
   total: number;
   cashier: string;
- paymentMethod: "cash" | "card" | "transfer"; // ✅ طريقة الدفع
-exchangeRate?: number; // ✅ سعر الصرف وقت إنشاء الفاتورة
+  paymentMethod: "cash" | "card" | "transfer";
+  exchangeRate?: number;
 }
 
 export interface AppConfig {
   storeName: string;
-  currency: string; // e.g. "دولار"
-   exchangeRate: number; // سعر صرف البوليفار مقابل الدولار
+  currency: string; // e.g. "$"
+  exchangeRate: number;
 }
 
 export interface Account {
   username: string;
   password: string;
   role: "admin" | "employee";
+  createdBy?: string | null;
+}
+
+export interface PurchaseInvoice {
+  id: string;
+  invoiceNumber: string;
+  supplier: string;
+  date: string;
+  time: string;
+  items: {
+    productId: string;
+    name: string;
+    price: number;
+    quantity: number;
+    description?: string;
+  }[];
+  total: number;
+  exchangeRate?: number;
+  createdBy?: string | null;
 }

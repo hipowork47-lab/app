@@ -1,7 +1,7 @@
+import { enqueueOperation } from "@/lib/offline-sync";
 // Simple localStorage-based account store for demo use.
 export type AccountRole = "admin" | "employee";
-export type Account = { username: string; password: string; role: AccountRole };
-import { enqueueOperation } from "@/lib/offline-sync";
+export type Account = { username: string; password: string; role: AccountRole; createdBy?: string | null };
 
 const KEY = "pos_accounts_v1";
 
@@ -34,13 +34,14 @@ export function saveAccounts(accounts: Account[]) {
 export function addAccount(account: Account): Account[] {
   const existing = loadAccounts();
   const found = existing.find((a) => a.username.toLowerCase() === account.username.toLowerCase());
+  const withCreator = { ...account, createdBy: account.createdBy ?? "system" };
   const next = found
     ? existing.map((a) =>
-        a.username.toLowerCase() === account.username.toLowerCase() ? account : a
+        a.username.toLowerCase() === account.username.toLowerCase() ? withCreator : a
       )
-    : [...existing, account];
+    : [...existing, withCreator];
   saveAccounts(next);
-  enqueueOperation({ type: "ADD_ACCOUNT", payload: account });
+  enqueueOperation({ type: "ADD_ACCOUNT", payload: withCreator });
   return next;
 }
 
@@ -59,8 +60,8 @@ export function applyAccountsSnapshot(accounts: Account[]) {
 
 function defaultAccounts(): Account[] {
   return [
-    { username: "Admin", password: "admin425", role: "admin" },
-    { username: "Worker", password: "1234", role: "employee" },
+    { username: "Admin", password: "admin425", role: "admin", createdBy: "system" },
+    { username: "Worker", password: "1234", role: "employee", createdBy: "system" },
   ];
 }
 

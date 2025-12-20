@@ -18,7 +18,11 @@ type LineItem = {
 const genId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
 
-const PurchaseInvoices: React.FC = () => {
+type PurchaseInvoicesProps = {
+  currentUser?: { username: string; role: "admin" | "employee" } | null;
+};
+
+const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null }) => {
   const { state, dispatch } = useStore();
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -156,7 +160,7 @@ const PurchaseInvoices: React.FC = () => {
       payload: {
         supplier,
         items: payloadItems,
-        invoiceMeta: { exchangeRate: state.config.exchangeRate },
+        invoiceMeta: { exchangeRate: state.config.exchangeRate, createdBy: currentUser?.username ?? null },
       },
     });
 

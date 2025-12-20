@@ -23,9 +23,11 @@ import { syncNow } from "@/lib/sync-adapter";
 import { useStore } from "@/store/store";
 import { addAccount } from "@/lib/accounts";
 
+type User = { username: string; role: "admin" | "employee" };
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState("sales");
-  const [userRole, setUserRole] = useState(null); // "admin" أو "employee"
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useStore();
   const langLabel: Record<string, { flag: string; text: string }> = {
@@ -34,8 +36,9 @@ const Index = () => {
     en: { flag: "🇺🇸", text: "English" },
   };
   const currentLangKey = (i18n.language || "").slice(0, 2) as keyof typeof langLabel;
+  const userRole = currentUser?.role ?? null;
 
-  const handleLogout = () => setUserRole(null);
+  const handleLogout = () => setCurrentUser(null);
   const handleAddAccount = () => {
     if (userRole !== "admin") return;
     const username = prompt("اسم المستخدم الجديد");
@@ -44,14 +47,14 @@ const Index = () => {
     if (!password) return;
     const roleInput = prompt('الدور (admin أو employee)', "employee") || "employee";
     const role = roleInput === "admin" ? "admin" : "employee";
-    addAccount({ username, password, role });
+    addAccount({ username, password, role, createdBy: currentUser?.username ?? "system" });
     syncNow(() => {});
     alert("تم إنشاء الحساب");
   };
 
   // إذا لم يسجل الدخول بعد
-  if (!userRole) {
-    return <Login onLogin={setUserRole} />;
+  if (!currentUser) {
+    return <Login onLogin={setCurrentUser} />;
   }
 
   // الصفحة الرئيسية
@@ -151,7 +154,8 @@ const Index = () => {
               onClick={() => {
                 syncNow((snapshot) => {
                   if (!snapshot) return;
-                  dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as any });
+                  type AppState = typeof state;
+                  dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as Partial<AppState> });
                 });
               }}
             >
@@ -215,7 +219,7 @@ const Index = () => {
 
           {/* المحتوى */}
           <TabsContent value="sales">
-            <SalesInterface userRole={userRole} />
+            <SalesInterface currentUser={currentUser} />
           </TabsContent>
           <TabsContent value="sales-invoices">
             <SalesInvoices />
@@ -227,7 +231,7 @@ const Index = () => {
                 <ProductManagement />
               </TabsContent>
               <TabsContent value="invoices">
-                <PurchaseInvoices />
+                <PurchaseInvoices currentUser={currentUser} />
               </TabsContent>
               <TabsContent value="reports">
                 <ReportsSection />

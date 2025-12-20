@@ -36,7 +36,7 @@ const Login = ({ onLogin }) => {
     );
 
     if (found) {
-      onLogin(found.role);
+      onLogin({ username: found.username, role: found.role });
       return;
     }
 

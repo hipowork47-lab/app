@@ -50,7 +50,7 @@ type Action =
       payload: {
         supplier: string;
         items: { productId: string; quantity: number; price: number }[];
-        invoiceMeta?: { invoiceNumber?: string; date?: string; time?: string };
+        invoiceMeta?: { invoiceNumber?: string; date?: string; time?: string; createdBy?: string | null };
       };
     }
   | { type: "LOAD_STATE"; payload: State }
@@ -226,6 +226,7 @@ case "ADD_PURCHASE": {
     })),
     total,
     exchangeRate: invoiceMeta?.exchangeRate ?? state.config.exchangeRate,
+    createdBy: invoiceMeta?.createdBy ?? null,
   };
 
   return { ...state, products: finalProducts, purchases: [...state.purchases, invoice] };

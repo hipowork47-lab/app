@@ -76,8 +76,12 @@ export async function pullSnapshot(): Promise<Snapshot | null> {
         ...p,
         invoiceNumber: p.invoice_number ?? p.invoiceNumber,
         exchangeRate: p.exchange_rate ?? p.exchangeRate,
+        createdBy: p.created_by ?? p.createdBy ?? null,
       })),
-      accounts: raw?.accounts || [],
+      accounts: (raw?.accounts || []).map((a: any) => ({
+        ...a,
+        createdBy: a.created_by ?? a.createdBy ?? null,
+      })),
     };
   } catch {
     return null;
@@ -146,6 +150,7 @@ function mapOutbound(op: SyncOperation): SyncOperation {
         items: op.payload.items ?? [],
         total: op.payload.total ?? 0,
         exchange_rate: op.payload.exchangeRate ?? op.payload.exchange_rate,
+        created_by: op.payload.createdBy ?? op.payload.created_by ?? null,
       };
       break;
     case "ADD_ACCOUNT":
@@ -154,6 +159,7 @@ function mapOutbound(op: SyncOperation): SyncOperation {
         username: op.payload.username,
         password: op.payload.password,
         role: op.payload.role,
+        created_by: op.payload.createdBy ?? op.payload.created_by ?? null,
       };
       break;
     case "DELETE_ACCOUNT":
