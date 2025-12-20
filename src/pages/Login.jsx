@@ -51,34 +51,32 @@ const Login = ({ onLogin }) => {
 
       <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col lg:flex-row items-center justify-center gap-8 px-4 py-10">
         {/* Brand / intro side (hidden on mobile) */}
-        <div className="flex-1 w-full hidden lg:block">
-          <div className="text-white space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
-              <ShieldCheck className="w-4 h-4" />
-              <span className="text-sm font-medium">{t("welcome")}</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
-              {t("login.title")} <span className="text-blue-200">POS</span>
-            </h1>
-            <p className="text-blue-100/80 leading-relaxed max-w-xl">
-              {t("reports")} · {t("login.adminAccount")} · {t("login.workerAccount")}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {[
-                t("purchaseInvoices"),
-                t("salesInvoices"),
-                t("products"),
-                t("reports"),
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-blue-100"
-                >
-                  <Sparkles className="w-4 h-4 text-blue-200" />
-                  {item}
-                </span>
-              ))}
-            </div>
+        <div className="flex-1 w-full hidden lg:flex flex-col items-center text-center space-y-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
+            <ShieldCheck className="w-4 h-4" />
+            <span className="text-sm font-medium">{t("welcome")}</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold leading-tight text-white">
+            {t("login.title")} <span className="text-blue-200">POS</span>
+          </h1>
+          <p className="text-blue-100/80 leading-relaxed max-w-xl">
+            {t("reports")} · {t("login.adminAccount")} · {t("login.workerAccount")}
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              t("purchaseInvoices"),
+              t("salesInvoices"),
+              t("products"),
+              t("reports"),
+            ].map((item) => (
+              <span
+                key={item}
+                className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-blue-100"
+              >
+                <Sparkles className="w-4 h-4 text-blue-200" />
+                {item}
+              </span>
+            ))}
           </div>
         </div>
 
