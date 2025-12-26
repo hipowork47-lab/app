@@ -10,6 +10,7 @@ import type {
 } from "./store-types";
 import { enqueueOperation } from "@/lib/offline-sync";
 import { pushOutbox } from "@/lib/sync-adapter";
+import { useRef } from "react";
 // تعريف نوع حالة التطبيق
 type State = {
   config: AppConfig;
@@ -273,6 +274,8 @@ interface StoreContextValue {
 const StoreContext = createContext<StoreContextValue | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isPushing = useRef(false);
   const [state, dispatch] = useReducer(reducer, initialState, (init) => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -292,10 +295,19 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore storage write errors
     }
-    // Best-effort: push any queued operations to Supabase whenever state changes.
-    pushOutbox().catch(() => {
-      /* keep queue for retry */
-    });
+    // Best-effort: debounce push to Supabase whenever state changes.
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    pushTimer.current = setTimeout(async () => {
+      if (isPushing.current) return;
+      isPushing.current = true;
+      try {
+        await pushOutbox();
+      } catch {
+        // keep queue for retry
+      } finally {
+        isPushing.current = false;
+      }
+    }, 400);
   }, [state]);
 
   return <StoreContext.Provider value={{ state, dispatch }}>{children}</StoreContext.Provider>;
