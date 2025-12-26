@@ -140,6 +140,16 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     }
   };
 
+  const handleBarcodeChange = (val: string) => {
+    setBarcode(val);
+    // Auto-add when barcode matches an existing product
+    const product = products.find((p) => p.barcode === val);
+    if (product) {
+      addToCart(product);
+      setBarcode("");
+    }
+  };
+
   // Auto-add on Enter (barcode scanners typically send Enter)
   const handleBarcodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -243,7 +253,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
               <form onSubmit={handleBarcodeSubmit} className="flex gap-2">
                 <Input
                   value={barcode}
-                  onChange={(e) => setBarcode(e.target.value)}
+                  onChange={(e) => handleBarcodeChange(e.target.value)}
                   onKeyDown={handleBarcodeKeyDown}
                   placeholder={t("barcodePlaceholder")}
                   className="flex-1 text-center font-mono text-lg"
