@@ -196,7 +196,7 @@ const Index = () => {
             </Button>
           </div>
           <TabsList
-            className="flex flex-nowrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto md:overflow-visible gap-2 px-2 md:px-0 scroll-smooth md:flex-none items-stretch touch-pan-x overscroll-x-contain snap-x snap-mandatory"
+            className="flex flex-nowrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto md:overflow-visible gap-2 px-2 md:px-0 scroll-smooth md:flex-none items-stretch touch-pan-x overscroll-x-contain md:snap-x md:snap-mandatory"
             style={{
               gridTemplateColumns:
                 userRole === "admin" ? "repeat(5, 1fr)" : "repeat(2, 1fr)",
@@ -209,7 +209,7 @@ const Index = () => {
               <>
                 <TabsTrigger
                   value="reports"
-                  className="flex-col gap-1 flex-shrink-0 min-w-[130px] sm:min-w-[140px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white snap-start"
+                  className="flex-col gap-1 flex-shrink-0 min-w-[130px] sm:min-w-[140px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white md:snap-start"
                 >
                   <BarChart3 className="w-5 h-5" />
                   <span className="text-xs">{t("reports")}</span>
@@ -217,7 +217,7 @@ const Index = () => {
 
                 <TabsTrigger
                   value="invoices"
-                  className="flex-col gap-1 flex-shrink-0 min-w-[140px] sm:min-w-[150px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white snap-start"
+                  className="flex-col gap-1 flex-shrink-0 min-w-[140px] sm:min-w-[150px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white md:snap-start"
                 >
                   <FileText className="w-5 h-5" />
                   <span className="text-xs">{t("purchaseInvoices")}</span>
@@ -225,7 +225,7 @@ const Index = () => {
 
                 <TabsTrigger
                   value="products"
-                  className="flex-col gap-1 flex-shrink-0 min-w-[130px] sm:min-w-[140px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white snap-start"
+                  className="flex-col gap-1 flex-shrink-0 min-w-[130px] sm:min-w-[140px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white md:snap-start"
                 >
                   <Package className="w-5 h-5" />
                   <span className="text-xs">{t("products")}</span>
@@ -236,7 +236,7 @@ const Index = () => {
             {/* تبويبات مشتركة بين المدير والعامل */}
             <TabsTrigger
               value="sales-invoices"
-              className="flex-col gap-1 flex-shrink-0 min-w-[140px] sm:min-w-[160px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white snap-start"
+              className="flex-col gap-1 flex-shrink-0 min-w-[140px] sm:min-w-[160px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white md:snap-start"
             >
               <Receipt className="w-5 h-5" />
               <span className="text-xs">{t("salesInvoices")}</span>
@@ -244,7 +244,7 @@ const Index = () => {
 
             <TabsTrigger
               value="sales"
-              className="flex-col gap-1 flex-shrink-0 min-w-[130px] sm:min-w-[140px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white snap-start"
+              className="flex-col gap-1 flex-shrink-0 min-w-[130px] sm:min-w-[140px] md:min-w-0 md:h-full md:justify-center data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white md:snap-start"
             >
               <ShoppingCart className="w-5 h-5" />
               <span className="text-xs">{t("addInvoice")}</span>
