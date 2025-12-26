@@ -22,6 +22,8 @@ import { useTranslation } from "react-i18next";
 import { syncNow } from "@/lib/sync-adapter";
 import { useStore } from "@/store/store";
 import { addAccount } from "@/lib/accounts";
+import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 // نوع المستخدم
 
 type User = { username: string; role: "admin" | "employee" };
@@ -31,6 +33,7 @@ const Index = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useStore();
+  const { toast } = useToast();
   const langLabel: Record<string, { flag: string; text: string }> = {
     es: { flag: "🇪🇸", text: "Español" },
     ar: { flag: "🇸🇦", text: "العربية" },
@@ -72,6 +75,30 @@ const Index = () => {
   }, [currentUser, dispatch]);
 
   const handleLogout = () => setCurrentUser(null);
+  const handleSync = async () => {
+    try {
+      let applied = false;
+      await syncNow((snapshot) => {
+        if (!snapshot) return;
+        type AppState = typeof state;
+        dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as Partial<AppState> });
+        applied = true;
+      });
+      toast({
+        title: t("syncSuccess") || "تمت المزامنة بنجاح",
+        description: applied
+          ? t("syncSuccessDesc") || "تم تحديث البيانات من الخادم"
+          : t("syncFailedDesc") || "لم يتم تطبيق أي تحديثات",
+        variant: applied ? "default" : "destructive",
+      });
+    } catch {
+      toast({
+        title: t("syncFailed") || "فشل المزامنة",
+        description: t("syncFailedDesc") || "تحقق من الاتصال ثم أعد المحاولة",
+        variant: "destructive",
+      });
+    }
+  };
   const handleAddAccount = () => {
     if (userRole !== "admin") return;
     const username = prompt("اسم المستخدم الجديد");
@@ -184,13 +211,7 @@ const Index = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                syncNow((snapshot) => {
-                  if (!snapshot) return;
-                  type AppState = typeof state;
-                  dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as Partial<AppState> });
-                });
-              }}
+              onClick={handleSync}
             >
               {t("syncNow")} 🔄
             </Button>
