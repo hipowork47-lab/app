@@ -1,0 +1,260 @@
+// src/store/store.tsx
+import React, { createContext, useContext, useEffect, useReducer } from "react";
+import type {
+  Product,
+  Category,
+  SaleItem,
+  SaleInvoice,
+  AppConfig,
+  PurchaseInvoice,
+} from "./store-types";
+// تعريف نوع حالة التطبيق
+type State = {
+  config: AppConfig;
+  products: Product[];
+  categories: Category[];
+  sales: SaleInvoice[];
+  purchases: PurchaseInvoice[];
+};
+// أنواع الإجراءات الممكنة لتحديث الحالة
+
+type Action =
+  | { type: "SET_CURRENCY"; payload: string }
+  | { type: "SET_EXCHANGE_RATE"; payload: number }
+  | { type: "ADD_PRODUCT"; payload: Product }
+  | { type: "UPDATE_PRODUCT"; payload: Product }
+  | { type: "DELETE_PRODUCT"; payload: string }
+  | { type: "UPDATE_PRODUCT_PRICE"; payload: { productId: string; price: number } }
+  | { type: "ADD_CATEGORY"; payload: Category }
+  | { type: "UPDATE_CATEGORY"; payload: Category }
+  | { type: "DELETE_CATEGORY"; payload: string }
+  | {
+      type: "SELL_ITEMS";
+      payload: {
+        items: { productId: string; quantity: number }[];
+        cashier: string;
+        paymentMethod: "cash" | "card" | "transfer";
+        exchangeRate?: number;
+      };
+    }
+  | {
+      type: "ADD_PURCHASE";
+      payload: {
+        supplier: string;
+        items: { productId: string; name?: string; price: number; quantity: number }[];
+        invoiceNumber?: string;
+        date?: string;
+        time?: string;
+        createdBy?: string | null;
+        exchangeRate?: number;
+      };
+    }
+  | { type: "LOAD_STATE"; payload: State }
+  | { type: "APPLY_SNAPSHOT"; payload: Partial<State> };
+
+const defaultCategories: Category[] = [
+  { id: "cat-1", name: "مشروبات", color: "#3B82F6" },
+  { id: "cat-2", name: "وجبات خفيفة", color: "#F59E0B" },
+  { id: "cat-3", name: "حلويات", color: "#EC4899" },
+];
+
+const defaultProducts: Product[] = [
+  { id: "prod-1", name: "كوكا كولا", price: 1.5, stock: 20, categoryId: "cat-1", barcode: "1001" },
+  { id: "prod-2", name: "شوكولاتة", price: 2.0, stock: 15, categoryId: "cat-3", barcode: "1002" },
+  { id: "prod-3", name: "شيبس", price: 1.0, stock: 30, categoryId: "cat-2", barcode: "1003" },
+  { id: "prod-4", name: "عصير البرتقال", price: 1.8, stock: 12, categoryId: "cat-1", barcode: "1004" },
+];
+
+const initialState: State = {
+  config: { storeName: "المتجر", currency: "$", exchangeRate: 40 },
+  categories: defaultCategories,
+  products: defaultProducts,
+  sales: [],
+  purchases: [],
+};
+
+const STORAGE_KEY = "pos_app_state_v1";
+
+function mergeById<T extends { id: string }>(current: T[], incoming: T[] = []): T[] {
+  const map = new Map<string, T>();
+  current.forEach((item) => map.set(item.id, item));
+  incoming.forEach((item) => map.set(item.id, item));
+  return Array.from(map.values());
+}
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "SET_CURRENCY":
+      return { ...state, config: { ...state.config, currency: action.payload } };
+    case "SET_EXCHANGE_RATE":
+      return { ...state, config: { ...state.config, exchangeRate: action.payload } };
+    case "ADD_PRODUCT":
+      return { ...state, products: [...state.products, action.payload] };
+    case "UPDATE_PRODUCT":
+      return {
+        ...state,
+        products: state.products.map((p) => (p.id === action.payload.id ? action.payload : p)),
+      };
+    case "DELETE_PRODUCT":
+      return { ...state, products: state.products.filter((p) => p.id !== action.payload) };
+    case "UPDATE_PRODUCT_PRICE":
+      return {
+        ...state,
+        products: state.products.map((p) =>
+          p.id === action.payload.productId ? { ...p, price: action.payload.price } : p
+        ),
+      };
+    case "ADD_CATEGORY":
+      return { ...state, categories: [...state.categories, action.payload] };
+    case "UPDATE_CATEGORY":
+      return {
+        ...state,
+        categories: state.categories.map((c) => (c.id === action.payload.id ? action.payload : c)),
+      };
+    case "DELETE_CATEGORY":
+      return {
+        ...state,
+        categories: state.categories.filter((c) => c.id !== action.payload),
+        products: state.products.map((p) =>
+          p.categoryId === action.payload ? { ...p, categoryId: undefined } : p
+        ),
+      };
+    case "SELL_ITEMS": {
+      const { items, cashier, paymentMethod, exchangeRate } = action.payload;
+      const updatedProducts = state.products.map((p) => {
+        const sold = items.find((it) => it.productId === p.id);
+        return sold ? { ...p, stock: Math.max(0, p.stock - sold.quantity) } : p;
+      });
+
+      const now = new Date();
+      const id = now.getTime().toString();
+      const saleItems: SaleItem[] = items.map((it) => {
+        const prod = state.products.find((p) => p.id === it.productId);
+        return {
+          productId: it.productId,
+          name: prod?.name ?? "منتج",
+          price: prod?.price ?? 0,
+          quantity: it.quantity,
+        };
+      });
+      const total = saleItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
+
+      const invoice: SaleInvoice = {
+        id,
+        invoiceNumber: `S-${id}`,
+        date: now.toISOString().split("T")[0],
+        time: now.toTimeString().slice(0, 5),
+        items: saleItems,
+        total,
+        cashier,
+        paymentMethod,
+        exchangeRate: exchangeRate ?? state.config.exchangeRate,
+      };
+
+      return { ...state, products: updatedProducts, sales: [...state.sales, invoice] };
+    }
+    case "ADD_PURCHASE": {
+      const { supplier, items, invoiceNumber, date, time, createdBy, exchangeRate } = action.payload;
+
+      const productsMap = new Map<string, Product>();
+      state.products.forEach((p) => productsMap.set(p.id, p));
+
+      items.forEach((it) => {
+        const existing = productsMap.get(it.productId);
+        if (existing) {
+          productsMap.set(it.productId, {
+            ...existing,
+            stock: existing.stock + it.quantity,
+            price: it.price ?? existing.price,
+            name: it.name ?? existing.name,
+          });
+        } else {
+          productsMap.set(it.productId, {
+            id: it.productId,
+            name: it.name ?? "منتج",
+            price: it.price ?? 0,
+            stock: it.quantity,
+          });
+        }
+      });
+
+      const purchaseItems = items.map((it) => ({
+        productId: it.productId,
+        name: it.name,
+        price: it.price,
+        quantity: it.quantity,
+      }));
+      const total = purchaseItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
+
+      const now = new Date();
+      const id = now.getTime().toString();
+      const invoice: PurchaseInvoice = {
+        id,
+        invoiceNumber: invoiceNumber ?? `P-${id}`,
+        supplier,
+        date: date ?? now.toISOString().split("T")[0],
+        time: time ?? now.toTimeString().slice(0, 5),
+        items: purchaseItems,
+        total,
+        exchangeRate: exchangeRate ?? state.config.exchangeRate,
+        createdBy: createdBy ?? null,
+      };
+
+      return {
+        ...state,
+        products: Array.from(productsMap.values()),
+        purchases: [...state.purchases, invoice],
+      };
+    }
+    case "LOAD_STATE":
+      return action.payload;
+    case "APPLY_SNAPSHOT":
+      return {
+        config: action.payload.config ?? state.config,
+        categories: mergeById(state.categories, action.payload.categories ?? []),
+        products: mergeById(state.products, action.payload.products ?? []),
+        sales: mergeById(state.sales, action.payload.sales ?? []),
+        purchases: mergeById(state.purchases, action.payload.purchases ?? []),
+      };
+    default:
+      return state;
+  }
+}
+
+interface StoreContextValue {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}
+
+const StoreContext = createContext<StoreContextValue | undefined>(undefined);
+
+export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, initialState, (init) => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as State;
+        return { ...init, ...parsed };
+      }
+    } catch {
+      // ignore parse errors
+    }
+    return init;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // ignore storage write errors
+    }
+  }, [state]);
+
+  return <StoreContext.Provider value={{ state, dispatch }}>{children}</StoreContext.Provider>;
+}
+
+export function useStore() {
+  const ctx = useContext(StoreContext);
+  if (!ctx) throw new Error("useStore must be used within StoreProvider");
+  return ctx;
+}
