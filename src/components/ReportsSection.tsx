@@ -272,6 +272,8 @@ const purchaseReportData = useMemo(() => {
   const totalSales = filteredSales.reduce((sum, s) => sum + (s.total || 0), 0);
   const totalPurchases = filteredPurchases.reduce((sum, p) => sum + (p.total || 0), 0);
   const netProfit = totalSales - totalPurchases;
+  const fromLabel = dateFrom || t("allDates") || "جميع التواريخ";
+  const toLabel = dateTo || t("today") || "اليوم";
 
   return (
     <div className="space-y-6">
@@ -354,13 +356,18 @@ const purchaseReportData = useMemo(() => {
 
       {/* Bottom summary line */}
       <Card className="bg-white/80 backdrop-blur-sm border-blue-100">
-        <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm font-semibold text-blue-900">
+        <CardHeader>
+          <CardTitle className="text-blue-800 text-base sm:text-lg">
+            {t("profitsReportTitle") || "إجمالي الفترة"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm font-semibold text-blue-900">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <span>
-              {t("dateFrom")}: {dateFrom || t("allDates") || "—"}
+              {t("dateFrom")}: {fromLabel}
             </span>
             <span>
-              {t("dateTo")}: {dateTo || t("today") || "—"}
+              {t("dateTo")}: {toLabel}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs sm:text-sm">
@@ -374,7 +381,9 @@ const purchaseReportData = useMemo(() => {
             </span>
             <span>
               {t("netProfit")}:{" "}
-              <b className="text-purple-700">{netProfit.toFixed(2)} {state.config.currency}</b>
+              <b className={netProfit >= 0 ? "text-green-700" : "text-red-700"}>
+                {netProfit.toFixed(2)} {state.config.currency}
+              </b>
             </span>
           </div>
         </CardContent>
