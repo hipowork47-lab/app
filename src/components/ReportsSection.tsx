@@ -57,11 +57,13 @@ const salesReportData = useMemo(() => {
     map[s.date].total += s.total;
   });
 
-  return Object.entries(map).map(([date, vals]) => ({
-    date,
-    invoices: vals.invoices,
-    total: vals.total,
-  }));
+  return Object.entries(map)
+    .map(([date, vals]) => ({
+      date,
+      invoices: vals.invoices,
+      total: vals.total,
+    }))
+    .sort((a, b) => (a.date < b.date ? 1 : -1)); // latest first
 }, [sales]);
 
 
@@ -78,11 +80,13 @@ const purchaseReportData = useMemo(() => {
     map[p.date].total += p.total;
   });
 
-  return Object.entries(map).map(([date, vals]) => ({
-    date,
-    invoices: vals.invoices,
-    total: vals.total,
-  }));
+  return Object.entries(map)
+    .map(([date, vals]) => ({
+      date,
+      invoices: vals.invoices,
+      total: vals.total,
+    }))
+    .sort((a, b) => (a.date < b.date ? 1 : -1)); // latest first
 }, [purchases]);
 
   // تجميع أرباح حسب التاريخ
@@ -96,7 +100,9 @@ const purchaseReportData = useMemo(() => {
       map[p.date] = map[p.date] || { sales: 0, purchases: 0 };
       map[p.date].purchases += p.total;
     });
-    return Object.entries(map).map(([date, vals]) => ({ date, sales: vals.sales, purchases: vals.purchases, profit: vals.sales - vals.purchases }));
+    return Object.entries(map)
+      .map(([date, vals]) => ({ date, sales: vals.sales, purchases: vals.purchases, profit: vals.sales - vals.purchases }))
+      .sort((a, b) => (a.date < b.date ? 1 : -1)); // latest first
   }, [sales, purchases]);
 
   // المنتجات الأكثر مبيعًا
