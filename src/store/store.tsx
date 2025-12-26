@@ -210,7 +210,7 @@ function reducer(state: State, action: Action): State {
           productsMap.set(it.productId, {
             ...existing,
             stock: existing.stock + it.quantity,
-            price: it.price ?? existing.price,
+            // Keep existing price; do not override product price from purchase line.
             name: it.name ?? existing.name,
           });
         } else {
