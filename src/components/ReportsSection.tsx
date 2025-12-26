@@ -367,41 +367,6 @@ const purchaseReportData = useMemo(() => {
       </Card>
 
       {renderReportContent()}
-
-      {/* Bottom summary line */}
-      <Card className="bg-white/80 backdrop-blur-sm border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-blue-800 text-base sm:text-lg">
-            {t("profitsReportTitle") || "إجمالي الفترة"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm font-semibold text-blue-900">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span>
-              {t("dateFrom")}: {fromLabel}
-            </span>
-            <span>
-              {t("dateTo")}: {toLabel}
-            </span>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs sm:text-sm">
-            <span>
-              {t("totalSalesAmount")}:{" "}
-              <b className="text-blue-700">{totalSales.toFixed(2)} {state.config.currency}</b>
-            </span>
-            <span>
-              {t("totalPurchasesAmount")}:{" "}
-              <b className="text-emerald-700">{totalPurchases.toFixed(2)} {state.config.currency}</b>
-            </span>
-            <span>
-              {t("netProfit")}:{" "}
-              <b className={netProfit >= 0 ? "text-green-700" : "text-red-700"}>
-                {netProfit.toFixed(2)} {state.config.currency}
-              </b>
-            </span>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
