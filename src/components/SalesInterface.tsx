@@ -140,6 +140,14 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     }
   };
 
+  // Auto-add on Enter (barcode scanners typically send Enter)
+  const handleBarcodeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleBarcodeSubmit(e as unknown as React.FormEvent);
+    }
+  };
+
   const calculateTotal = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
@@ -236,6 +244,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                 <Input
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
+                  onKeyDown={handleBarcodeKeyDown}
                   placeholder={t("barcodePlaceholder")}
                   className="flex-1 text-center font-mono text-lg"
                   autoFocus
