@@ -63,6 +63,14 @@ const Index = () => {
     }
   }, [currentUser]);
 
+  // Pull latest snapshot from Supabase right after login so the dashboard uses remote data.
+  useEffect(() => {
+    if (!currentUser) return;
+    syncNow((snapshot) => {
+      dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as any });
+    });
+  }, [currentUser, dispatch]);
+
   const handleLogout = () => setCurrentUser(null);
   const handleAddAccount = () => {
     if (userRole !== "admin") return;
