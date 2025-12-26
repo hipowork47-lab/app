@@ -196,10 +196,11 @@ const Index = () => {
             </Button>
           </div>
           <TabsList
-            className="flex flex-wrap md:flex-nowrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-auto md:h-16 overflow-x-auto md:overflow-visible gap-2 px-2 md:px-0 scroll-smooth md:flex-none items-stretch touch-pan-x overscroll-x-contain snap-x snap-mandatory"
+            className="flex flex-nowrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto md:overflow-visible gap-2 px-2 md:px-0 scroll-smooth md:flex-none items-stretch touch-pan-x overscroll-x-contain snap-x snap-mandatory"
             style={{
               gridTemplateColumns:
                 userRole === "admin" ? "repeat(5, 1fr)" : "repeat(2, 1fr)",
+              WebkitOverflowScrolling: "touch",
             }}
             dir={i18n.language === "ar" ? "rtl" : "ltr"}
           >
