@@ -1,5 +1,5 @@
 // src/pages/Index.tsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Login from "./Login";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,7 +29,6 @@ type User = { username: string; role: "admin" | "employee" };
 const Index = () => {
   const [activeTab, setActiveTab] = useState("sales");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const tabsListRef = useRef<HTMLDivElement | null>(null);
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useStore();
   const langLabel: Record<string, { flag: string; text: string }> = {
@@ -197,9 +196,8 @@ const Index = () => {
             </Button>
           </div>
           <div className="relative">
-            {/* Desktop / tablet tabs (unchanged) */}
+            {/* Desktop / tablet tabs */}
             <TabsList
-              ref={tabsListRef}
               className="hidden md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 gap-2 px-0 items-stretch"
               style={{
                 gridTemplateColumns:
