@@ -217,19 +217,33 @@ const purchaseReportData = useMemo(() => {
                     <TableHead className="text-center">{t("netProfit")}</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {filterByDate(profitReportData).map((item, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell className="text-center">{item.date}</TableCell>
-                      <TableCell className="text-blue-600 text-center">{item.sales.toFixed(2)} {state.config.currency}</TableCell>
-                      <TableCell className="text-red-600 text-center">{item.purchases.toFixed(2)} {state.config.currency}</TableCell>
-                      <TableCell className="font-semibold text-green-600 text-center">{item.profit.toFixed(2)} {state.config.currency}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+              <TableBody>
+                {filterByDate(profitReportData).map((item, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell className="text-center">{item.date}</TableCell>
+                    <TableCell className="text-blue-600 text-center">{item.sales.toFixed(2)} {state.config.currency}</TableCell>
+                    <TableCell className="text-red-600 text-center">{item.purchases.toFixed(2)} {state.config.currency}</TableCell>
+                    <TableCell className="font-semibold text-green-600 text-center">{item.profit.toFixed(2)} {state.config.currency}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow className="bg-blue-50 font-semibold">
+                  <TableCell className="text-center">
+                    {t("dateFrom")}: {fromLabel} &nbsp;→&nbsp; {t("dateTo")}: {toLabel}
+                  </TableCell>
+                  <TableCell className="text-blue-700 text-center">
+                    {totalSales.toFixed(2)} {state.config.currency}
+                  </TableCell>
+                  <TableCell className="text-emerald-700 text-center">
+                    {totalPurchases.toFixed(2)} {state.config.currency}
+                  </TableCell>
+                  <TableCell className={netProfit >= 0 ? "text-green-700 font-bold text-center" : "text-red-700 font-bold text-center"}>
+                    {netProfit.toFixed(2)} {state.config.currency}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
         );
 
       case "top-selling":
