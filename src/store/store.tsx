@@ -54,18 +54,9 @@ type Action =
   | { type: "LOAD_STATE"; payload: State }
   | { type: "APPLY_SNAPSHOT"; payload: Partial<State> };
 
-const defaultCategories: Category[] = [
-  { id: "cat-1", name: "مشروبات", color: "#3B82F6" },
-  { id: "cat-2", name: "وجبات خفيفة", color: "#F59E0B" },
-  { id: "cat-3", name: "حلويات", color: "#EC4899" },
-];
+const defaultCategories: Category[] = [];
 
-const defaultProducts: Product[] = [
-  { id: "prod-1", name: "كوكا كولا", price: 1.5, stock: 20, categoryId: "cat-1", barcode: "1001" },
-  { id: "prod-2", name: "شوكولاتة", price: 2.0, stock: 15, categoryId: "cat-3", barcode: "1002" },
-  { id: "prod-3", name: "شيبس", price: 1.0, stock: 30, categoryId: "cat-2", barcode: "1003" },
-  { id: "prod-4", name: "عصير البرتقال", price: 1.8, stock: 12, categoryId: "cat-1", barcode: "1004" },
-];
+const defaultProducts: Product[] = [];
 
 const initialState: State = {
   config: { storeName: "المتجر", currency: "$", exchangeRate: 40 },
@@ -315,3 +306,4 @@ export function useStore() {
   if (!ctx) throw new Error("useStore must be used within StoreProvider");
   return ctx;
 }
+
