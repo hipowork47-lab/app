@@ -223,7 +223,11 @@ const purchaseReportData = useMemo(() => {
                     <TableCell className="text-center">{item.date}</TableCell>
                     <TableCell className="text-blue-600 text-center">{item.sales.toFixed(2)} {state.config.currency}</TableCell>
                     <TableCell className="text-red-600 text-center">{item.purchases.toFixed(2)} {state.config.currency}</TableCell>
-                    <TableCell className="font-semibold text-green-600 text-center">{item.profit.toFixed(2)} {state.config.currency}</TableCell>
+                    <TableCell
+                      className={`font-semibold text-center ${item.profit >= 0 ? "text-green-600" : "text-red-600"}`}
+                    >
+                      {item.profit.toFixed(2)} {state.config.currency}
+                    </TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="bg-blue-50 font-semibold">
@@ -233,7 +237,7 @@ const purchaseReportData = useMemo(() => {
                   <TableCell className="text-blue-700 text-center">
                     {totalSales.toFixed(2)} {state.config.currency}
                   </TableCell>
-                  <TableCell className="text-emerald-700 text-center">
+                  <TableCell className="text-red-700 text-center">
                     {totalPurchases.toFixed(2)} {state.config.currency}
                   </TableCell>
                   <TableCell className={netProfit >= 0 ? "text-green-700 font-bold text-center" : "text-red-700 font-bold text-center"}>
