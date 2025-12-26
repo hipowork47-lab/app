@@ -1,5 +1,5 @@
 // src/pages/Index.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Login from "./Login";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,6 +29,7 @@ type User = { username: string; role: "admin" | "employee" };
 const Index = () => {
   const [activeTab, setActiveTab] = useState("sales");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const tabsListRef = useRef<HTMLDivElement | null>(null);
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useStore();
   const langLabel: Record<string, { flag: string; text: string }> = {
@@ -195,15 +196,43 @@ const Index = () => {
               {t("syncNow")} 🔄
             </Button>
           </div>
-          <TabsList
-            className="flex flex-nowrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto md:overflow-visible gap-2 px-2 md:px-0 scroll-smooth md:flex-none items-stretch touch-pan-x overscroll-x-contain md:snap-x md:snap-mandatory"
-            style={{
-              gridTemplateColumns:
-                userRole === "admin" ? "repeat(5, 1fr)" : "repeat(2, 1fr)",
-              WebkitOverflowScrolling: "touch",
-            }}
-            dir={i18n.language === "ar" ? "rtl" : "ltr"}
-          >
+          <div className="relative">
+            {/* Mobile scroll helpers */}
+            <div className="absolute inset-y-1 left-1 flex md:hidden items-center z-10">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 rounded-full bg-white/80 shadow-sm border border-blue-100"
+                onClick={() =>
+                  tabsListRef.current?.scrollBy({ left: -220, behavior: "smooth" })
+                }
+              >
+                ‹
+              </Button>
+            </div>
+            <div className="absolute inset-y-1 right-1 flex md:hidden items-center justify-end z-10">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 rounded-full bg-white/80 shadow-sm border border-blue-100"
+                onClick={() =>
+                  tabsListRef.current?.scrollBy({ left: 220, behavior: "smooth" })
+                }
+              >
+                ›
+              </Button>
+            </div>
+
+            <TabsList
+              ref={tabsListRef}
+              className="flex flex-nowrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto md:overflow-visible gap-2 px-8 md:px-0 scroll-smooth md:flex-none items-stretch touch-pan-x overscroll-x-contain md:snap-x md:snap-mandatory"
+              style={{
+                gridTemplateColumns:
+                  userRole === "admin" ? "repeat(5, 1fr)" : "repeat(2, 1fr)",
+                WebkitOverflowScrolling: "touch",
+              }}
+              dir={i18n.language === "ar" ? "rtl" : "ltr"}
+            >
             {/* التبويبات حسب نوع المستخدم */}
             {userRole === "admin" && (
               <>
@@ -249,7 +278,8 @@ const Index = () => {
               <ShoppingCart className="w-5 h-5" />
               <span className="text-xs">{t("addInvoice")}</span>
             </TabsTrigger>
-          </TabsList>
+            </TabsList>
+          </div>
 
           {/* المحتوى */}
           <TabsContent value="sales">
