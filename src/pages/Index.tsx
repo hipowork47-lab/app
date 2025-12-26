@@ -197,39 +197,12 @@ const Index = () => {
             </Button>
           </div>
           <div className="relative">
-            {/* Mobile scroll helpers */}
-            <div className="absolute inset-y-1 left-1 flex md:hidden items-center z-10">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 rounded-full bg-white/80 shadow-sm border border-blue-100"
-                onClick={() =>
-                  tabsListRef.current?.scrollBy({ left: -220, behavior: "smooth" })
-                }
-              >
-                ‹
-              </Button>
-            </div>
-            <div className="absolute inset-y-1 right-1 flex md:hidden items-center justify-end z-10">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 rounded-full bg-white/80 shadow-sm border border-blue-100"
-                onClick={() =>
-                  tabsListRef.current?.scrollBy({ left: 220, behavior: "smooth" })
-                }
-              >
-                ›
-              </Button>
-            </div>
-
             <TabsList
               ref={tabsListRef}
-              className="flex flex-nowrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-16 overflow-x-auto md:overflow-visible gap-2 px-8 md:px-0 scroll-smooth md:flex-none items-stretch touch-pan-x overscroll-x-contain md:snap-x md:snap-mandatory"
+              className="flex flex-wrap md:grid w-full bg-white/60 backdrop-blur-sm border border-blue-100 h-auto md:h-16 overflow-visible md:overflow-visible gap-2 px-2 md:px-0 items-stretch"
               style={{
                 gridTemplateColumns:
                   userRole === "admin" ? "repeat(5, 1fr)" : "repeat(2, 1fr)",
-                WebkitOverflowScrolling: "touch",
               }}
               dir={i18n.language === "ar" ? "rtl" : "ltr"}
             >
