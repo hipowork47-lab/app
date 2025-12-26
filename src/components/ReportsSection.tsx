@@ -357,10 +357,10 @@ const purchaseReportData = useMemo(() => {
         <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm font-semibold text-blue-900">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <span>
-              {t("dateFrom")}: {dateFrom || t("allDates") ?? "—"}
+              {t("dateFrom")}: {dateFrom || t("allDates") || "—"}
             </span>
             <span>
-              {t("dateTo")}: {dateTo || t("today") ?? "—"}
+              {t("dateTo")}: {dateTo || t("today") || "—"}
             </span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs sm:text-sm">
