@@ -266,6 +266,13 @@ const purchaseReportData = useMemo(() => {
     }
   };
 
+  // Summary totals for current date range
+  const filteredSales = useMemo(() => filterByDate(sales), [sales, dateFrom, dateTo]);
+  const filteredPurchases = useMemo(() => filterByDate(purchases), [purchases, dateFrom, dateTo]);
+  const totalSales = filteredSales.reduce((sum, s) => sum + (s.total || 0), 0);
+  const totalPurchases = filteredPurchases.reduce((sum, p) => sum + (p.total || 0), 0);
+  const netProfit = totalSales - totalPurchases;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -344,6 +351,34 @@ const purchaseReportData = useMemo(() => {
       </Card>
 
       {renderReportContent()}
+
+      {/* Bottom summary line */}
+      <Card className="bg-white/80 backdrop-blur-sm border-blue-100">
+        <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm font-semibold text-blue-900">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <span>
+              {t("dateFrom")}: {dateFrom || t("allDates") ?? "—"}
+            </span>
+            <span>
+              {t("dateTo")}: {dateTo || t("today") ?? "—"}
+            </span>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-xs sm:text-sm">
+            <span>
+              {t("totalSalesAmount")}:{" "}
+              <b className="text-blue-700">{totalSales.toFixed(2)} {state.config.currency}</b>
+            </span>
+            <span>
+              {t("totalPurchasesAmount")}:{" "}
+              <b className="text-emerald-700">{totalPurchases.toFixed(2)} {state.config.currency}</b>
+            </span>
+            <span>
+              {t("netProfit")}:{" "}
+              <b className="text-purple-700">{netProfit.toFixed(2)} {state.config.currency}</b>
+            </span>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
