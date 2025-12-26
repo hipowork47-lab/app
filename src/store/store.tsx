@@ -8,6 +8,8 @@ import type {
   AppConfig,
   PurchaseInvoice,
 } from "./store-types";
+import { enqueueOperation } from "@/lib/offline-sync";
+import { pushOutbox } from "@/lib/sync-adapter";
 // تعريف نوع حالة التطبيق
 type State = {
   config: AppConfig;
@@ -75,6 +77,18 @@ const initialState: State = {
 
 const STORAGE_KEY = "pos_app_state_v1";
 
+function queueConfigUpdate(config: AppConfig) {
+  enqueueOperation({
+    type: "UPDATE_CONFIG",
+    payload: {
+      id: "singleton",
+      storeName: config.storeName,
+      currency: config.currency,
+      exchangeRate: config.exchangeRate,
+    },
+  });
+}
+
 function mergeById<T extends { id: string }>(current: T[], incoming: T[] = []): T[] {
   const map = new Map<string, T>();
   current.forEach((item) => map.set(item.id, item));
@@ -85,19 +99,39 @@ function mergeById<T extends { id: string }>(current: T[], incoming: T[] = []): 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "SET_CURRENCY":
-      return { ...state, config: { ...state.config, currency: action.payload } };
+      {
+        const nextConfig = { ...state.config, currency: action.payload };
+        queueConfigUpdate(nextConfig);
+        return { ...state, config: nextConfig };
+      }
     case "SET_EXCHANGE_RATE":
-      return { ...state, config: { ...state.config, exchangeRate: action.payload } };
+      {
+        const nextConfig = { ...state.config, exchangeRate: action.payload };
+        queueConfigUpdate(nextConfig);
+        return { ...state, config: nextConfig };
+      }
     case "ADD_PRODUCT":
+      enqueueOperation({ type: "ADD_PRODUCT", payload: action.payload });
       return { ...state, products: [...state.products, action.payload] };
     case "UPDATE_PRODUCT":
+      enqueueOperation({ type: "UPDATE_PRODUCT", payload: action.payload });
       return {
         ...state,
         products: state.products.map((p) => (p.id === action.payload.id ? action.payload : p)),
       };
     case "DELETE_PRODUCT":
+      enqueueOperation({ type: "DELETE_PRODUCT", payload: { id: action.payload } });
       return { ...state, products: state.products.filter((p) => p.id !== action.payload) };
     case "UPDATE_PRODUCT_PRICE":
+      {
+        const existing = state.products.find((p) => p.id === action.payload.productId);
+        if (existing) {
+          enqueueOperation({
+            type: "UPDATE_PRODUCT",
+            payload: { ...existing, price: action.payload.price },
+          });
+        }
+      }
       return {
         ...state,
         products: state.products.map((p) =>
@@ -105,13 +139,16 @@ function reducer(state: State, action: Action): State {
         ),
       };
     case "ADD_CATEGORY":
+      enqueueOperation({ type: "ADD_CATEGORY", payload: action.payload });
       return { ...state, categories: [...state.categories, action.payload] };
     case "UPDATE_CATEGORY":
+      enqueueOperation({ type: "UPDATE_CATEGORY", payload: action.payload });
       return {
         ...state,
         categories: state.categories.map((c) => (c.id === action.payload.id ? action.payload : c)),
       };
     case "DELETE_CATEGORY":
+      enqueueOperation({ type: "DELETE_CATEGORY", payload: { id: action.payload } });
       return {
         ...state,
         categories: state.categories.filter((c) => c.id !== action.payload),
@@ -151,6 +188,7 @@ function reducer(state: State, action: Action): State {
         exchangeRate: exchangeRate ?? state.config.exchangeRate,
       };
 
+      enqueueOperation({ type: "SELL_ITEMS", payload: invoice });
       return { ...state, products: updatedProducts, sales: [...state.sales, invoice] };
     }
     case "ADD_PURCHASE": {
@@ -200,6 +238,7 @@ function reducer(state: State, action: Action): State {
         createdBy: createdBy ?? null,
       };
 
+      enqueueOperation({ type: "ADD_PURCHASE", payload: invoice });
       return {
         ...state,
         products: Array.from(productsMap.values()),
@@ -248,6 +287,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore storage write errors
     }
+    // Best-effort: push any queued operations to Supabase whenever state changes.
+    pushOutbox().catch(() => {
+      /* keep queue for retry */
+    });
   }, [state]);
 
   return <StoreContext.Provider value={{ state, dispatch }}>{children}</StoreContext.Provider>;
