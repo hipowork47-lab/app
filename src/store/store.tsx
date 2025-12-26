@@ -189,6 +189,13 @@ function reducer(state: State, action: Action): State {
       };
 
       enqueueOperation({ type: "SELL_ITEMS", payload: invoice });
+      // Also push stock updates for affected products.
+      items.forEach((it) => {
+        const updated = updatedProducts.find((p) => p.id === it.productId);
+        if (updated) {
+          enqueueOperation({ type: "UPDATE_PRODUCT", payload: updated });
+        }
+      });
       return { ...state, products: updatedProducts, sales: [...state.sales, invoice] };
     }
     case "ADD_PURCHASE": {
@@ -239,6 +246,13 @@ function reducer(state: State, action: Action): State {
       };
 
       enqueueOperation({ type: "ADD_PURCHASE", payload: invoice });
+      // Push stock/price updates for affected products.
+      purchaseItems.forEach((it) => {
+        const updated = productsMap.get(it.productId);
+        if (updated) {
+          enqueueOperation({ type: "UPDATE_PRODUCT", payload: updated });
+        }
+      });
       return {
         ...state,
         products: Array.from(productsMap.values()),
