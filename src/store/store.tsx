@@ -69,8 +69,8 @@ const defaultProducts: Product[] = [
 
 const initialState: State = {
   config: { storeName: "المتجر", currency: "$", exchangeRate: 40 },
-  categories: defaultCategories,
-  products: defaultProducts,
+  categories: [],
+  products: [],
   sales: [],
   purchases: [],
 };
