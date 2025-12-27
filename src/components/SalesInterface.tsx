@@ -96,7 +96,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     toast({
       title: t("addedTitle"),
       description: t("addedDescription", { name: product.name }),
-      duration: 1500,
+      duration: 800,
     });
   };
 
