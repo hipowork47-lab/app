@@ -102,11 +102,4 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
-
-  /* Slightly enlarge desktop layout (similar to 110% browser zoom) without affecting mobile/tablet */
-  @media (min-width: 1024px) {
-    :root {
-      font-size: 110%;
-    }
-  }
 }
