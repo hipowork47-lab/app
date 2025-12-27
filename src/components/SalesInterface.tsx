@@ -493,22 +493,22 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                   <Separator />
 
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center text-lg font-bold">
+                    <div className="flex justify-between items-center text-2xl font-extrabold">
                       <span>{t("total")}:</span>
-                      <span className="text-blue-600">
+                      <span className="text-blue-600 text-3xl">
                         {calculateTotal().toFixed(2)} {config.currency}
                       </span>
                     </div>
 			{/* 💱 عرض المبلغ بما يعادل البوليفار وسعر الصرف */}
 {config.currency === "$" && config.exchangeRate && (
-  <div className="text-right text-sm text-gray-600">
+  <div className="text-right text-lg text-gray-700">
     <p>
       💱 {t("equivalentTo")}{" "}
-      <span className="font-semibold text-blue-600">
+      <span className="font-semibold text-blue-600 text-2xl">
         {(calculateTotal() * config.exchangeRate).toFixed(2)} Bs
       </span>
     </p>
-    <p className="text-xs text-gray-500">
+    <p className="text-sm text-gray-500">
       {t("exchangeRateInfo", { rate: config.exchangeRate })}
     </p>
   </div>
