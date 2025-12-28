@@ -6,8 +6,9 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isElectron = process.env.ELECTRON === "1";
+  const isCapacitor = process.env.CAPACITOR === "1";
   // For Electron we need relative assets so file:// loads work
-  const base = isElectron ? "./" : mode === "development" ? "/" : "/app/";
+  const base = isElectron || isCapacitor ? "./" : mode === "development" ? "/" : "/app/";
 
   return {
     // Use repository name for GitHub Pages base path (or relative for Electron)
