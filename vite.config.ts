@@ -4,21 +4,23 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
-  // Use repository name for GitHub Pages base path
-  base: mode === "development" ? "/" : "/app/",
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+export default defineConfig(({ mode }) => {
+  const isElectron = process.env.ELECTRON === "1";
+  // For Electron we need relative assets so file:// loads work
+  const base = isElectron ? "./" : mode === "development" ? "/" : "/app/";
+
+  return {
+    // Use repository name for GitHub Pages base path (or relative for Electron)
+    base,
+    server: {
+      host: "::",
+      port: 8080,
     },
-  },
-}));
+    plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+  };
+});
