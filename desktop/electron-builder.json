@@ -1,0 +1,22 @@
+{
+  "appId": "com.easypos.desktop",
+  "productName": "Easy POS",
+  "directories": {
+    "output": "release",
+    "buildResources": "desktop"
+  },
+  "files": [
+    "dist/**/*",
+    "desktop/main.js",
+    "package.json"
+  ],
+  "win": {
+    "target": ["nsis", "portable"]
+  },
+  "mac": {
+    "target": ["dmg"]
+  },
+  "linux": {
+    "target": ["AppImage"]
+  }
+}
