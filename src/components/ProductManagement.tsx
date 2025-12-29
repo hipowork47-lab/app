@@ -1,5 +1,5 @@
 // src/components/ProductManagement.tsx
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,7 @@ const ProductManagement = () => {
     image: "",
   });
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const generateBarcode = () => {
     const barcode = Math.floor(Math.random() * 1000000000).toString();
@@ -273,13 +274,21 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                 <Label htmlFor="image">{t("productImage")}</Label>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <Input
+                    <input
+                      ref={fileInputRef}
                       id="image"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
-                      className="h-10 file:h-10 file:bg-gradient-to-r file:from-blue-500 file:to-purple-500 file:hover:from-blue-600 file:hover:to-purple-600 file:text-white file:border-0 file:px-4 file:rounded-md file:cursor-pointer file:text-sm"
+                      className="hidden"
                     />
+                    <Button
+                      type="button"
+                      className="h-10 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {t("productImage")}
+                    </Button>
                     <Button
                       type="button"
                       variant="outline"
