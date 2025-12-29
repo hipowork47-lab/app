@@ -287,7 +287,7 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                       className="h-10 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      {t("productImage")}
+                      {t("chooseFile")}
                     </Button>
                     <Button
                       type="button"
