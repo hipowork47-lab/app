@@ -298,7 +298,7 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                       URL
                     </Button>
                     {formData.image && (
-                      <img src={formData.image} alt="preview" className="w-12 h-12 rounded object-cover border" />
+                      <img src={formData.image} alt="preview" className="w-12 h-12 rounded object-contain border bg-white" />
                     )}
                   </div>
                   {showUrlInput && (
