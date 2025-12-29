@@ -268,11 +268,22 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
 
               <div>
                 <Label htmlFor="image">{t("productImage")}</Label>
-                <div className="flex items-center gap-3">
-                  <Input id="image" type="file" accept="image/*" onChange={handleImageUpload} />
-                  {formData.image && (
-                    <img src={formData.image} alt="preview" className="w-12 h-12 rounded object-cover border" />
-                  )}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <Input id="image" type="file" accept="image/*" onChange={handleImageUpload} />
+                    {formData.image && (
+                      <img src={formData.image} alt="preview" className="w-12 h-12 rounded object-cover border" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="url"
+                      placeholder={t("imageUrlPlaceholder")}
+                      value={formData.image?.startsWith("http") ? formData.image : ""}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    />
+                    <span className="text-xs text-gray-500">{t("orEnterImageUrl")}</span>
+                  </div>
                 </div>
               </div>
 
