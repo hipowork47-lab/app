@@ -89,7 +89,7 @@ const Index = () => {
         description: applied
           ? t("syncSuccessDesc") || "تم تحديث البيانات من الخادم"
           : t("syncFailedDesc") || "لم يتم تطبيق أي تحديثات",
-        variant: applied ? "default" : "destructive",
+        variant: applied ? "success" : "destructive",
       });
     } catch {
       toast({

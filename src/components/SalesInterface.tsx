@@ -97,6 +97,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
       title: t("addedTitle"),
       description: t("addedDescription", { name: product.name }),
       duration: 400,
+      variant: "success",
     });
   };
 
