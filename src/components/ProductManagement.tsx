@@ -273,7 +273,13 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                 <Label htmlFor="image">{t("productImage")}</Label>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <Input id="image" type="file" accept="image/*" onChange={handleImageUpload} />
+                    <Input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="file:bg-blue-600 file:text-white file:border-0 file:px-3 file:py-2 file:rounded-md file:cursor-pointer"
+                    />
                     <Button
                       type="button"
                       variant="outline"
