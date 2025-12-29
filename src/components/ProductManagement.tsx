@@ -40,6 +40,7 @@ const ProductManagement = () => {
     categoryId: "",
     image: "",
   });
+  const [showUrlInput, setShowUrlInput] = useState(false);
 
   const generateBarcode = () => {
     const barcode = Math.floor(Math.random() * 1000000000).toString();
@@ -91,6 +92,7 @@ const ProductManagement = () => {
     setIsDialogOpen(false);
     setEditingProduct(null);
     setFormData({ name: "", price: "", stock: "", barcode: "", categoryId: "", image: "" });
+    setShowUrlInput(false);
   };
 
   const handleEdit = (product: any) => {
@@ -103,6 +105,7 @@ const ProductManagement = () => {
       categoryId: product.categoryId || "",
       image: product.image || "",
     });
+    setShowUrlInput(!!product.image && typeof product.image === "string" && product.image.startsWith("http"));
     setIsDialogOpen(true);
   };
 
@@ -271,19 +274,29 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <Input id="image" type="file" accept="image/*" onChange={handleImageUpload} />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowUrlInput((v) => !v)}
+                      className="whitespace-nowrap"
+                    >
+                      URL
+                    </Button>
                     {formData.image && (
                       <img src={formData.image} alt="preview" className="w-12 h-12 rounded object-cover border" />
                     )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Input
-                      type="url"
-                      placeholder={t("imageUrlPlaceholder")}
-                      value={formData.image?.startsWith("http") ? formData.image : ""}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    />
-                    <span className="text-xs text-gray-500">{t("orEnterImageUrl")}</span>
-                  </div>
+                  {showUrlInput && (
+                    <div className="flex items-center gap-3">
+                      <Input
+                        type="url"
+                        placeholder={t("imageUrlPlaceholder")}
+                        value={formData.image?.startsWith("http") ? formData.image : ""}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      />
+                      <span className="text-xs text-gray-500">{t("orEnterImageUrl")}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
