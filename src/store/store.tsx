@@ -214,12 +214,13 @@ function reducer(state: State, action: Action): State {
       const productsMap = new Map<string, Product>();
       state.products.forEach((p) => productsMap.set(p.id, p));
 
-      items.forEach((it) => {
-        const existing = productsMap.get(it.productId);
-        if (existing) {
-          productsMap.set(it.productId, {
-            ...existing,
-            stock: existing.stock + it.quantity,
+    items.forEach((it) => {
+      if (!it.productId) return; // Ignore purchase lines without a selected product
+      const existing = productsMap.get(it.productId);
+      if (existing) {
+        productsMap.set(it.productId, {
+          ...existing,
+          stock: existing.stock + it.quantity,
             // Keep existing price; do not override product price from purchase line.
             name: it.name ?? existing.name,
           });
@@ -258,7 +259,8 @@ function reducer(state: State, action: Action): State {
       enqueueOperation({ type: "ADD_PURCHASE", payload: invoice });
       // Push stock/price updates for affected products.
       purchaseItems.forEach((it) => {
-        const updated = it.productId ? productsMap.get(it.productId) : undefined;
+        if (!it.productId) return;
+        const updated = productsMap.get(it.productId);
         if (updated) {
           enqueueOperation({ type: "UPDATE_PRODUCT", payload: updated });
         }
