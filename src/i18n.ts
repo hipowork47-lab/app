@@ -590,7 +590,14 @@ const resources = {
 
 i18n.use(initReactI18next).init({
   resources,
-  lng: localStorage.getItem("lang") || "en",
+  lng: (() => {
+    const saved = localStorage.getItem("lang");
+    if (!saved) {
+      localStorage.setItem("lang", "en");
+      return "en";
+    }
+    return saved;
+  })(),
   fallbackLng: "en",
   interpolation: {
     escapeValue: false,
