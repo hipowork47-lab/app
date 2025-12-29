@@ -591,15 +591,15 @@ const resources = {
 const getInitialLang = () => {
   if (typeof window === "undefined") return "en";
 
-  // One-time migration to force default to English (override old Spanish default)
-  const migrated = localStorage.getItem("lang_migrated_en_default");
-  if (!migrated) {
-    localStorage.setItem("lang_migrated_en_default", "1");
+  const userSet = localStorage.getItem("lang_user_set") === "1";
+  const saved = localStorage.getItem("lang");
+
+  // If لم يغيّر المستخدم اللغة يدوياً، نفرض EN كافتراضي حتى لو كان محفوظ سابقاً.
+  if (!userSet) {
     localStorage.setItem("lang", "en");
     return "en";
   }
 
-  const saved = localStorage.getItem("lang");
   if (saved) return saved;
   localStorage.setItem("lang", "en");
   return "en";
@@ -618,6 +618,7 @@ if (typeof window !== "undefined") {
   i18n.on("languageChanged", (lng) => {
     try {
       localStorage.setItem("lang", lng);
+      localStorage.setItem("lang_user_set", "1");
     } catch {
       // ignore write errors (e.g., private mode)
     }
