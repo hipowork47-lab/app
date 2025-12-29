@@ -588,20 +588,31 @@ const resources = {
   },
 } as const;
 
+const getInitialLang = () => {
+  if (typeof window === "undefined") return "en";
+  const saved = localStorage.getItem("lang");
+  if (saved) return saved;
+  localStorage.setItem("lang", "en");
+  return "en";
+};
+
 i18n.use(initReactI18next).init({
   resources,
-  lng: (() => {
-    const saved = localStorage.getItem("lang");
-    if (!saved) {
-      localStorage.setItem("lang", "en");
-      return "en";
-    }
-    return saved;
-  })(),
+  lng: getInitialLang(),
   fallbackLng: "en",
   interpolation: {
     escapeValue: false,
   },
 });
+
+if (typeof window !== "undefined") {
+  i18n.on("languageChanged", (lng) => {
+    try {
+      localStorage.setItem("lang", lng);
+    } catch {
+      // ignore write errors (e.g., private mode)
+    }
+  });
+}
 
 export default i18n;
