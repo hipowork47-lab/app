@@ -278,7 +278,7 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
-                      className="file:bg-blue-600 file:text-white file:border-0 file:px-3 file:py-2 file:rounded-md file:cursor-pointer"
+                      className="file:bg-gradient-to-r file:from-blue-500 file:to-purple-500 file:hover:from-blue-600 file:hover:to-purple-600 file:text-white file:border-0 file:px-3 file:py-2 file:rounded-md file:cursor-pointer"
                     />
                     <Button
                       type="button"
