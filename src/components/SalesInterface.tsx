@@ -96,9 +96,11 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     toast({
       title: t("addedTitle"),
       description: (
-        <div className="flex flex-col">
-          <span>{t("addedDescription", { name: product.name })}</span>
-          <span className="font-semibold text-green-900">{product.name}</span>
+        <div className="flex flex-col gap-1">
+          <span className="font-semibold text-green-900 text-base">{product.name}</span>
+          <span className="text-xs text-gray-700">
+            {t("addedDescription", { name: product.name })}
+          </span>
         </div>
       ),
       duration: 400,
