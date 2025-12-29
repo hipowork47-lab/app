@@ -347,7 +347,17 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                       </span>
                       <CardContent className="p-4 text-center space-y-2">
                         <div className="flex justify-center">
-                          <ShoppingBag className="w-5 h-5 text-blue-500" aria-hidden="true" />
+                          <div className="w-full h-24 rounded-md border border-blue-50 bg-white flex items-center justify-center overflow-hidden">
+                            {product.image ? (
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                className="max-h-full max-w-full object-contain"
+                              />
+                            ) : (
+                              <ShoppingBag className="w-6 h-6 text-blue-500" aria-hidden="true" />
+                            )}
+                          </div>
                         </div>
                         <h3 className="text-lg md:text-xl font-extrabold text-gray-900">
                           {product.name}
