@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,8 +18,41 @@ const SalesInvoices = () => {
 
   const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
+  const [cashierQuery, setCashierQuery] = useState("");
+  const [dateQuery, setDateQuery] = useState("");
+  const [paymentQuery, setPaymentQuery] = useState("");
+  const [filters, setFilters] = useState({ cashier: "", date: "", payment: "" });
 
   const dir = i18n.language === "ar" ? "rtl" : "ltr";
+
+  const applyFilters = () =>
+    setFilters({
+      cashier: cashierQuery.trim(),
+      date: dateQuery,
+      payment: paymentQuery,
+    });
+
+  const clearFilters = () => {
+    setCashierQuery("");
+    setDateQuery("");
+    setPaymentQuery("");
+    setFilters({ cashier: "", date: "", payment: "" });
+  };
+
+  const filteredSales = [...sales]
+    .filter((inv) => {
+      if (!filters.cashier) return true;
+      return (inv.cashier ?? "").toLowerCase().includes(filters.cashier.toLowerCase());
+    })
+    .filter((inv) => {
+      if (!filters.date) return true;
+      return inv.date === filters.date;
+    })
+    .filter((inv) => {
+      if (!filters.payment) return true;
+      return inv.paymentMethod === filters.payment;
+    })
+    .sort((a, b) => b.id.localeCompare(a.id));
 
   return (
     <div className="space-y-6" dir={dir}>
@@ -40,12 +74,56 @@ const SalesInvoices = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-blue-800">
             <Receipt className="w-5 h-5" />
-            {t("salesInvoices")} ({sales.length})
+            {t("salesInvoices")} ({filteredSales.length})
           </CardTitle>
         </CardHeader>
 
         <CardContent>
-          {sales.length === 0 ? (
+          <div className="flex flex-wrap gap-3 mb-4 items-end">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-semibold text-blue-800">{t("mainCashier")}</label>
+              <Input
+                value={cashierQuery}
+                onChange={(e) => setCashierQuery(e.target.value)}
+                placeholder={t("mainCashier")}
+                className="min-w-[180px]"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-semibold text-blue-800">{t("date")}</label>
+              <Input
+                type="date"
+                value={dateQuery}
+                onChange={(e) => setDateQuery(e.target.value)}
+                className="min-w-[150px]"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-semibold text-blue-800">{t("paymentMethod")}</label>
+              <select
+                value={paymentQuery}
+                onChange={(e) => setPaymentQuery(e.target.value)}
+                className="min-w-[150px] border border-gray-300 rounded-md px-3 py-2 text-sm"
+              >
+                <option value="">{t("allCategories")}</option>
+                <option value="cash">{t("cash")}</option>
+                <option value="card">{t("card")}</option>
+                <option value="transfer">{t("transfer")}</option>
+              </select>
+            </div>
+            <div className="flex items-end gap-2">
+              <Button onClick={applyFilters} className="bg-blue-600 hover:bg-blue-700 text-white">
+                {t("search")}
+              </Button>
+              {(filters.cashier || filters.date || filters.payment) && (
+                <Button variant="outline" onClick={clearFilters}>
+                  {t("clearAll")}
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {filteredSales.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Receipt className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               <p>{t("previousInvoices")}</p>
@@ -53,7 +131,7 @@ const SalesInvoices = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {[...sales].sort((a, b) => b.id.localeCompare(a.id)).map((invoice) => (
+              {filteredSales.map((invoice) => (
                 <Card
                   key={invoice.id}
                   className="border-blue-200 hover:shadow-md transition-all duration-200 cursor-pointer"
