@@ -240,7 +240,7 @@ function reducer(state: State, action: Action): State {
       enqueueOperation({ type: "ADD_PURCHASE", payload: invoice });
       // Push stock/price updates for affected products.
       purchaseItems.forEach((it) => {
-        const updated = productsMap.get(it.productId);
+        const updated = it.productId ? productsMap.get(it.productId) : undefined;
         if (updated) {
           enqueueOperation({ type: "UPDATE_PRODUCT", payload: updated });
         }

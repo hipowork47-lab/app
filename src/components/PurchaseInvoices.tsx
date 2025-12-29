@@ -45,14 +45,14 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
       return;
     }
 
-    const existing = state.products.find((p) => p.name === lineName);
+    const existing = lineName ? state.products.find((p) => p.name === lineName) : undefined;
     const productId = existing ? existing.id : null;
 
     setItems((s) => [
       ...s,
       {
         productId,
-        name: existing ? existing.name : t("productName"),
+        name: existing ? existing.name : lineName || t("productName"),
         quantity: Number(lineQty),
         price: Number(linePrice),
         description: lineDesc,
@@ -148,7 +148,8 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
 
     // جهز العناصر للإرسال: لو المنتج غير مرتبط (null) ننشئ id مؤقت للحقل productId
     const payloadItems = items.map((it) => ({
-      productId: it.productId ?? genId(),
+      // إذا لم يُحدد منتج موجود، لا ننشئ منتج جديد
+      productId: it.productId ?? null,
       name: it.name,
       description: it.description,
       quantity: it.quantity,
