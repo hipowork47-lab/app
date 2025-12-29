@@ -258,7 +258,7 @@ const resources = {
       productDeletedDesc: "لن يظهر في فواتير الشراء الجديدة بعد الآن",
       changePricePrompt: "أدخل السعر الجديد للمنتج:",
       changePriceInvalid: "السعر غير صحيح",
-      changePriceToastTitle: "تم تحديث السعر",
+      changePriceToastTitle: "تحديث السعر",
       changePriceToastDesc: "السعر الجديد: {{price}}",
       selectCategoryPlaceholder: "اختر الفئة",
       newCategory: "فئة جديدة",
