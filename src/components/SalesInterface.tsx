@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Search, Barcode, Plus, Minus, Trash2, Receipt } from "lucide-react";
+import { Search, Barcode, Plus, Minus, Trash2, Receipt, ShoppingBag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useStore } from "@/store/store";
 
@@ -339,6 +339,9 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                         </span>
                       </span>
                       <CardContent className="p-4 text-center space-y-2">
+                        <div className="flex justify-center">
+                          <ShoppingBag className="w-5 h-5 text-blue-500" aria-hidden="true" />
+                        </div>
                         <h3 className="text-lg md:text-xl font-extrabold text-gray-900">
                           {product.name}
                         </h3>
