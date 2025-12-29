@@ -67,6 +67,24 @@ const initialState: State = {
   purchases: [],
 };
 
+const PLACEHOLDER_PRODUCT_NAMES = ["Product Name", "Nombre del producto", "اسم المنتج", "ā?ā?į?į?"];
+
+function sanitizeProducts(products: Product[], sales: SaleInvoice[], purchases: PurchaseInvoice[]) {
+  if (!products?.length) return [];
+  const referenced = new Set<string>();
+  sales?.forEach((inv) => inv.items?.forEach((it) => it.productId && referenced.add(it.productId)));
+  purchases?.forEach((inv) => inv.items?.forEach((it) => it.productId && referenced.add(it.productId)));
+
+  return products.filter((p) => {
+    if (!p.id) return false;
+    const name = (p.name || "").trim();
+    const isPlaceholder = PLACEHOLDER_PRODUCT_NAMES.includes(name);
+    if (isPlaceholder && !referenced.has(p.id)) {
+      return false;
+    }
+    return true;
+  });
+}
 const STORAGE_KEY = "pos_app_state_v1";
 
 function queueConfigUpdate(config: AppConfig) {
@@ -281,7 +299,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as State;
-        return { ...init, ...parsed };
+        return {
+          ...init,
+          ...parsed,
+          products: sanitizeProducts(parsed.products ?? [], parsed.sales ?? [], parsed.purchases ?? []),
+        };
       }
     } catch {
       // ignore parse errors

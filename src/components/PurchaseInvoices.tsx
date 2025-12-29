@@ -147,14 +147,15 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
     }
 
     // جهز العناصر للإرسال: لو المنتج غير مرتبط (null) ننشئ id مؤقت للحقل productId
-    const payloadItems = items.map((it) => ({
-      // إذا لم يُحدد منتج موجود، لا ننشئ منتج جديد
-      productId: it.productId ?? null,
-      name: it.name,
-      description: it.description,
-      quantity: it.quantity,
-      price: it.price,
-    }));
+    const payloadItems = items
+      .filter((it) => it.productId) // تجاهل الأسطر التي لم يتم اختيار منتج لها
+      .map((it) => ({
+        productId: it.productId!,
+        name: it.name,
+        description: it.description,
+        quantity: it.quantity,
+        price: it.price,
+      }));
 
     dispatch({
       type: "ADD_PURCHASE",
