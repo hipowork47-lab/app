@@ -58,10 +58,6 @@ const Login = ({ onLogin }) => {
           <CardTitle className="text-2xl font-bold text-slate-900 text-center">
             {t("login.title")}
           </CardTitle>
-          <p className="text-center text-sm text-slate-600">
-            {t("login.adminAccount")}: <b>Admin / admin425</b> · {t("login.workerAccount")}:{" "}
-            <b>Worker / 1234</b>
-          </p>
         </CardHeader>
 
         <CardContent className="pt-4">
