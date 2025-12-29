@@ -472,7 +472,11 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
             </CardHeader>
             <CardContent className="space-y-3">
               {product.image && (
-                <img src={product.image} alt={product.name} className="w-full h-32 object-cover rounded-md border" />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-32 rounded-md border bg-white object-contain"
+                />
               )}
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">{t("unitPrice")}:</span>
