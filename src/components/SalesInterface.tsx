@@ -50,7 +50,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
           })
           .filter((name): name is string => !!name)
       )
-    ),
+    ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" })),
   ];
 
   const addToCart = (product: any) => {
