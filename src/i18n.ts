@@ -339,7 +339,7 @@ const resources = {
       allCategories: "كل الفئات",
       addedTitle: "تمت إضافة المنتج",
       addedDescription: "{{name}} تمت إضافته إلى السلة",
-      notFoundTitle: "غير موجود",
+      notFoundTitle: "لا يمكن",
       notFoundDesc: "لا يوجد منتج بهذا الباركود",
       outOfStockDesc: "لا يوجد مخزون متاح لهذا المنتج",
       emptyCartTitle: "السلة فارغة",
