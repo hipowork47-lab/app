@@ -23,5 +23,22 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: [
+              "react",
+              "react-dom",
+              "react-router-dom",
+              "react-i18next",
+              "@tanstack/react-query",
+              "recharts",
+              "date-fns",
+            ],
+          },
+        },
+      },
+    },
   };
 });
