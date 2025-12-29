@@ -36,6 +36,15 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
   const [items, setItems] = useState<LineItem[]>([]);
 
   const addLine = () => {
+    if (!lineName) {
+      toast({
+        title: t("errorTitle"),
+        description: t("selectProductPlaceholder"),
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!lineQty || !linePrice || Number(lineQty) <= 0 || Number(linePrice) <= 0) {
       toast({
         title: t("errorTitle"),
@@ -129,6 +138,8 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
   };
 
   const createInvoice = () => {
+    const validItems = items.filter((it) => it.productId);
+
     if (!supplier) {
       toast({
         title: t("errorTitle"),
@@ -137,7 +148,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
       });
       return;
     }
-    if (items.length === 0) {
+    if (validItems.length === 0) {
       toast({
         title: t("errorTitle"),
         description: t("errorItemsRequired"),
@@ -147,8 +158,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
     }
 
     // جهز العناصر للإرسال: لو المنتج غير مرتبط (null) ننشئ id مؤقت للحقل productId
-    const payloadItems = items
-      .filter((it) => it.productId) // تجاهل الأسطر التي لم يتم اختيار منتج لها
+    const payloadItems = validItems
       .map((it) => ({
         productId: it.productId!,
         name: it.name,
