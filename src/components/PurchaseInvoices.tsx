@@ -36,15 +36,6 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
   const [items, setItems] = useState<LineItem[]>([]);
 
   const addLine = () => {
-    if (!lineName) {
-      toast({
-        title: t("errorTitle"),
-        description: t("selectProductPlaceholder"),
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (!lineQty || !linePrice || Number(lineQty) <= 0 || Number(linePrice) <= 0) {
       toast({
         title: t("errorTitle"),
