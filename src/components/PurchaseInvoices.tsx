@@ -138,8 +138,6 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
   };
 
   const createInvoice = () => {
-    const validItems = items.filter((it) => it.productId);
-
     if (!supplier) {
       toast({
         title: t("errorTitle"),
@@ -148,7 +146,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
       });
       return;
     }
-    if (validItems.length === 0) {
+    if (items.length === 0) {
       toast({
         title: t("errorTitle"),
         description: t("errorItemsRequired"),
@@ -157,15 +155,14 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
       return;
     }
 
-    // جهز العناصر للإرسال: لو المنتج غير مرتبط (null) ننشئ id مؤقت للحقل productId
-    const payloadItems = validItems
-      .map((it) => ({
-        productId: it.productId!,
-        name: it.name,
-        description: it.description,
-        quantity: it.quantity,
-        price: it.price,
-      }));
+    // جهز العناصر للإرسال: نحتفظ بالبند حتى لو لم يُحدد منتج (productId يبقى null)
+    const payloadItems = items.map((it) => ({
+      productId: it.productId ?? null,
+      name: it.name,
+      description: it.description,
+      quantity: it.quantity,
+      price: it.price,
+    }));
 
     dispatch({
       type: "ADD_PURCHASE",
