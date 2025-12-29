@@ -57,7 +57,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     if (!product || product.stock <= 0) {
       toast({
         title: t("notFoundTitle"),
-        description: t("notFoundDesc"),
+        description: t("outOfStockDesc") || t("notFoundDesc"),
         variant: "destructive",
       });
       return;
@@ -68,7 +68,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     if (nextQty > product.stock) {
       toast({
         title: t("notFoundTitle"),
-        description: t("notFoundDesc"),
+        description: t("outOfStockDesc") || t("notFoundDesc"),
         variant: "destructive",
       });
       return;
@@ -113,7 +113,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     if (product && newQuantity > product.stock) {
       toast({
         title: t("notFoundTitle"),
-        description: t("notFoundDesc"),
+        description: t("outOfStockDesc") || t("notFoundDesc"),
         variant: "destructive",
       });
       return;
