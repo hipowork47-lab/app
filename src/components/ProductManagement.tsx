@@ -297,6 +297,19 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                     >
                       URL
                     </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setFormData({ ...formData, image: "" });
+                        if (fileInputRef.current) fileInputRef.current.value = "";
+                      }}
+                      disabled={!formData.image}
+                      className="whitespace-nowrap"
+                    >
+                      {t("delete")}
+                    </Button>
                     {formData.image && (
                       <img src={formData.image} alt="preview" className="w-12 h-12 rounded object-contain border bg-white" />
                     )}
