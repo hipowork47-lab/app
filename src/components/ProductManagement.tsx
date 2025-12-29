@@ -294,7 +294,6 @@ const CategoryForm: React.FC<{ dispatch: any }> = ({ dispatch }) => {
                         value={formData.image?.startsWith("http") ? formData.image : ""}
                         onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                       />
-                      <span className="text-xs text-gray-500">{t("orEnterImageUrl")}</span>
                     </div>
                   )}
                 </div>
