@@ -84,13 +84,19 @@ const Index = () => {
         dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as Partial<AppState> });
         applied = true;
       });
-      toast({
-        title: t("syncSuccess") || "تمت المزامنة بنجاح",
-        description: applied
-          ? t("syncSuccessDesc") || "تم تحديث البيانات من الخادم"
-          : t("syncFailedDesc") || "لم يتم تطبيق أي تحديثات",
-        variant: applied ? "success" : "destructive",
-      });
+      if (applied) {
+        toast({
+          title: t("syncSuccess") || "تمت المزامنة بنجاح",
+          description: t("syncSuccessDesc") || "تم تحديث البيانات من الخادم",
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: t("syncFailed") || "فشلت المزامنة",
+          description: t("syncFailedDesc") || "لم يتم تطبيق أي تحديثات",
+          variant: "destructive",
+        });
+      }
     } catch {
       toast({
         title: t("syncFailed") || "فشل المزامنة",
