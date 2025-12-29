@@ -34,6 +34,9 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
   const [linePrice, setLinePrice] = useState<number | "">("");
   const [lineDesc, setLineDesc] = useState("");
   const [items, setItems] = useState<LineItem[]>([]);
+  const [supplierQuery, setSupplierQuery] = useState("");
+  const [dateQuery, setDateQuery] = useState("");
+  const [filters, setFilters] = useState({ supplier: "", date: "" });
 
   const addLine = () => {
     if (!lineQty || !linePrice || Number(lineQty) <= 0 || Number(linePrice) <= 0) {
@@ -69,6 +72,29 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
     setItems((s) => s.filter((_, i) => i !== idx));
 
   const total = items.reduce((sum, it) => sum + it.price * it.quantity, 0);
+
+  const applyFilters = () =>
+    setFilters({
+      supplier: supplierQuery.trim(),
+      date: dateQuery,
+    });
+
+  const clearFilters = () => {
+    setSupplierQuery("");
+    setDateQuery("");
+    setFilters({ supplier: "", date: "" });
+  };
+
+  const filteredPurchases = [...(state.purchases ?? [])]
+    .filter((p) => {
+      if (!filters.supplier) return true;
+      return (p.supplier ?? "").toLowerCase().includes(filters.supplier.toLowerCase());
+    })
+    .filter((p) => {
+      if (!filters.date) return true;
+      return p.date === filters.date;
+    })
+    .sort((a, b) => b.id.localeCompare(a.id));
 
   const printInvoice = (invoice: any) => {
     if (typeof window === "undefined") return;
@@ -327,15 +353,43 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
         <h3 className="text-lg font-semibold mb-4 text-blue-800">
           🧩 {t("recentPurchasesTitle")}
         </h3>
-        {(state.purchases ?? []).length === 0 ? (
+        <div className="flex flex-wrap gap-3 mb-4 items-end">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-blue-800">{t("supplier")}</label>
+            <Input
+              value={supplierQuery}
+              onChange={(e) => setSupplierQuery(e.target.value)}
+              placeholder={t("supplier")}
+              className="min-w-[180px]"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-blue-800">{t("date")}</label>
+            <Input
+              type="date"
+              value={dateQuery}
+              onChange={(e) => setDateQuery(e.target.value)}
+              className="min-w-[150px]"
+            />
+          </div>
+          <div className="flex items-end gap-2">
+            <Button onClick={applyFilters} className="bg-blue-600 hover:bg-blue-700 text-white">
+              {t("search")}
+            </Button>
+            {(filters.supplier || filters.date) && (
+              <Button variant="outline" onClick={clearFilters}>
+                {t("clearAll")}
+              </Button>
+            )}
+          </div>
+        </div>
+        {filteredPurchases.length === 0 ? (
           <div className="text-gray-500 text-center py-4">
             {t("noPurchasesYet")}
           </div>
         ) : (
           <div className="space-y-6">
-           {[...(state.purchases ?? [])]
-  .sort((a, b) => b.id.localeCompare(a.id))
-  .map((p) => (
+           {filteredPurchases.map((p) => (
 
               <div
                 key={p.id}
