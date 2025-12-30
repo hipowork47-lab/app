@@ -18,6 +18,8 @@ const Login = ({ onLogin }) => {
 
   useEffect(() => {
     setAccounts(loadAccounts());
+    const license = getLicenseKey();
+    if (!license) return;
     pullSnapshot().then((snap) => {
       if (snap?.accounts) {
         applyAccountsSnapshot(snap.accounts);
