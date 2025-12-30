@@ -3,6 +3,7 @@
 
 import { flushQueue, readQueue, clearQueue, SyncOperation } from "@/lib/offline-sync";
 import { hashPassword, isHashed } from "@/lib/accounts";
+import { licenseHeaders } from "@/lib/license";
 
 const API_BASE = import.meta.env.VITE_SYNC_API ?? ""; // e.g., https://your-api.com
 const API_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ""; // Supabase anon key for auth
@@ -28,7 +29,12 @@ async function safeFetch(url: string, opts: RequestInit = {}) {
 
     const res = await fetch(url, {
       ...opts,
-      headers: { ...baseHeaders, ...(opts.headers || {}), "Content-Type": "application/json" },
+      headers: {
+        ...baseHeaders,
+        ...licenseHeaders(),
+        ...(opts.headers || {}),
+        "Content-Type": "application/json",
+      },
       signal: controller.signal,
     });
     if (!res.ok) {
@@ -47,10 +53,12 @@ async function safeFetch(url: string, opts: RequestInit = {}) {
   }
 }
 
-export async function pullSnapshot(): Promise<Snapshot | null> {
+export async function pullSnapshot(overrideLicenseKey?: string): Promise<Snapshot | null> {
   if (!API_BASE) return null;
   try {
-    const raw = await safeFetch(`${API_BASE}/sync/snapshot`);
+    const raw = await safeFetch(`${API_BASE}/sync/snapshot`, {
+      headers: licenseHeaders(overrideLicenseKey),
+    });
     // Map snake_case from Supabase to camelCase used in the app.
     return {
       ...raw,
@@ -197,4 +205,9 @@ export async function syncNow(onPulled: (snapshot: Snapshot) => void) {
   await pushOutbox();
   const snap = await pullSnapshot();
   if (snap) onPulled(snap);
+}
+
+export async function validateLicense(key: string) {
+  const snap = await pullSnapshot(key);
+  return !!snap;
 }

@@ -19,11 +19,12 @@ import PurchaseInvoices from "@/components/PurchaseInvoices";
 import ReportsSection from "@/components/ReportsSection";
 import SalesInvoices from "@/components/SalesInvoices";
 import { useTranslation } from "react-i18next";
-import { syncNow } from "@/lib/sync-adapter";
+import { syncNow, validateLicense } from "@/lib/sync-adapter";
 import { useStore } from "@/store/store";
 import { addAccount } from "@/lib/accounts";
 import { useToast } from "@/hooks/use-toast";
 import { useToast } from "@/hooks/use-toast";
+import { clearLicense, getDeviceId, getLicenseKey, licenseHeaders, setLicenseKey } from "@/lib/license";
 // نوع المستخدم
 
 type User = { username: string; role: "admin" | "employee" };
@@ -34,6 +35,9 @@ const Index = () => {
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useStore();
   const { toast } = useToast();
+  const [licenseKey, setLicenseKeyState] = useState(getLicenseKey());
+  const [licenseError, setLicenseError] = useState("");
+  const [licenseLoading, setLicenseLoading] = useState(false);
   const langLabel: Record<string, { flag: string; text: string }> = {
     es: { flag: "🇪🇸", text: "Español" },
     ar: { flag: "🇸🇦", text: "العربية" },
@@ -43,6 +47,24 @@ const Index = () => {
   const userRole = currentUser?.role ?? null;
 
   // Persist login across refreshes
+  useEffect(() => {
+    getDeviceId();
+    if (licenseKey) {
+      setLicenseLoading(true);
+      validateLicense(licenseKey)
+        .then((ok) => {
+          if (!ok) {
+            clearLicense();
+            setLicenseKeyState("");
+          }
+        })
+        .catch(() => {
+          // ignore, will require revalidation on next sync
+        })
+        .finally(() => setLicenseLoading(false));
+    }
+  }, [licenseKey]);
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem("pos_current_user");
@@ -75,6 +97,30 @@ const Index = () => {
   }, [currentUser, dispatch]);
 
   const handleLogout = () => setCurrentUser(null);
+
+  const handleLicenseSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!licenseKey.trim()) {
+      setLicenseError(t("login.invalidCredentials"));
+      return;
+    }
+    setLicenseLoading(true);
+    setLicenseError("");
+    try {
+      const ok = await validateLicense(licenseKey.trim());
+      if (ok) {
+        setLicenseKey(licenseKey.trim());
+        setLicenseKeyState(licenseKey.trim());
+      } else {
+        setLicenseError(t("login.invalidCredentials"));
+      }
+    } catch {
+      setLicenseError(t("login.invalidCredentials"));
+    } finally {
+      setLicenseLoading(false);
+    }
+  };
+
   const handleSync = async () => {
     try {
       let applied = false;
@@ -120,6 +166,41 @@ const Index = () => {
 
   // إذا لم يسجل الدخول بعد
   if (!currentUser) {
+    if (!licenseKey) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
+          <Card className="w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
+            <CardHeader className="space-y-2 pb-2 text-center">
+              <CardTitle className="text-xl font-bold text-slate-900">{t("syncNow")}</CardTitle>
+              <p className="text-sm text-gray-600">{t("licenseKey") || "License Key"}</p>
+            </CardHeader>
+            <CardContent>
+              <form className="space-y-3" onSubmit={handleLicenseSubmit}>
+                <Input
+                  placeholder={t("licenseKeyPlaceholder") || "XXXX-XXXX-XXXX"}
+                  value={licenseKey}
+                  onChange={(e) => setLicenseKeyState(e.target.value)}
+                  disabled={licenseLoading}
+                  required
+                />
+                {licenseError && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                    {licenseError}
+                  </div>
+                )}
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
+                  disabled={licenseLoading}
+                >
+                  {licenseLoading ? t("view") : t("confirm")}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
     return <Login onLogin={setCurrentUser} />;
   }
 

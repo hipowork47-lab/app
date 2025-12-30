@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, User, ShieldCheck } from "lucide-react";
 import { applyAccountsSnapshot, hashPassword, loadAccounts, isHashed } from "@/lib/accounts";
+import { getLicenseKey } from "@/lib/license";
 import { pullSnapshot } from "@/lib/sync-adapter";
 
 const Login = ({ onLogin }) => {
@@ -30,6 +31,10 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError("");
 // البحث عن الحساب المطابق
+    if (!getLicenseKey()) {
+      setError(t("login.invalidCredentials"));
+      return;
+    }
     if (isHashed(password)) {
       setError(t("login.invalidCredentials"));
       return;
