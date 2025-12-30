@@ -40,6 +40,8 @@ const Index = () => {
   const [licenseValidated, setLicenseValidated] = useState(!!initialLicense);
   const [licenseError, setLicenseError] = useState("");
   const [licenseLoading, setLicenseLoading] = useState(false);
+  const [customDeviceId, setCustomDeviceIdState] = useState("");
+  const [customDeviceName, setCustomDeviceNameState] = useState("");
   const langLabel: Record<string, { flag: string; text: string }> = {
     es: { flag: "🇪🇸", text: "Español" },
     ar: { flag: "🇸🇦", text: "العربية" },
@@ -95,6 +97,8 @@ const Index = () => {
     setLicenseLoading(true);
     setLicenseError("");
     try {
+      if (customDeviceId.trim()) setCustomDeviceId(customDeviceId.trim());
+      if (customDeviceName.trim()) setCustomDeviceName(customDeviceName.trim());
       const ok = await validateLicense(licenseKey.trim());
       if (ok) {
         setLicenseKey(licenseKey.trim());
@@ -182,6 +186,18 @@ const Index = () => {
                   {licenseError}
                 </div>
               )}
+              <div className="space-y-2">
+                <Input
+                  placeholder={t("licenseDevicesTitle") || "اسم الجهاز (اختياري لثبات الهوية)"}
+                  value={customDeviceName}
+                  onChange={(e) => setCustomDeviceNameState(e.target.value)}
+                />
+                <Input
+                  placeholder="معرف جهاز مخصص (اختياري)"
+                  value={customDeviceId}
+                  onChange={(e) => setCustomDeviceIdState(e.target.value)}
+                />
+              </div>
               <Button
                 type="submit"
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white"

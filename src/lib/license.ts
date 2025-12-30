@@ -2,6 +2,7 @@ const LICENSE_KEY_STORAGE = "pos_license_key";
 const DEVICE_ID_STORAGE = "pos_device_id";
 const DEVICE_NAME_STORAGE = "pos_device_name";
 const DEVICE_ID_OVERRIDE = "pos_device_id_custom";
+const DEVICE_NAME_OVERRIDE = "pos_device_name_custom";
 
 export function getDeviceId(): string {
   if (typeof window === "undefined") return "";
@@ -38,6 +39,8 @@ export function setCustomDeviceId(id: string) {
 
 export function getDeviceName(): string {
   if (typeof window === "undefined") return "";
+  const override = localStorage.getItem(DEVICE_NAME_OVERRIDE);
+  if (override) return override;
   let cached = localStorage.getItem(DEVICE_NAME_STORAGE);
   if (cached) return cached;
   const ua = navigator.userAgent || "";
@@ -52,6 +55,17 @@ export function getDeviceName(): string {
   else if (/Linux/i.test(ua)) name = "Linux";
   localStorage.setItem(DEVICE_NAME_STORAGE, name);
   return name;
+}
+
+export function setCustomDeviceName(name: string) {
+  if (typeof window === "undefined") return;
+  const val = name.trim();
+  if (val) {
+    localStorage.setItem(DEVICE_NAME_OVERRIDE, val);
+    localStorage.setItem(DEVICE_NAME_STORAGE, val);
+  } else {
+    localStorage.removeItem(DEVICE_NAME_OVERRIDE);
+  }
 }
 
 export function getLicenseKey(): string {
