@@ -35,7 +35,9 @@ const Index = () => {
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useStore();
   const { toast } = useToast();
-  const [licenseKey, setLicenseKeyState] = useState(getLicenseKey());
+  const initialLicense = getLicenseKey();
+  const [licenseKey, setLicenseKeyState] = useState(initialLicense);
+  const [licenseValidated, setLicenseValidated] = useState(!!initialLicense);
   const [licenseError, setLicenseError] = useState("");
   const [licenseLoading, setLicenseLoading] = useState(false);
   const langLabel: Record<string, { flag: string; text: string }> = {
@@ -97,6 +99,7 @@ const Index = () => {
       if (ok) {
         setLicenseKey(licenseKey.trim());
         setLicenseKeyState(licenseKey.trim());
+        setLicenseValidated(true);
       } else {
         setLicenseError(t("login.invalidCredentials"));
       }
@@ -152,7 +155,7 @@ const Index = () => {
 
   // إذا لم يسجل الدخول بعد
   if (!currentUser) {
-    if (!licenseKey) {
+    if (!licenseValidated) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
           <div className="w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40 rounded-xl p-6 space-y-4">
