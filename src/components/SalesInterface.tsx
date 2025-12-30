@@ -230,6 +230,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
         currency: config.currency,
         method: paymentMethod,
       }),
+      variant: "success",
     });
 
     setCart([]);
