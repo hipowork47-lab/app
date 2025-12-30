@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import Login from "./Login";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -169,35 +168,34 @@ const Index = () => {
     if (!licenseKey) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
-          <Card className="w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40">
-            <CardHeader className="space-y-2 pb-2 text-center">
-              <CardTitle className="text-xl font-bold text-slate-900">{t("syncNow")}</CardTitle>
-              <p className="text-sm text-gray-600">{t("licenseKey") || "License Key"}</p>
-            </CardHeader>
-            <CardContent>
-              <form className="space-y-3" onSubmit={handleLicenseSubmit}>
-                <Input
-                  placeholder={t("licenseKeyPlaceholder") || "XXXX-XXXX-XXXX"}
-                  value={licenseKey}
-                  onChange={(e) => setLicenseKeyState(e.target.value)}
-                  disabled={licenseLoading}
-                  required
-                />
-                {licenseError && (
-                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-                    {licenseError}
-                  </div>
-                )}
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
-                  disabled={licenseLoading}
-                >
-                  {licenseLoading ? t("view") : t("confirm")}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          <div className="w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40 rounded-xl p-6 space-y-4">
+            <div className="text-center space-y-1">
+              <div className="text-sm font-semibold text-blue-700">{t("syncNow")}</div>
+              <div className="text-xl font-bold text-slate-900">{t("licenseKey") || "License Key"}</div>
+              <p className="text-sm text-gray-600">{t("licenseKeyPlaceholder") || "XXXX-XXXX-XXXX"}</p>
+            </div>
+            <form className="space-y-3" onSubmit={handleLicenseSubmit}>
+              <Input
+                placeholder={t("licenseKeyPlaceholder") || "XXXX-XXXX-XXXX"}
+                value={licenseKey}
+                onChange={(e) => setLicenseKeyState(e.target.value)}
+                disabled={licenseLoading}
+                required
+              />
+              {licenseError && (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                  {licenseError}
+                </div>
+              )}
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
+                disabled={licenseLoading}
+              >
+                {licenseLoading ? t("view") : t("confirm")}
+              </Button>
+            </form>
+          </div>
         </div>
       );
     }
