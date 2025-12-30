@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
-
 const LICENSE_KEY_STORAGE = "pos_license_key";
 const DEVICE_ID_STORAGE = "pos_device_id";
 const DEVICE_NAME_STORAGE = "pos_device_name";
@@ -7,10 +5,23 @@ const DEVICE_NAME_STORAGE = "pos_device_name";
 export function getDeviceId(): string {
   if (typeof window === "undefined") return "";
   let id = localStorage.getItem(DEVICE_ID_STORAGE);
-  if (!id) {
-    id = uuidv4();
-    localStorage.setItem(DEVICE_ID_STORAGE, id);
+  if (id) return id;
+
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+  const lang = navigator.language || "";
+  const screenSize =
+    typeof screen !== "undefined" ? `${screen.width}x${screen.height}` : "unknown";
+  const fingerprint = `${ua}|${platform}|${lang}|${screenSize}`;
+
+  // FNV-1a hash for a stable fingerprint
+  let hash = 2166136261;
+  for (let i = 0; i < fingerprint.length; i++) {
+    hash ^= fingerprint.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
   }
+  id = `fp-${(hash >>> 0).toString(16)}`;
+  localStorage.setItem(DEVICE_ID_STORAGE, id);
   return id;
 }
 
