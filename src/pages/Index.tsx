@@ -40,7 +40,6 @@ const Index = () => {
   const [licenseValidated, setLicenseValidated] = useState(!!initialLicense);
   const [licenseError, setLicenseError] = useState("");
   const [licenseLoading, setLicenseLoading] = useState(false);
-  const [customDeviceId, setCustomDeviceIdState] = useState("");
   const [customDeviceName, setCustomDeviceNameState] = useState("");
   const langLabel: Record<string, { flag: string; text: string }> = {
     es: { flag: "🇪🇸", text: "Español" },
@@ -97,7 +96,6 @@ const Index = () => {
     setLicenseLoading(true);
     setLicenseError("");
     try {
-      if (customDeviceId.trim()) setCustomDeviceId(customDeviceId.trim());
       if (customDeviceName.trim()) setCustomDeviceName(customDeviceName.trim());
       const ok = await validateLicense(licenseKey.trim());
       if (ok) {
@@ -191,11 +189,6 @@ const Index = () => {
                   placeholder="Device name (optional)"
                   value={customDeviceName}
                   onChange={(e) => setCustomDeviceNameState(e.target.value)}
-                />
-                <Input
-                  placeholder="Custom device ID (optional)"
-                  value={customDeviceId}
-                  onChange={(e) => setCustomDeviceIdState(e.target.value)}
                 />
               </div>
               <Button
