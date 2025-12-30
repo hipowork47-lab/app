@@ -44,12 +44,21 @@ async function assertLicense(req: Request) {
     return { ok: false, status: 403, error: "Device limit reached" };
   }
 
-  if (!already) {
+  // add new device, or refresh the stored name if it changed
+  let finalDevices = devices;
+  if (already) {
+    const updated = devices.map((d) => (d.id === deviceId ? { ...d, name: deviceName || d.name || d.id } : d));
+    if (JSON.stringify(updated) !== JSON.stringify(devices)) {
+      await supabase.from("licenses").update({ devices: updated }).eq("license_key", licenseKey);
+      finalDevices = updated;
+    }
+  } else {
     const next = [...devices, { id: deviceId, name: deviceName }];
     await supabase.from("licenses").update({ devices: next }).eq("license_key", licenseKey);
+    finalDevices = next;
   }
 
-  return { ok: true, license: { license_key: licenseKey, max_devices: maxDevices, devices } };
+  return { ok: true, license: { license_key: licenseKey, max_devices: maxDevices, devices: finalDevices } };
 }
 
 serve(async (req) => {
