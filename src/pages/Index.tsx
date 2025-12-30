@@ -49,21 +49,7 @@ const Index = () => {
   // Persist login across refreshes
   useEffect(() => {
     getDeviceId();
-    if (licenseKey) {
-      setLicenseLoading(true);
-      validateLicense(licenseKey)
-        .then((ok) => {
-          if (!ok) {
-            clearLicense();
-            setLicenseKeyState("");
-          }
-        })
-        .catch(() => {
-          // ignore, will require revalidation on next sync
-        })
-        .finally(() => setLicenseLoading(false));
-    }
-  }, [licenseKey]);
+  }, []);
 
   useEffect(() => {
     try {
