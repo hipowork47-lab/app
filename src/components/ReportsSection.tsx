@@ -20,7 +20,7 @@ const ReportsSection: React.FC = () => {
   const [showRateInput, setShowRateInput] = useState(false);
   const [devicesLoading, setDevicesLoading] = useState(false);
   const [devicesError, setDevicesError] = useState("");
-  const [devicesList, setDevicesList] = useState<string[]>([]);
+  const [devicesList, setDevicesList] = useState<{ id: string; name?: string }[]>([]);
   const [devicesLimit, setDevicesLimit] = useState<number | null>(null);
    // مزامنة قيمة سعر الصرف في الواجهة مع القيمة في الـ store
 React.useEffect(() => {
@@ -53,7 +53,12 @@ React.useEffect(() => {
         setDevicesList([]);
         setDevicesLimit(null);
       } else {
-        setDevicesList(info.devices ?? []);
+        setDevicesList(
+          (info.devices ?? []).map((d: any) => ({
+            id: d.id ?? d.deviceId ?? d,
+            name: d.name ?? d.id ?? d,
+          }))
+        );
         setDevicesLimit(info.maxDevices ?? null);
       }
     } catch (e) {
@@ -352,8 +357,12 @@ const purchaseReportData = useMemo(() => {
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {devicesList.map((d) => (
-                <span key={d} className="px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-100 text-xs">
-                  {d}
+                <span
+                  key={d.id}
+                  className="px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-100 text-xs"
+                  title={d.id}
+                >
+                  {d.name || d.id}
                 </span>
               ))}
             </div>

@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-  "Access-Control-Allow-Headers": "authorization,apikey,content-type,x-license-key,x-device-id",
+  "Access-Control-Allow-Headers": "authorization,apikey,content-type,x-license-key,x-device-id,x-device-name",
 };
 
 const supabaseUrl = Deno.env.get("PROJECT_URL") ?? "";
@@ -17,6 +17,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 async function assertLicense(req: Request) {
   const licenseKey = req.headers.get("x-license-key")?.trim();
   const deviceId = req.headers.get("x-device-id")?.trim();
+  const deviceName = req.headers.get("x-device-name")?.trim() || deviceId;
   if (!licenseKey || !deviceId) {
     return { ok: false, status: 401, error: "License required" };
   }
@@ -30,15 +31,21 @@ async function assertLicense(req: Request) {
   }
 
   const maxDevices = data.max_devices ?? 999999;
-  const devices: string[] = Array.isArray(data.devices) ? data.devices : [];
+  const devicesRaw = Array.isArray(data.devices) ? data.devices : [];
+  const devices: { id: string; name?: string }[] = devicesRaw
+    .map((d: any) => {
+      if (typeof d === "string") return { id: d, name: d };
+      return { id: d?.id ?? d?.deviceId ?? "", name: d?.name ?? d?.id ?? "" };
+    })
+    .filter((d) => d.id);
   const isUnlimited = maxDevices === 9 || maxDevices >= 999999;
-  const already = devices.includes(deviceId);
+  const already = devices.some((d) => d.id === deviceId);
   if (!already && !isUnlimited && devices.length >= maxDevices) {
     return { ok: false, status: 403, error: "Device limit reached" };
   }
 
   if (!already) {
-    const next = [...devices, deviceId];
+    const next = [...devices, { id: deviceId, name: deviceName }];
     await supabase.from("licenses").update({ devices: next }).eq("license_key", licenseKey);
   }
 
