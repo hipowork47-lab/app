@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Login from "./Login";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,7 @@ import { syncNow, validateLicense } from "@/lib/sync-adapter";
 import { useStore } from "@/store/store";
 import { addAccount } from "@/lib/accounts";
 import { useToast } from "@/hooks/use-toast";
-import { useToast } from "@/hooks/use-toast";
-import { clearLicense, getDeviceId, getLicenseKey, licenseHeaders, setLicenseKey } from "@/lib/license";
+import { clearLicense, getDeviceId, getLicenseKey, setLicenseKey } from "@/lib/license";
 // نوع المستخدم
 
 type User = { username: string; role: "admin" | "employee" };
