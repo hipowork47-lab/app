@@ -57,6 +57,7 @@ React.useEffect(() => {
           (info.devices ?? []).map((d: any) => ({
             id: d.id ?? d.deviceId ?? d,
             name: d.name ?? d.id ?? d,
+            type: d.type ?? d.deviceType ?? "",
           }))
         );
         setDevicesLimit(info.maxDevices ?? null);
@@ -363,6 +364,7 @@ const purchaseReportData = useMemo(() => {
                   title={d.id}
                 >
                   {d.name || d.id}
+                  {d.type ? ` · ${d.type}` : ""}
                 </span>
               ))}
             </div>

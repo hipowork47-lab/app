@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-  "Access-Control-Allow-Headers": "authorization,apikey,content-type,x-license-key,x-device-id,x-device-name",
+  "Access-Control-Allow-Headers": "authorization,apikey,content-type,x-license-key,x-device-id,x-device-name,x-device-type",
 };
 
 const supabaseUrl = Deno.env.get("PROJECT_URL") ?? "";
@@ -18,6 +18,7 @@ async function assertLicense(req: Request) {
   const licenseKey = req.headers.get("x-license-key")?.trim();
   const deviceId = req.headers.get("x-device-id")?.trim();
   const deviceName = req.headers.get("x-device-name")?.trim() || deviceId;
+  const deviceType = req.headers.get("x-device-type")?.trim() || "Unknown";
   if (!licenseKey || !deviceId) {
     return { ok: false, status: 401, error: "License required" };
   }
@@ -32,10 +33,14 @@ async function assertLicense(req: Request) {
 
   const maxDevices = data.max_devices ?? 999999;
   const devicesRaw = Array.isArray(data.devices) ? data.devices : [];
-  const devices: { id: string; name?: string }[] = devicesRaw
+  const devices: { id: string; name?: string; type?: string }[] = devicesRaw
     .map((d: any) => {
-      if (typeof d === "string") return { id: d, name: d };
-      return { id: d?.id ?? d?.deviceId ?? "", name: d?.name ?? d?.id ?? "" };
+      if (typeof d === "string") return { id: d, name: d, type: "Unknown" };
+      return {
+        id: d?.id ?? d?.deviceId ?? "",
+        name: d?.name ?? d?.id ?? "",
+        type: d?.type ?? d?.deviceType ?? "Unknown",
+      };
     })
     .filter((d) => d.id);
   const isUnlimited = maxDevices === 9 || maxDevices >= 999999;
@@ -47,13 +52,21 @@ async function assertLicense(req: Request) {
   // add new device, or refresh the stored name if it changed
   let finalDevices = devices;
   if (already) {
-    const updated = devices.map((d) => (d.id === deviceId ? { ...d, name: deviceName || d.name || d.id } : d));
+    const updated = devices.map((d) =>
+      d.id === deviceId
+        ? {
+            ...d,
+            name: deviceName || d.name || d.id,
+            type: deviceType || d.type || "Unknown",
+          }
+        : d,
+    );
     if (JSON.stringify(updated) !== JSON.stringify(devices)) {
       await supabase.from("licenses").update({ devices: updated }).eq("license_key", licenseKey);
       finalDevices = updated;
     }
   } else {
-    const next = [...devices, { id: deviceId, name: deviceName }];
+    const next = [...devices, { id: deviceId, name: deviceName, type: deviceType }];
     await supabase.from("licenses").update({ devices: next }).eq("license_key", licenseKey);
     finalDevices = next;
   }
