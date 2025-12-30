@@ -98,6 +98,11 @@ export function setLicenseKey(key: string) {
 export function clearLicense() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(LICENSE_KEY_STORAGE);
+  localStorage.removeItem(DEVICE_ID_STORAGE);
+  localStorage.removeItem(DEVICE_ID_OVERRIDE);
+  localStorage.removeItem(DEVICE_NAME_STORAGE);
+  localStorage.removeItem(DEVICE_NAME_OVERRIDE);
+  localStorage.removeItem(DEVICE_TYPE_STORAGE);
 }
 
 export function licenseHeaders(overrideKey?: string, registerDevice = false) {

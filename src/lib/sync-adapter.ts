@@ -103,7 +103,15 @@ export async function pullSnapshot(overrideLicenseKey?: string, registerDevice =
           }
         : null,
     };
-  } catch {
+  } catch (err: any) {
+    const msg = String(err || "");
+    if (msg.includes("401") || msg.includes("403")) {
+      try {
+        clearLicense();
+      } catch {
+        /* ignore */
+      }
+    }
     return null;
   }
 }
