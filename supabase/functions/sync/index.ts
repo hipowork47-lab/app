@@ -89,6 +89,46 @@ serve(async (req) => {
     });
   }
 
+  if (req.method === "POST" && url.pathname === "/sync/device-remove") {
+    try {
+      const { deviceId } = await req.json();
+      if (!deviceId) {
+        return new Response(JSON.stringify({ ok: false, error: "deviceId required" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+      const currentDevices: any[] = Array.isArray(licenseCheck.license?.devices)
+        ? licenseCheck.license?.devices ?? []
+        : [];
+      const filtered = currentDevices
+        .map((d: any) =>
+          typeof d === "string"
+            ? { id: d, name: d, type: "Unknown" }
+            : {
+                id: d?.id ?? d?.deviceId ?? "",
+                name: d?.name ?? d?.id ?? "",
+                type: d?.type ?? d?.deviceType ?? "Unknown",
+              },
+        )
+        .filter((d) => d.id && d.id !== deviceId);
+
+      await supabase
+        .from("licenses")
+        .update({ devices: filtered })
+        .eq("license_key", licenseCheck.license?.license_key ?? licenseCheck.license?.licenseKey ?? licenseCheck.license?.license);
+
+      return new Response(JSON.stringify({ ok: true, devices: filtered }), {
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ ok: false, error: String(err) }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+  }
+
   if (req.method === "GET" && url.pathname === "/sync/snapshot") {
     const [config, products, categories, sales, purchases, accounts] = await Promise.all([
       supabase.from("config").select("*").single(),

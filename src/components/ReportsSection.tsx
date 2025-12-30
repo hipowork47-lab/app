@@ -10,7 +10,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { FileText, Calendar, TrendingUp, ShoppingCart, DollarSign } from "lucide-react";
 import { useStore } from "@/store/store";
 import { useTranslation } from "react-i18next";
-import { fetchLicenseInfo } from "@/lib/sync-adapter";
+import { fetchLicenseInfo, removeLinkedDevice } from "@/lib/sync-adapter";
 
 const ReportsSection: React.FC = () => {
 
@@ -20,8 +20,9 @@ const ReportsSection: React.FC = () => {
   const [showRateInput, setShowRateInput] = useState(false);
   const [devicesLoading, setDevicesLoading] = useState(false);
   const [devicesError, setDevicesError] = useState("");
-  const [devicesList, setDevicesList] = useState<{ id: string; name?: string }[]>([]);
+  const [devicesList, setDevicesList] = useState<{ id: string; name?: string; type?: string }[]>([]);
   const [devicesLimit, setDevicesLimit] = useState<number | null>(null);
+  const [removingDeviceId, setRemovingDeviceId] = useState<string>("");
    // مزامنة قيمة سعر الصرف في الواجهة مع القيمة في الـ store
 React.useEffect(() => {
   setNewRate(state.config.exchangeRate);
@@ -353,19 +354,39 @@ const purchaseReportData = useMemo(() => {
       {devicesList.length > 0 && (
         <Card className="bg-white/80 backdrop-blur-sm border-blue-100">
           <CardHeader>
-            <CardTitle className="text-blue-800 text-sm">{t("licenseDevicesTitle") || "الأجهزة المرتبطة بالمفتاح"}</CardTitle>
+            <CardTitle className="text-blue-800 text-sm">{t("licenseDevicesTitle") || "Linked devices"}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {devicesList.map((d) => (
-                <span
+                <div
                   key={d.id}
-                  className="px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-100 text-xs"
+                  className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-100 text-xs"
                   title={d.id}
                 >
-                  {d.name || d.id}
-                  {d.type ? ` · ${d.type}` : ""}
-                </span>
+                  <span className="truncate max-w-[140px]">
+                    {d.name || d.id}
+                    {d.type ? ` · ${d.type}` : ""}
+                  </span>
+                  <button
+                    className="text-red-600 hover:text-red-800 disabled:opacity-50"
+                    onClick={async () => {
+                      setRemovingDeviceId(d.id);
+                      const ok = await removeLinkedDevice(d.id);
+                      if (ok) {
+                        setDevicesList((prev) => prev.filter((x) => x.id !== d.id));
+                      } else {
+                        setDevicesError(t("errorTitle") || "Error");
+                      }
+                      setRemovingDeviceId("");
+                    }}
+                    disabled={removingDeviceId === d.id}
+                    aria-label="Remove device"
+                    title={t("delete") || "Delete"}
+                  >
+                    ?
+                  </button>
+                </div>
               ))}
             </div>
           </CardContent>
@@ -449,3 +470,5 @@ const purchaseReportData = useMemo(() => {
 };
 
 export default ReportsSection;
+
+

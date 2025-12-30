@@ -219,6 +219,20 @@ export async function validateLicense(key: string) {
   return !!snap;
 }
 
+export async function removeLinkedDevice(deviceId: string) {
+  if (!API_BASE) return false;
+  try {
+    await safeFetch(`${API_BASE}/sync/device-remove`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deviceId }),
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchLicenseInfo() {
   const snap = await pullSnapshot();
   if (!snap?.license) return null;
