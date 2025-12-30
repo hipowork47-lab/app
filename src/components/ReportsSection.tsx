@@ -384,7 +384,7 @@ const purchaseReportData = useMemo(() => {
                     aria-label="Remove device"
                     title={t("delete") || "Delete"}
                   >
-                    ?
+                    X
                   </button>
                 </div>
               ))}
@@ -470,5 +470,7 @@ const purchaseReportData = useMemo(() => {
 };
 
 export default ReportsSection;
+
+
 
 
