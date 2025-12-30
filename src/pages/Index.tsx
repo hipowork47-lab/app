@@ -115,29 +115,35 @@ const Index = () => {
   const handleSync = async () => {
     try {
       let applied = false;
-      await syncNow((snapshot) => {
+      const snap = await syncNow((snapshot) => {
         if (!snapshot) return;
         type AppState = typeof state;
         dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as Partial<AppState> });
         applied = true;
       });
-      if (applied) {
+      if (applied && snap) {
         toast({
-          title: t("syncSuccess") || "تمت المزامنة بنجاح",
-          description: t("syncSuccessDesc") || "تم تحديث البيانات من الخادم",
+          title: t("syncSuccess"),
+          description: t("syncSuccessDesc"),
           variant: "success",
         });
       } else {
+        if (!snap) {
+          clearLicense();
+          setCurrentUser(null);
+        }
         toast({
-          title: t("syncFailed") || "فشلت المزامنة",
-          description: t("syncFailedDesc") || "لم يتم تطبيق أي تحديثات",
+          title: t("syncFailed"),
+          description: t("syncFailedDesc"),
           variant: "destructive",
         });
       }
     } catch {
+      clearLicense();
+      setCurrentUser(null);
       toast({
-        title: t("syncFailed") || "فشل المزامنة",
-        description: t("syncFailedDesc") || "تحقق من الاتصال ثم أعد المحاولة",
+        title: t("syncFailed"),
+        description: t("syncFailedDesc"),
         variant: "destructive",
       });
     }
