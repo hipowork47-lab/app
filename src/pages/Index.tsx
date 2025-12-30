@@ -188,12 +188,12 @@ const Index = () => {
               )}
               <div className="space-y-2">
                 <Input
-                  placeholder={t("licenseDevicesTitle") || "اسم الجهاز (اختياري لثبات الهوية)"}
+                  placeholder="Device name (optional)"
                   value={customDeviceName}
                   onChange={(e) => setCustomDeviceNameState(e.target.value)}
                 />
                 <Input
-                  placeholder="معرف جهاز مخصص (اختياري)"
+                  placeholder="Custom device ID (optional)"
                   value={customDeviceId}
                   onChange={(e) => setCustomDeviceIdState(e.target.value)}
                 />
