@@ -15,6 +15,7 @@ type Snapshot = {
   sales?: any[];
   purchases?: any[];
   accounts?: any[];
+  license?: { devices?: string[]; maxDevices?: number };
 };
 
 async function safeFetch(url: string, opts: RequestInit = {}) {
@@ -92,6 +93,12 @@ export async function pullSnapshot(overrideLicenseKey?: string): Promise<Snapsho
         password: hashPassword(isHashed(a.password ?? "") ? a.password : a.password ?? ""),
         createdBy: a.created_by ?? a.createdBy ?? null,
       })),
+      license: raw?.license
+        ? {
+            devices: raw.license.devices ?? [],
+            maxDevices: raw.license.max_devices ?? raw.license.maxDevices ?? null,
+          }
+        : null,
     };
   } catch {
     return null;
@@ -210,4 +217,10 @@ export async function syncNow(onPulled: (snapshot: Snapshot) => void) {
 export async function validateLicense(key: string) {
   const snap = await pullSnapshot(key);
   return !!snap;
+}
+
+export async function fetchLicenseInfo() {
+  const snap = await pullSnapshot();
+  if (!snap?.license) return null;
+  return snap.license;
 }

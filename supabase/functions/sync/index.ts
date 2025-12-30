@@ -42,7 +42,7 @@ async function assertLicense(req: Request) {
     await supabase.from("licenses").update({ devices: next }).eq("license_key", licenseKey);
   }
 
-  return { ok: true };
+  return { ok: true, license: { license_key: licenseKey, max_devices: maxDevices, devices } };
 }
 
 serve(async (req) => {
@@ -78,6 +78,7 @@ serve(async (req) => {
         sales: sales.data ?? [],
         purchases: purchases.data ?? [],
         accounts: accounts.data ?? [],
+        license: licenseCheck.license ?? null,
       }),
       { headers: { "Content-Type": "application/json", ...corsHeaders } },
     );

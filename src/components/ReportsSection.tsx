@@ -10,6 +10,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { FileText, Calendar, TrendingUp, ShoppingCart, DollarSign } from "lucide-react";
 import { useStore } from "@/store/store";
 import { useTranslation } from "react-i18next";
+import { fetchLicenseInfo } from "@/lib/sync-adapter";
 
 const ReportsSection: React.FC = () => {
 
@@ -17,6 +18,10 @@ const ReportsSection: React.FC = () => {
   const { t } = useTranslation();
   const [newRate, setNewRate] = useState(state.config?.exchangeRate || 45); // السعر الابتدائي بالبوليفار
   const [showRateInput, setShowRateInput] = useState(false);
+  const [devicesLoading, setDevicesLoading] = useState(false);
+  const [devicesError, setDevicesError] = useState("");
+  const [devicesList, setDevicesList] = useState<string[]>([]);
+  const [devicesLimit, setDevicesLimit] = useState<number | null>(null);
    // مزامنة قيمة سعر الصرف في الواجهة مع القيمة في الـ store
 React.useEffect(() => {
   setNewRate(state.config.exchangeRate);
@@ -37,6 +42,26 @@ React.useEffect(() => {
   const [selectedReport, setSelectedReport] = useState<string>("sales");
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
+
+  const loadDevices = async () => {
+    setDevicesLoading(true);
+    setDevicesError("");
+    try {
+      const info = await fetchLicenseInfo();
+      if (!info) {
+        setDevicesError(t("licenseKey") || "License key required");
+        setDevicesList([]);
+        setDevicesLimit(null);
+      } else {
+        setDevicesList(info.devices ?? []);
+        setDevicesLimit(info.maxDevices ?? null);
+      }
+    } catch (e) {
+      setDevicesError(t("errorTitle") || "Error");
+    } finally {
+      setDevicesLoading(false);
+    }
+  };
 
   // اضمن مصفوفات افتراضية
   const sales = state.sales ?? [];
@@ -301,9 +326,40 @@ const purchaseReportData = useMemo(() => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-3 flex-wrap">
         <h2 className="text-2xl font-bold text-blue-800">{t("reportsAndStats")}</h2>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={loadDevices} disabled={devicesLoading}>
+            {devicesLoading ? t("view") : t("licenseDevices") || "الأجهزة المربوطة"}
+          </Button>
+          {devicesLimit !== null && (
+            <span className="text-sm text-gray-600">
+              {t("licenseDevicesCount", { used: devicesList.length, max: devicesLimit === null ? "∞" : devicesLimit })}
+            </span>
+          )}
+        </div>
       </div>
+      {devicesError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+          {devicesError}
+        </div>
+      )}
+      {devicesList.length > 0 && (
+        <Card className="bg-white/80 backdrop-blur-sm border-blue-100">
+          <CardHeader>
+            <CardTitle className="text-blue-800 text-sm">{t("licenseDevicesTitle") || "الأجهزة المرتبطة بالمفتاح"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {devicesList.map((d) => (
+                <span key={d} className="px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-100 text-xs">
+                  {d}
+                </span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
       {/* قسم تعديل سعر الصرف */}
       <div className="mb-6">
         {!showRateInput ? (
