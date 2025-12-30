@@ -120,7 +120,7 @@ serve(async (req) => {
       await supabase
         .from("licenses")
         .update({ devices: filtered })
-        .eq("license_key", licenseCheck.license?.license_key ?? licenseCheck.license?.licenseKey ?? licenseCheck.license?.license);
+        .eq("license_key", licenseCheck.license?.license_key ?? licenseKey);
 
       return new Response(JSON.stringify({ ok: true, devices: filtered }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
