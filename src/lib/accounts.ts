@@ -23,8 +23,8 @@ function simpleHash(value: string): string {
 
 export function hashPassword(raw: string): string {
   if (!raw) return "";
-  if (raw.startsWith("hp$")) return raw; // already hashed
-  return `hp$${simpleHash(raw)}`;
+  const input = raw.startsWith("hp$") ? raw.slice(3) : raw;
+  return `hp$${simpleHash(input)}`;
 }
 
 function normalizeAccount(acc: Account): Account {
