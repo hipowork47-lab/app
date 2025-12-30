@@ -80,9 +80,16 @@ const Index = () => {
   // Pull latest snapshot from Supabase right after login so the dashboard uses remote data.
   useEffect(() => {
     if (!currentUser) return;
-    syncNow((snapshot) => {
-      dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as any });
-    });
+    (async () => {
+      const snap = await syncNow((snapshot) => {
+        dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as any });
+      });
+      // إذا فشلت المزامنة (مثلاً الجهاز محذوف) اخرج واطلب المفتاح مجدداً
+      if (!snap) {
+        clearLicense();
+        setCurrentUser(null);
+      }
+    })();
   }, [currentUser, dispatch]);
 
   const handleLogout = () => setCurrentUser(null);
