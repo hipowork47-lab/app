@@ -24,7 +24,7 @@ import { syncNow, validateLicense } from "@/lib/sync-adapter";
 import { useStore } from "@/store/store";
 import { addAccount } from "@/lib/accounts";
 import { useToast } from "@/hooks/use-toast";
-import { clearLicense, getDeviceId, getLicenseKey, setLicenseKey } from "@/lib/license";
+import { clearLicense, getDeviceId, getLicenseKey, setLicenseKey, setCustomDeviceName } from "@/lib/license";
 // نوع المستخدم
 
 type User = { username: string; role: "admin" | "employee" };
