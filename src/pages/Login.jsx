@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, User, ShieldCheck } from "lucide-react";
-import { applyAccountsSnapshot, loadAccounts } from "@/lib/accounts";
+import { applyAccountsSnapshot, hashPassword, loadAccounts } from "@/lib/accounts";
 import { pullSnapshot } from "@/lib/sync-adapter";
 
 const Login = ({ onLogin }) => {
@@ -30,10 +30,11 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError("");
 // البحث عن الحساب المطابق
+    const hashed = hashPassword(password);
     const found = accounts.find(
       (acc) =>
         acc.username.toLowerCase() === username.toLowerCase() &&
-        acc.password === password
+        acc.password === hashed
     );
 
     if (found) {
