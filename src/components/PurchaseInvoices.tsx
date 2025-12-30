@@ -195,7 +195,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
     toast({
       title: t("purchaseCreatedTitle"),
       description: t("purchaseCreatedDesc"),
-      variant: "default",
+      variant: "success",
     });
 
     setSupplier("");
