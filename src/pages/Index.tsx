@@ -85,7 +85,7 @@ const Index = () => {
         dispatch({ type: "APPLY_SNAPSHOT", payload: snapshot as any });
       });
       // إذا فشلت المزامنة (مثلاً الجهاز محذوف) اخرج واطلب المفتاح مجدداً
-      if (!snap) {
+      if (!snap && !getLicenseKey()) {
         clearLicense();
         setCurrentUser(null);
       }
@@ -135,7 +135,7 @@ const Index = () => {
           variant: "success",
         });
       } else {
-        if (!snap) {
+        if (!snap && !getLicenseKey()) {
           clearLicense();
           setCurrentUser(null);
         }
@@ -146,8 +146,10 @@ const Index = () => {
         });
       }
     } catch {
-      clearLicense();
-      setCurrentUser(null);
+      if (!getLicenseKey()) {
+        clearLicense();
+        setCurrentUser(null);
+      }
       toast({
         title: t("syncFailed"),
         description: t("syncFailedDesc"),
