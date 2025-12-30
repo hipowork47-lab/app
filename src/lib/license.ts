@@ -100,7 +100,7 @@ export function clearLicense() {
   localStorage.removeItem(LICENSE_KEY_STORAGE);
 }
 
-export function licenseHeaders(overrideKey?: string) {
+export function licenseHeaders(overrideKey?: string, registerDevice = false) {
   const key = (overrideKey ?? getLicenseKey()).trim();
   const deviceId = getDeviceId();
   const deviceName = getDeviceName();
@@ -111,6 +111,7 @@ export function licenseHeaders(overrideKey?: string) {
         "X-Device-Id": deviceId,
         "X-Device-Name": deviceName,
         "X-Device-Type": deviceType,
+        "X-Register-Device": registerDevice ? "1" : "0",
       }
     : {};
 }

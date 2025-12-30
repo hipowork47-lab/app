@@ -3,7 +3,7 @@
 
 import { flushQueue, readQueue, clearQueue, SyncOperation } from "@/lib/offline-sync";
 import { hashPassword, isHashed } from "@/lib/accounts";
-import { licenseHeaders } from "@/lib/license";
+import { licenseHeaders, getDeviceId, clearLicense } from "@/lib/license";
 
 const API_BASE = import.meta.env.VITE_SYNC_API ?? ""; // e.g., https://your-api.com
 const API_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ""; // Supabase anon key for auth
@@ -54,12 +54,15 @@ async function safeFetch(url: string, opts: RequestInit = {}) {
   }
 }
 
-export async function pullSnapshot(overrideLicenseKey?: string): Promise<Snapshot | null> {
+export async function pullSnapshot(overrideLicenseKey?: string, registerDevice = false): Promise<Snapshot | null> {
   if (!API_BASE) return null;
   try {
-    const raw = await safeFetch(`${API_BASE}/sync/snapshot`, {
-      headers: licenseHeaders(overrideLicenseKey),
-    });
+    const raw = await safeFetch(
+      `${API_BASE}/sync/snapshot`,
+      {
+        headers: licenseHeaders(overrideLicenseKey, registerDevice),
+      },
+    );
     // Map snake_case from Supabase to camelCase used in the app.
     return {
       ...raw,
@@ -215,7 +218,7 @@ export async function syncNow(onPulled: (snapshot: Snapshot) => void) {
 }
 
 export async function validateLicense(key: string) {
-  const snap = await pullSnapshot(key);
+  const snap = await pullSnapshot(key, true);
   return !!snap;
 }
 
@@ -227,6 +230,17 @@ export async function removeLinkedDevice(deviceId: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ deviceId }),
     });
+    // إذا حذف المستخدم الجهاز الحالي، نظف الترخيص ثم أعد تحميل الصفحة لطلب المفتاح مجدداً.
+    if (deviceId === getDeviceId() && typeof window !== "undefined") {
+      try {
+        clearLicense();
+        const keys = ["pos_device_id", "pos_device_id_custom", "pos_device_name", "pos_device_name_custom", "pos_device_type"];
+        keys.forEach((k) => localStorage.removeItem(k));
+      } catch {
+        /* ignore */
+      }
+      window.location.reload();
+    }
     return true;
   } catch {
     return false;

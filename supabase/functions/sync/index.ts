@@ -19,6 +19,7 @@ async function assertLicense(req: Request) {
   const deviceId = req.headers.get("x-device-id")?.trim();
   const deviceName = req.headers.get("x-device-name")?.trim() || deviceId;
   const deviceType = req.headers.get("x-device-type")?.trim() || "Unknown";
+  const registerFlag = req.headers.get("x-register-device") === "1";
   if (!licenseKey || !deviceId) {
     return { ok: false, status: 401, error: "License required" };
   }
@@ -66,6 +67,9 @@ async function assertLicense(req: Request) {
       finalDevices = updated;
     }
   } else {
+    if (!registerFlag) {
+      return { ok: false, status: 403, error: "Device not registered" };
+    }
     const next = [...devices, { id: deviceId, name: deviceName, type: deviceType }];
     await supabase.from("licenses").update({ devices: next }).eq("license_key", licenseKey);
     finalDevices = next;
