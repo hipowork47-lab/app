@@ -167,6 +167,11 @@ const Index = () => {
                 value={licenseKey}
                 onChange={(e) => setLicenseKeyState(e.target.value)}
                 disabled={licenseLoading}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                  }
+                }}
                 required
               />
               {licenseError && (
