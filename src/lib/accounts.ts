@@ -21,10 +21,14 @@ function simpleHash(value: string): string {
   return (hash >>> 0).toString(16);
 }
 
+export function isHashed(value: string): boolean {
+  return value?.startsWith("hp$");
+}
+
 export function hashPassword(raw: string): string {
   if (!raw) return "";
-  const input = raw.startsWith("hp$") ? raw.slice(3) : raw;
-  return `hp$${simpleHash(input)}`;
+  if (isHashed(raw)) return raw;
+  return `hp$${simpleHash(raw)}`;
 }
 
 function normalizeAccount(acc: Account): Account {

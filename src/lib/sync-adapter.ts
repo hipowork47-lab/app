@@ -2,7 +2,7 @@
 // It pulls a snapshot and pushes the outbox. Uses fetch with abort safety.
 
 import { flushQueue, readQueue, clearQueue, SyncOperation } from "@/lib/offline-sync";
-import { hashPassword } from "@/lib/accounts";
+import { hashPassword, isHashed } from "@/lib/accounts";
 
 const API_BASE = import.meta.env.VITE_SYNC_API ?? ""; // e.g., https://your-api.com
 const API_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ""; // Supabase anon key for auth
@@ -81,7 +81,7 @@ export async function pullSnapshot(): Promise<Snapshot | null> {
       })),
       accounts: (raw?.accounts || []).map((a: any) => ({
         ...a,
-        password: hashPassword(a.password ?? ""),
+        password: hashPassword(isHashed(a.password ?? "") ? a.password : a.password ?? ""),
         createdBy: a.created_by ?? a.createdBy ?? null,
       })),
     };
