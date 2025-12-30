@@ -3,7 +3,7 @@
 
 import { flushQueue, readQueue, clearQueue, SyncOperation } from "@/lib/offline-sync";
 import { hashPassword, isHashed } from "@/lib/accounts";
-import { licenseHeaders, getDeviceId, clearLicense } from "@/lib/license";
+import { licenseHeaders, getDeviceId, clearLicense, setDeviceSignature, getDeviceSignature } from "@/lib/license";
 
 const API_BASE = import.meta.env.VITE_SYNC_API ?? ""; // e.g., https://your-api.com
 const API_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ""; // Supabase anon key for auth
@@ -57,14 +57,11 @@ async function safeFetch(url: string, opts: RequestInit = {}) {
 export async function pullSnapshot(overrideLicenseKey?: string, registerDevice = false): Promise<Snapshot | null> {
   if (!API_BASE) return null;
   try {
-    const raw = await safeFetch(
-      `${API_BASE}/sync/snapshot`,
-      {
-        headers: licenseHeaders(overrideLicenseKey, registerDevice),
-      },
-    );
+    const raw = await safeFetch(`${API_BASE}/sync/snapshot`, {
+      headers: licenseHeaders(overrideLicenseKey, registerDevice),
+    });
     // Map snake_case from Supabase to camelCase used in the app.
-    return {
+    const mapped = {
       ...raw,
       config: raw?.config
         ? {
@@ -100,9 +97,26 @@ export async function pullSnapshot(overrideLicenseKey?: string, registerDevice =
         ? {
             devices: raw.license.devices ?? [],
             maxDevices: raw.license.max_devices ?? raw.license.maxDevices ?? null,
+            signatureSecret: raw.license.signature_secret ?? raw.license.signatureSecret ?? null,
           }
         : null,
     };
+
+    // Cache device signature for this device if provided by backend
+    try {
+      const deviceId = getDeviceId();
+      const entry =
+        (mapped.license?.devices as any[])?.find?.((d: any) => (d?.id ?? d?.deviceId ?? d) === deviceId) ??
+        null;
+      const sig = entry?.signature ?? entry?.sig ?? entry?.sign;
+      if (sig && sig !== getDeviceSignature()) {
+        setDeviceSignature(String(sig));
+      }
+    } catch {
+      /* ignore */
+    }
+
+    return mapped;
   } catch (err: any) {
     const msg = String(err || "");
     if (msg.includes("401") || msg.includes("403")) {

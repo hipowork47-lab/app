@@ -4,6 +4,7 @@ const DEVICE_NAME_STORAGE = "pos_device_name";
 const DEVICE_ID_OVERRIDE = "pos_device_id_custom";
 const DEVICE_NAME_OVERRIDE = "pos_device_name_custom";
 const DEVICE_TYPE_STORAGE = "pos_device_type";
+const DEVICE_SIGNATURE_STORAGE = "pos_device_signature";
 
 export function getDeviceId(): string {
   if (typeof window === "undefined") return "";
@@ -103,6 +104,17 @@ export function clearLicense() {
   localStorage.removeItem(DEVICE_NAME_STORAGE);
   localStorage.removeItem(DEVICE_NAME_OVERRIDE);
   localStorage.removeItem(DEVICE_TYPE_STORAGE);
+  localStorage.removeItem(DEVICE_SIGNATURE_STORAGE);
+}
+
+export function setDeviceSignature(sig: string) {
+  if (typeof window === "undefined") return;
+  if (sig) localStorage.setItem(DEVICE_SIGNATURE_STORAGE, sig);
+}
+
+export function getDeviceSignature(): string {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem(DEVICE_SIGNATURE_STORAGE) ?? "";
 }
 
 export function licenseHeaders(overrideKey?: string, registerDevice = false) {
@@ -110,12 +122,14 @@ export function licenseHeaders(overrideKey?: string, registerDevice = false) {
   const deviceId = getDeviceId();
   const deviceName = getDeviceName();
   const deviceType = getDeviceType();
+  const signature = getDeviceSignature();
   return key
     ? {
         "X-License-Key": key,
         "X-Device-Id": deviceId,
         "X-Device-Name": deviceName,
         "X-Device-Type": deviceType,
+        ...(signature ? { "X-Device-Signature": signature } : {}),
         "X-Register-Device": registerDevice ? "1" : "0",
       }
     : {};

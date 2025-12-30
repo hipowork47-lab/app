@@ -4,7 +4,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-  "Access-Control-Allow-Headers": "authorization,apikey,content-type,x-license-key,x-device-id,x-device-name,x-device-type",
+  "Access-Control-Allow-Headers":
+    "authorization,apikey,content-type,x-license-key,x-device-id,x-device-name,x-device-type,x-device-signature,x-register-device",
 };
 
 const supabaseUrl = Deno.env.get("PROJECT_URL") ?? "";
@@ -14,12 +15,26 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+function toHex(buffer: ArrayBuffer) {
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+async function computeSignature(secret: string, licenseKey: string, deviceId: string) {
+  const enc = new TextEncoder();
+  const data = enc.encode(`${secret}:${licenseKey}:${deviceId}`);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return toHex(digest);
+}
+
 async function assertLicense(req: Request) {
   const licenseKey = req.headers.get("x-license-key")?.trim();
   const deviceId = req.headers.get("x-device-id")?.trim();
   const deviceName = req.headers.get("x-device-name")?.trim() || deviceId;
   const deviceType = req.headers.get("x-device-type")?.trim() || "Unknown";
   const registerFlag = req.headers.get("x-register-device") === "1";
+  const deviceSignature = req.headers.get("x-device-signature")?.trim() || "";
   if (!licenseKey || !deviceId) {
     return { ok: false, status: 401, error: "License required" };
   }
@@ -32,15 +47,33 @@ async function assertLicense(req: Request) {
     return { ok: false, status: 403, error: "License blocked" };
   }
 
+  // ensure we have a secret for signatures
+  let signatureSecret =
+    (data as any).signature_secret ??
+    (data as any).signatureSecret ??
+    (data as any).secret ??
+    licenseKey;
+  if (!signatureSecret) {
+    signatureSecret = licenseKey;
+  }
+  if (!(data as any).signature_secret) {
+    try {
+      await supabase.from("licenses").update({ signature_secret: signatureSecret }).eq("license_key", licenseKey);
+    } catch {
+      // If the column does not exist yet, continue using the fallback secret.
+    }
+  }
+
   const maxDevices = data.max_devices ?? 999999;
   const devicesRaw = Array.isArray(data.devices) ? data.devices : [];
-  const devices: { id: string; name?: string; type?: string }[] = devicesRaw
+  const devices: { id: string; name?: string; type?: string; signature?: string }[] = devicesRaw
     .map((d: any) => {
-      if (typeof d === "string") return { id: d, name: d, type: "Unknown" };
+      if (typeof d === "string") return { id: d, name: d, type: "Unknown", signature: undefined };
       return {
         id: d?.id ?? d?.deviceId ?? "",
         name: d?.name ?? d?.id ?? "",
         type: d?.type ?? d?.deviceType ?? "Unknown",
+        signature: d?.signature ?? d?.sig ?? d?.sign ?? undefined,
       };
     })
     .filter((d) => d.id);
@@ -53,12 +86,24 @@ async function assertLicense(req: Request) {
   // add new device, or refresh the stored name if it changed
   let finalDevices = devices;
   if (already) {
+    const expected = await computeSignature(signatureSecret, licenseKey, deviceId);
+    const stored = devices.find((d) => d.id === deviceId);
+    if (!stored?.signature || stored.signature !== expected) {
+      if (!deviceSignature || deviceSignature !== expected) {
+        return { ok: false, status: 401, error: "Signature mismatch" };
+      }
+    } else if (!deviceSignature) {
+      // require signature after first registration
+      return { ok: false, status: 401, error: "Signature required" };
+    }
+
     const updated = devices.map((d) =>
       d.id === deviceId
         ? {
             ...d,
             name: deviceName || d.name || d.id,
             type: deviceType || d.type || "Unknown",
+            signature: stored?.signature ?? expected,
           }
         : d,
     );
@@ -70,12 +115,21 @@ async function assertLicense(req: Request) {
     if (!registerFlag) {
       return { ok: false, status: 403, error: "Device not registered" };
     }
-    const next = [...devices, { id: deviceId, name: deviceName, type: deviceType }];
+    const signature = await computeSignature(signatureSecret, licenseKey, deviceId);
+    const next = [...devices, { id: deviceId, name: deviceName, type: deviceType, signature }];
     await supabase.from("licenses").update({ devices: next }).eq("license_key", licenseKey);
     finalDevices = next;
   }
 
-  return { ok: true, license: { license_key: licenseKey, max_devices: maxDevices, devices: finalDevices } };
+  return {
+    ok: true,
+    license: {
+      license_key: licenseKey,
+      max_devices: maxDevices,
+      devices: finalDevices,
+      signature_secret: signatureSecret,
+    },
+  };
 }
 
 serve(async (req) => {
@@ -117,10 +171,15 @@ serve(async (req) => {
         )
         .filter((d) => d.id && d.id !== deviceId);
 
+      const lk =
+        licenseCheck.license?.license_key ??
+        (licenseCheck as any).licenseKey ??
+        (licenseCheck as any).license ??
+        "";
       await supabase
         .from("licenses")
         .update({ devices: filtered })
-        .eq("license_key", licenseCheck.license?.license_key ?? licenseKey);
+        .eq("license_key", lk);
 
       return new Response(JSON.stringify({ ok: true, devices: filtered }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
