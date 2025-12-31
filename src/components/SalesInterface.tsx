@@ -429,7 +429,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                 </p>
               ) : (
                 <>
-                  <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                  <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
                     {cart.map((item) => (
                       <div
                         key={item.id}
