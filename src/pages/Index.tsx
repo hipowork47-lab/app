@@ -253,7 +253,7 @@ const Index = () => {
                   className="w-full sm:w-auto"
                   onClick={handleAddAccount}
                 >
-                  إنشاء حساب
+                  {t("createAccount")}
                 </Button>
               )}
               {/* اختيار اللغة */}
