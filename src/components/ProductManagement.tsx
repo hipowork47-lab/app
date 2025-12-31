@@ -1,4 +1,4 @@
-// src/components/ProductManagement.tsx
+﻿// src/components/ProductManagement.tsx
 import { useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -118,15 +118,18 @@ const ProductManagement = () => {
 };
 
 
+ const search = searchTerm.toLowerCase();
  const filteredProducts = products
-  .filter((p) => !p.deleted) // ✅ استبعاد المنتجات المحذوفة من العرض
-  .filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (categories.find(c => c.id === product.categoryId)?.name || "")
+  .filter((p) => !p.deleted) // keep only active products
+  .filter((product) => {
+    const nameMatch = product.name.toLowerCase().includes(search);
+    const categoryMatch =
+      (categories.find((c) => c.id === product.categoryId)?.name || "")
         .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-  )
+        .includes(search);
+    const barcodeMatch = (product.barcode || "").toLowerCase().includes(search);
+    return nameMatch || categoryMatch || barcodeMatch;
+  })
   .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 
 
