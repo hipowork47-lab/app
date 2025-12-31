@@ -146,6 +146,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
         title: t("delete"),
         description: removed.name,
         variant: "destructive",
+        duration: 500,
       });
     }
   };
