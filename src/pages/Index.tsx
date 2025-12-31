@@ -103,7 +103,7 @@ const Index = () => {
   const handleLicenseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!licenseKey.trim()) {
-      setLicenseError(t("login.invalidCredentials"));
+      setLicenseError(t("licenseInvalid"));
       return;
     }
     setLicenseLoading(true);
@@ -116,10 +116,10 @@ const Index = () => {
         setLicenseKeyState(licenseKey.trim());
         setLicenseValidated(true);
       } else {
-        setLicenseError(t("login.invalidCredentials"));
+        setLicenseError(t("licenseInvalid"));
       }
     } catch {
-      setLicenseError(t("login.invalidCredentials"));
+      setLicenseError(t("licenseInvalid"));
     } finally {
       setLicenseLoading(false);
     }
