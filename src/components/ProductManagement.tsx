@@ -126,7 +126,8 @@ const ProductManagement = () => {
       (categories.find(c => c.id === product.categoryId)?.name || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
-  );
+  )
+  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 
 
   const getCategoryColor = (categoryId?: string) => {
