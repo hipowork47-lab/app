@@ -1,4 +1,4 @@
-// src/pages/Index.tsx
+﻿// src/pages/Index.tsx
 import { useEffect, useState } from "react";
 import Login from "./Login";
 import { Badge } from "@/components/ui/badge";
@@ -48,9 +48,9 @@ const Index = () => {
   const [newAccountRole, setNewAccountRole] = useState<"admin" | "employee">("employee");
   const [accountError, setAccountError] = useState("");
   const langLabel: Record<string, { flag: string; text: string }> = {
-    es: { flag: "🇪🇸", text: "Español" },
-    ar: { flag: "🇸🇦", text: "العربية" },
-    en: { flag: "🇺🇸", text: "English" },
+    es: { flag: "ES", text: "Spanish" },
+    ar: { flag: "AR", text: "Arabic" },
+    en: { flag: "EN", text: "English" },
   };
   const currentLangKey = (i18n.language || "").slice(0, 2) as keyof typeof langLabel;
   const userRole = currentUser?.role ?? null;
@@ -327,30 +327,30 @@ const Index = () => {
                 </Dialog>
               )}
               {/* اختيار اللغة */}
-              <Select value={i18n.language} onValueChange={(val) => i18n.changeLanguage(val)}>
+                            <Select value={i18n.language} onValueChange={(val) => i18n.changeLanguage(val)}>
                 <SelectTrigger className="w-full sm:w-40">
                   <div className="flex items-center gap-2">
-                    <span>{langLabel[currentLangKey]?.flag ?? "🌐"}</span>
+                    <span>{langLabel[currentLangKey]?.flag ?? "??"}</span>
                     <span className="truncate">{langLabel[currentLangKey]?.text ?? ""}</span>
                   </div>
                 </SelectTrigger>
                 <SelectContent align="end">
                   <SelectItem value="es">
                     <div className="flex items-center gap-2">
-                      <span>🇪🇸</span>
-                      <span>Español</span>
+                      <span>{langLabel.es.flag}</span>
+                      <span>{langLabel.es.text}</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="ar">
                     <div className="flex items-center gap-2">
-                      <span>🇸🇦</span>
-                      <span>العربية</span>
+                      <span>{langLabel.ar.flag}</span>
+                      <span>{langLabel.ar.text}</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="en">
                     <div className="flex items-center gap-2">
-                      <span>🇺🇸</span>
-                      <span>English</span>
+                      <span>{langLabel.en.flag}</span>
+                      <span>{langLabel.en.text}</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
