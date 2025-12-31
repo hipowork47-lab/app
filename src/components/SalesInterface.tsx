@@ -120,7 +120,15 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
     }
 
     if (newQuantity <= 0) {
+      const removed = cart.find((item) => item.id === id);
       setCart(cart.filter((item) => item.id !== id));
+      if (removed) {
+        toast({
+          title: t("delete"),
+          description: removed.name,
+          variant: "destructive",
+        });
+      }
     } else {
       setCart(
         cart.map((item) =>
