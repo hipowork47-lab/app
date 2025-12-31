@@ -244,7 +244,8 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
         (selectedCategory === t("allCategories") ||
           categories.find((c) => c.id === product.categoryId)?.name === selectedCategory) &&
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    )
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 
   return (
     <div className="space-y-6">
