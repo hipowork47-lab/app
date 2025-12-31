@@ -131,7 +131,15 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
   };
 
   const removeFromCart = (id: string) => {
+    const removed = cart.find((item) => item.id === id);
     setCart(cart.filter((item) => item.id !== id));
+    if (removed) {
+      toast({
+        title: t("delete"),
+        description: removed.name,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleBarcodeSubmit = (e: React.FormEvent) => {
@@ -542,7 +550,14 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                       <Button
                         variant="destructive"
                         className="border-red-400 hover:bg-red-50 flex items-center justify-center"
-                        onClick={() => setCart([])}
+                        onClick={() => {
+                          setCart([]);
+                          toast({
+                            title: t("clearAll"),
+                            description: t("emptyCartDesc"),
+                            variant: "destructive",
+                          });
+                        }}
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
                         {t("clearAll")}
