@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import Login from "./Login";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   ShoppingCart,
   Package,
@@ -41,6 +42,11 @@ const Index = () => {
   const [licenseError, setLicenseError] = useState("");
   const [licenseLoading, setLicenseLoading] = useState(false);
   const [customDeviceName, setCustomDeviceNameState] = useState("");
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const [newAccountUser, setNewAccountUser] = useState("");
+  const [newAccountPass, setNewAccountPass] = useState("");
+  const [newAccountRole, setNewAccountRole] = useState<"admin" | "employee">("employee");
+  const [accountError, setAccountError] = useState("");
   const langLabel: Record<string, { flag: string; text: string }> = {
     es: { flag: "🇪🇸", text: "Español" },
     ar: { flag: "🇸🇦", text: "العربية" },
@@ -157,17 +163,33 @@ const Index = () => {
       });
     }
   };
-  const handleAddAccount = () => {
+  const openAccountDialog = () => {
     if (userRole !== "admin") return;
-    const username = prompt("اسم المستخدم الجديد");
-    if (!username) return;
-    const password = prompt("كلمة المرور");
-    if (!password) return;
-    const roleInput = prompt('الدور (admin أو employee)', "employee") || "employee";
-    const role = roleInput === "admin" ? "admin" : "employee";
-    addAccount({ username, password, role, createdBy: currentUser?.username ?? "system" });
-    syncNow(() => {});
-    alert("تم إنشاء الحساب");
+    setAccountError("");
+    setNewAccountUser("");
+    setNewAccountPass("");
+    setNewAccountRole("employee");
+    setAccountDialogOpen(true);
+  };
+
+  const handleCreateAccount = async () => {
+    if (!newAccountUser.trim() || !newAccountPass.trim()) {
+      setAccountError(t("accountCreateError"));
+      return;
+    }
+    addAccount({
+      username: newAccountUser.trim(),
+      password: newAccountPass.trim(),
+      role: newAccountRole,
+      createdBy: currentUser?.username ?? "system",
+    });
+    await syncNow(() => {});
+    toast({
+      title: t("accountCreateSuccessTitle"),
+      description: t("accountCreateSuccessDesc", { username: newAccountUser.trim() }),
+      variant: "success",
+    });
+    setAccountDialogOpen(false);
   };
 
   // إذا لم يسجل الدخول بعد
@@ -247,14 +269,62 @@ const Index = () => {
             {/* أزرار التحكم */}
             <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3 text-right sm:text-left">
               {userRole === "admin" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full sm:w-auto"
-                  onClick={handleAddAccount}
-                >
-                  {t("createAccount")}
-                </Button>
+                <Dialog open={accountDialogOpen} onOpenChange={setAccountDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto"
+                      onClick={openAccountDialog}
+                    >
+                      {t("createAccount")}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{t("accountCreateTitle")}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <label className="text-sm text-gray-700">{t("accountUsername")}</label>
+                        <Input value={newAccountUser} onChange={(e) => setNewAccountUser(e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-sm text-gray-700">{t("accountPassword")}</label>
+                        <Input
+                          type="password"
+                          value={newAccountPass}
+                          onChange={(e) => setNewAccountPass(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-sm text-gray-700">{t("accountRole")}</label>
+                        <Select
+                          value={newAccountRole}
+                          onValueChange={(val: "admin" | "employee") => setNewAccountRole(val)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="admin">{t("accountRoleAdmin")}</SelectItem>
+                            <SelectItem value="employee">{t("accountRoleEmployee")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {accountError && (
+                        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                          {accountError}
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleCreateAccount} className="bg-blue-600 text-white">
+                        {t("accountCreateConfirm")}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               )}
               {/* اختيار اللغة */}
               <Select value={i18n.language} onValueChange={(val) => i18n.changeLanguage(val)}>
