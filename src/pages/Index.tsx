@@ -47,10 +47,10 @@ const Index = () => {
   const [newAccountPass, setNewAccountPass] = useState("");
   const [newAccountRole, setNewAccountRole] = useState<"admin" | "employee">("employee");
   const [accountError, setAccountError] = useState("");
-  const langLabel: Record<string, { flag: string; text: string }> = {
-    es: { flag: "ES", text: "Spanish" },
-    ar: { flag: "AR", text: "Arabic" },
-    en: { flag: "EN", text: "English" },
+  const langLabel: Record<string, { code: string; text: string }> = {
+    es: { code: "ES", text: "Español" },
+    ar: { code: "AR", text: "العربية" },
+    en: { code: "EN", text: "English" },
   };
   const currentLangKey = (i18n.language || "").slice(0, 2) as keyof typeof langLabel;
   const userRole = currentUser?.role ?? null;
@@ -330,26 +330,34 @@ const Index = () => {
                             <Select value={i18n.language} onValueChange={(val) => i18n.changeLanguage(val)}>
                 <SelectTrigger className="w-full sm:w-40">
                   <div className="flex items-center gap-2">
-                    <span>{langLabel[currentLangKey]?.flag ?? "??"}</span>
+                    <span className="inline-flex min-w-[28px] justify-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                      {langLabel[currentLangKey]?.code ?? "??"}
+                    </span>
                     <span className="truncate">{langLabel[currentLangKey]?.text ?? ""}</span>
                   </div>
                 </SelectTrigger>
                 <SelectContent align="end">
                   <SelectItem value="es">
                     <div className="flex items-center gap-2">
-                      <span>{langLabel.es.flag}</span>
+                      <span className="inline-flex min-w-[28px] justify-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                        {langLabel.es.code}
+                      </span>
                       <span>{langLabel.es.text}</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="ar">
                     <div className="flex items-center gap-2">
-                      <span>{langLabel.ar.flag}</span>
+                      <span className="inline-flex min-w-[28px] justify-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                        {langLabel.ar.code}
+                      </span>
                       <span>{langLabel.ar.text}</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="en">
                     <div className="flex items-center gap-2">
-                      <span>{langLabel.en.flag}</span>
+                      <span className="inline-flex min-w-[28px] justify-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                        {langLabel.en.code}
+                      </span>
                       <span>{langLabel.en.text}</span>
                     </div>
                   </SelectItem>
