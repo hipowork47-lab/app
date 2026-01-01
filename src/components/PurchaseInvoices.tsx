@@ -132,7 +132,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
           <div>${t("purchaseSupplierLabel")}: ${invoice.supplier}</div>
           <div>${t("purchaseDateLabel")}: ${invoice.date}</div>
           <div>${t("purchaseTotal")}: ${invoice.total?.toFixed(2)} ${state.config.currency}</div>
-          <div>${t("purchaseRateNote", { rate })}</div>
+          <div>${t("purchaseRateNote", { rate, secondary: state.secondaryCurrency || "Bs", primary: state.config.currency })}</div>
           <table>
             <thead>
               <tr>
@@ -421,7 +421,11 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
                     </div>
                     {p.exchangeRate && (
                       <div className="text-xs text-gray-400">
-                        ({t("purchaseRateNote", { rate: p.exchangeRate, secondary: state.secondaryCurrency || "Bs" })})
+                        ({t("purchaseRateNote", {
+                          rate: p.exchangeRate,
+                          secondary: state.secondaryCurrency || "Bs",
+                          primary: state.config.currency,
+                        })})
                       </div>
                     )}
                   </div>
