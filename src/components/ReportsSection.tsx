@@ -23,6 +23,7 @@ const ReportsSection: React.FC = () => {
   const [devicesList, setDevicesList] = useState<{ id: string; name?: string; type?: string }[]>([]);
   const [devicesLimit, setDevicesLimit] = useState<number | null>(null);
   const [removingDeviceId, setRemovingDeviceId] = useState<string>("");
+  const currencyOptions = ["$", "\u20AC", "\u00A3", "\u00A5", "\u20B9", "\u20BA", "\u062F.\u0625", "\u20BD", "R$", "\u20A9", "\u20AA", "\u20AB"];
    // مزامنة قيمة سعر الصرف في الواجهة مع القيمة في الـ store
 React.useEffect(() => {
   setNewRate(state.config.exchangeRate);
@@ -431,7 +432,7 @@ const purchaseReportData = useMemo(() => {
           <CardTitle className="flex items-center gap-2 text-blue-800"><FileText className="w-6 h-6" /> {t("reportSettings")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
               <Label>{t("reportType")}</Label>
               <Select value={selectedReport} onValueChange={(v) => setSelectedReport(v)}>
@@ -457,8 +458,24 @@ const purchaseReportData = useMemo(() => {
               <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
             </div>
 
+            <div>
+              <Label>{t("currency")}</Label>
+              <Select value={state.config.currency} onValueChange={(v) => dispatch({ type: "SET_CURRENCY", payload: v })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencyOptions.map((cur) => (
+                    <SelectItem key={cur} value={cur}>
+                      {cur}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="flex items-end">
-              <Button onClick={() => { /* مجرد إعادة عرض */ }} className="w-full bg-gradient-to-r from-blue-500 to-purple-500">{t("view")}</Button>
+              <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500">{t("view")}</Button>
             </div>
           </div>
         </CardContent>
