@@ -26,6 +26,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
   const { state, dispatch } = useStore();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const showExchangeInfo = state.secondaryCurrency !== state.config.currency;
   const [openId, setOpenId] = useState<string | null>(null);
 
   const [supplier, setSupplier] = useState("");
@@ -132,7 +133,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
           <div>${t("purchaseSupplierLabel")}: ${invoice.supplier}</div>
           <div>${t("purchaseDateLabel")}: ${invoice.date}</div>
           <div>${t("purchaseTotal")}: ${invoice.total?.toFixed(2)} ${state.config.currency}</div>
-          <div>${t("purchaseRateNote", { rate, secondary: state.secondaryCurrency || "Bs", primary: state.config.currency })}</div>
+          ${showExchangeInfo ? `<div>${t("purchaseRateNote", { rate, secondary: state.secondaryCurrency || "Bs", primary: state.config.currency })}</div>` : ""}
           <table>
             <thead>
               <tr>
@@ -416,17 +417,21 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
                     <div>
                       {t("purchaseTotal")}: {p.total.toFixed(2)} {state.config.currency}
                     </div>
-                    <div className="text-sm text-gray-600">
-                      {(p.total * (p.exchangeRate ?? state.config.exchangeRate)).toFixed(2)} {state.secondaryCurrency || "Bs"}
-                    </div>
-                    {p.exchangeRate && (
-                      <div className="text-xs text-gray-400">
-                        ({t("purchaseRateNote", {
-                          rate: p.exchangeRate,
-                          secondary: state.secondaryCurrency || "Bs",
-                          primary: state.config.currency,
-                        })})
-                      </div>
+                    {showExchangeInfo && (
+                      <>
+                        <div className="text-sm text-gray-600">
+                          {(p.total * (p.exchangeRate ?? state.config.exchangeRate)).toFixed(2)} {state.secondaryCurrency || "Bs"}
+                        </div>
+                        {p.exchangeRate && (
+                          <div className="text-xs text-gray-400">
+                            ({t("purchaseRateNote", {
+                              rate: p.exchangeRate,
+                              secondary: state.secondaryCurrency || "Bs",
+                              primary: state.config.currency,
+                            })})
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                   <div className="mt-2 flex gap-2">

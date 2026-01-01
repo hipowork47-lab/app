@@ -29,6 +29,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
   const { state, dispatch } = useStore();
   const { products, categories, config } = state;
   const { toast } = useToast();
+  const showExchangeInfo = Boolean(config.exchangeRate) && state.secondaryCurrency !== config.currency;
 
   const userRole = userRoleProp ?? currentUser?.role ?? null;
 
@@ -542,7 +543,7 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                       </span>
                     </div>
 			{/* 💱 عرض المبلغ بما يعادل البوليفار وسعر الصرف */}
-{config.exchangeRate && (
+{showExchangeInfo && (
   <div className="text-right text-lg text-gray-700">
     <p>
       💱 {t("equivalentTo")}{" "}
