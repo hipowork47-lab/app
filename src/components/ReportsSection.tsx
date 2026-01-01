@@ -21,6 +21,7 @@ const ReportsSection: React.FC = () => {
   const [pendingSecondaryCurrency, setPendingSecondaryCurrency] = useState(state.secondaryCurrency || "Bs");
   const [showCurrencyPanel, setShowCurrencyPanel] = useState(false);
   const [showRateInput, setShowRateInput] = useState(false);
+  const showRateControls = state.config.currency !== state.secondaryCurrency;
   const [devicesLoading, setDevicesLoading] = useState(false);
   const [devicesError, setDevicesError] = useState("");
   const [devicesList, setDevicesList] = useState<{ id: string; name?: string; type?: string }[]>([]);
@@ -532,38 +533,40 @@ const purchaseReportData = useMemo(() => {
         </Card>
       )}
       {/* قسم تعديل سعر الصرف */}
-      <div className="mb-6">
-        {!showRateInput ? (
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-            onClick={() => setShowRateInput(true)}
-          >
-           {t("exchangeRateEdit", { rate: state.config.exchangeRate, secondary: state.secondaryCurrency || "Bs", primary: state.config.currency })}
+      {showRateControls && (
+        <div className="mb-6">
+          {!showRateInput ? (
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+              onClick={() => setShowRateInput(true)}
+            >
+             {t("exchangeRateEdit", { rate: state.config.exchangeRate, secondary: state.secondaryCurrency || "Bs", primary: state.config.currency })}
 
-          </button>
-        ) : (
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              value={newRate}
-              onChange={(e) => setNewRate(parseFloat(e.target.value))}
-              className="border p-2 rounded w-28 text-center"
-              />
-            <button
-              className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700"
-              onClick={handleExchangeRateChange}
-            >
-              {t("exchangeRateSave")}
             </button>
-            <button
-              className="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500"
-              onClick={() => setShowRateInput(false)}
-            >
-              {t("exchangeRateCancel")}
-            </button>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                value={newRate}
+                onChange={(e) => setNewRate(parseFloat(e.target.value))}
+                className="border p-2 rounded w-28 text-center"
+                />
+              <button
+                className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700"
+                onClick={handleExchangeRateChange}
+              >
+                {t("exchangeRateSave")}
+              </button>
+              <button
+                className="bg-gray-400 text-white px-3 py-2 rounded hover:bg-gray-500"
+                onClick={() => setShowRateInput(false)}
+              >
+                {t("exchangeRateCancel")}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <Card className="bg-white/60 backdrop-blur-sm border-blue-100">
         <CardHeader>
