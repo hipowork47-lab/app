@@ -542,16 +542,16 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
                       </span>
                     </div>
 			{/* 💱 عرض المبلغ بما يعادل البوليفار وسعر الصرف */}
-{config.currency === "$" && config.exchangeRate && (
+{config.exchangeRate && (
   <div className="text-right text-lg text-gray-700">
     <p>
       💱 {t("equivalentTo")}{" "}
       <span className="font-semibold text-blue-600 text-2xl">
-        {(calculateTotal() * config.exchangeRate).toFixed(2)} Bs
+        {(calculateTotal() * config.exchangeRate).toFixed(2)} {state.secondaryCurrency || "Bs"}
       </span>
     </p>
     <p className="text-sm text-gray-500">
-      {t("exchangeRateInfo", { rate: config.exchangeRate })}
+      {t("exchangeRateInfo", { rate: config.exchangeRate, secondary: state.secondaryCurrency || "Bs" })}
     </p>
   </div>
 )}

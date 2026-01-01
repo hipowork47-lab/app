@@ -274,19 +274,23 @@ const SalesInvoices = () => {
                   {/* 💵 المبلغ الإجمالي مع التحويل للبوليفار */}
                   <span className="text-blue-600">
                     {selectedInvoice.total.toFixed(2)} {config.currency}
-                    {config.currency === "$"  && (
-  <div className="text-right text-sm text-gray-600">
-    <p>
-      💱 {t("equivalentTo")}{" "}
-      <span className="font-semibold text-blue-600">
-        {(selectedInvoice.total * (selectedInvoice.exchangeRate ?? config.exchangeRate)).toFixed(2)} Bs
-      </span>
-    </p>
-    <p className="text-xs text-gray-500">
-      {t("exchangeRateInfo", { rate: selectedInvoice.exchangeRate ?? config.exchangeRate, secondary: state.secondaryCurrency || "Bs" })}
-    </p>
-  </div>
-)}
+                    {config.exchangeRate && (
+                      <div className="text-right text-sm text-gray-600">
+                        <p>
+                          💱 {t("equivalentTo")}{" "}
+                          <span className="font-semibold text-blue-600">
+                            {(selectedInvoice.total * (selectedInvoice.exchangeRate ?? config.exchangeRate)).toFixed(2)}{" "}
+                            {state.secondaryCurrency || "Bs"}
+                          </span>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {t("exchangeRateInfo", {
+                            rate: selectedInvoice.exchangeRate ?? config.exchangeRate,
+                            secondary: state.secondaryCurrency || "Bs",
+                          })}
+                        </p>
+                      </div>
+                    )}
 
                   </span>
                 </div>
