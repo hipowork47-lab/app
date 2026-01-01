@@ -246,6 +246,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${t.do
                           <div>${e("paymentMethod")}: ${s.paymentMethod}</div>
                           <div>${e("invoiceTotal")}: ${s.total.toFixed(2)} ${a.currency}</div>
                           <div>${e("exchangeRateInfo",{rate:D,secondary:r.secondaryCurrency||"Bs"})}</div>
+                          <div>💱 ${e("equivalentTo")} ${(s.total*D).toFixed(2)} ${r.secondaryCurrency||"Bs"}</div>
                           <table>
                             <thead>
                               <tr>

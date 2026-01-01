@@ -333,6 +333,7 @@ const SalesInvoices = () => {
                           <div>${t("paymentMethod")}: ${selectedInvoice.paymentMethod}</div>
                           <div>${t("invoiceTotal")}: ${selectedInvoice.total.toFixed(2)} ${config.currency}</div>
                           <div>${t("exchangeRateInfo", { rate, secondary: state.secondaryCurrency || "Bs" })}</div>
+                          <div>💱 ${t("equivalentTo")} ${(selectedInvoice.total * rate).toFixed(2)} ${state.secondaryCurrency || "Bs"}</div>
                           <table>
                             <thead>
                               <tr>
