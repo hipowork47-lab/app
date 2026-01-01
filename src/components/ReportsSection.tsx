@@ -427,6 +427,34 @@ const purchaseReportData = useMemo(() => {
             </button>
           </div>
         )}
+        <div className="mt-4 flex flex-col gap-2 md:flex-row md:items-end md:gap-3">
+          <div className="min-w-[180px]">
+            <Label>{t("currency")}</Label>
+            <Select value={pendingCurrency} onValueChange={(v) => setPendingCurrency(v)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {currencyOptions.map((cur) => (
+                  <SelectItem key={cur} value={cur}>
+                    {cur}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            className="bg-gradient-to-r from-blue-500 to-purple-500"
+            onClick={() => {
+              const warn =
+                t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
+              if (!window.confirm(warn)) return;
+              dispatch({ type: "SET_CURRENCY", payload: pendingCurrency });
+            }}
+          >
+            {t("save")}
+          </Button>
+        </div>
       </div>
 
       <Card className="bg-white/60 backdrop-blur-sm border-blue-100">
@@ -460,33 +488,8 @@ const purchaseReportData = useMemo(() => {
               <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
             </div>
 
-            <div>
-              <Label>{t("currency")}</Label>
-              <Select value={pendingCurrency} onValueChange={(v) => setPendingCurrency(v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {currencyOptions.map((cur) => (
-                    <SelectItem key={cur} value={cur}>
-                      {cur}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className="flex items-end">
-              <Button
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500"
-                onClick={() => {
-                  const warn = t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
-                  if (!window.confirm(warn)) return;
-                  dispatch({ type: "SET_CURRENCY", payload: pendingCurrency });
-                }}
-              >
-                {t("view")}
-              </Button>
+              <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500">{t("view")}</Button>
             </div>
           </div>
         </CardContent>
