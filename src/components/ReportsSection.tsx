@@ -360,7 +360,7 @@ const purchaseReportData = useMemo(() => {
             <CardTitle className="text-blue-800 text-sm">{t("licenseDevicesTitle") || "Linked devices"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-4">
               {devicesList.map((d) => (
                 <div
                   key={d.id}
@@ -391,6 +391,34 @@ const purchaseReportData = useMemo(() => {
                   </button>
                 </div>
               ))}
+
+            <div className="flex flex-col gap-2 md:flex-row md:items-end md:gap-3">
+              <div className="min-w-[180px]">
+                <Label>{t("currency")}</Label>
+                <Select value={pendingCurrency} onValueChange={(v) => setPendingCurrency(v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currencyOptions.map((cur) => (
+                      <SelectItem key={cur} value={cur}>
+                        {cur}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                className="bg-gradient-to-r from-blue-500 to-purple-500"
+                onClick={() => {
+                  const warn = t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
+                  if (!window.confirm(warn)) return;
+                  dispatch({ type: "SET_CURRENCY", payload: pendingCurrency });
+                }}
+              >
+                {t("save")}
+              </Button>
+            </div>
             </div>
           </CardContent>
         </Card>
@@ -427,34 +455,6 @@ const purchaseReportData = useMemo(() => {
             </button>
           </div>
         )}
-        <div className="mt-4 flex flex-col gap-2 md:flex-row md:items-end md:gap-3">
-          <div className="min-w-[180px]">
-            <Label>{t("currency")}</Label>
-            <Select value={pendingCurrency} onValueChange={(v) => setPendingCurrency(v)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {currencyOptions.map((cur) => (
-                  <SelectItem key={cur} value={cur}>
-                    {cur}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button
-            className="bg-gradient-to-r from-blue-500 to-purple-500"
-            onClick={() => {
-              const warn =
-                t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
-              if (!window.confirm(warn)) return;
-              dispatch({ type: "SET_CURRENCY", payload: pendingCurrency });
-            }}
-          >
-            {t("save")}
-          </Button>
-        </div>
       </div>
 
       <Card className="bg-white/60 backdrop-blur-sm border-blue-100">
