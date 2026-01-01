@@ -14,6 +14,7 @@ import { useRef } from "react";
 // تعريف نوع حالة التطبيق
 type State = {
   config: AppConfig;
+  secondaryCurrency: string;
   products: Product[];
   categories: Category[];
   sales: SaleInvoice[];
@@ -23,6 +24,7 @@ type State = {
 
 type Action =
   | { type: "SET_CURRENCY"; payload: string }
+  | { type: "SET_SECONDARY_CURRENCY"; payload: string }
   | { type: "SET_EXCHANGE_RATE"; payload: number }
   | { type: "ADD_PRODUCT"; payload: Product }
   | { type: "UPDATE_PRODUCT"; payload: Product }
@@ -61,6 +63,7 @@ const defaultProducts: Product[] = [];
 
 const initialState: State = {
   config: { storeName: "المتجر", currency: "$", exchangeRate: 40 },
+  secondaryCurrency: "Bs",
   categories: [],
   products: [],
   sales: [],
@@ -114,6 +117,8 @@ function reducer(state: State, action: Action): State {
         queueConfigUpdate(nextConfig);
         return { ...state, config: nextConfig };
       }
+    case "SET_SECONDARY_CURRENCY":
+      return { ...state, secondaryCurrency: action.payload };
     case "SET_EXCHANGE_RATE":
       {
         const nextConfig = { ...state.config, exchangeRate: action.payload };
@@ -272,10 +277,15 @@ function reducer(state: State, action: Action): State {
       };
     }
     case "LOAD_STATE":
-      return action.payload;
+      return {
+        ...state,
+        ...action.payload,
+        secondaryCurrency: (action.payload as any).secondaryCurrency ?? state.secondaryCurrency,
+      };
     case "APPLY_SNAPSHOT":
       return {
         config: action.payload.config ?? state.config,
+        secondaryCurrency: (action.payload as any).secondaryCurrency ?? state.secondaryCurrency,
         categories: mergeById(state.categories, action.payload.categories ?? []),
         products: mergeById(state.products, action.payload.products ?? []),
         sales: mergeById(state.sales, action.payload.sales ?? []),

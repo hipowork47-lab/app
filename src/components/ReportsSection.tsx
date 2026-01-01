@@ -17,7 +17,9 @@ const ReportsSection: React.FC = () => {
   const { state, dispatch } = useStore();
   const { t } = useTranslation();
   const [newRate, setNewRate] = useState(state.config?.exchangeRate || 45); // السعر الابتدائي بالبوليفار
-  const [pendingCurrency, setPendingCurrency] = useState(state.config?.currency || "$");
+  const [pendingPrimaryCurrency, setPendingPrimaryCurrency] = useState(state.config?.currency || "$");
+  const [pendingSecondaryCurrency, setPendingSecondaryCurrency] = useState(state.secondaryCurrency || "Bs");
+  const [showCurrencyPanel, setShowCurrencyPanel] = useState(false);
   const [showRateInput, setShowRateInput] = useState(false);
   const [devicesLoading, setDevicesLoading] = useState(false);
   const [devicesError, setDevicesError] = useState("");
@@ -28,7 +30,8 @@ const ReportsSection: React.FC = () => {
    // مزامنة قيمة سعر الصرف في الواجهة مع القيمة في الـ store
 React.useEffect(() => {
   setNewRate(state.config.exchangeRate);
-  setPendingCurrency(state.config.currency || "$");
+  setPendingPrimaryCurrency(state.config.currency || "$");
+  setPendingSecondaryCurrency(state.secondaryCurrency || "Bs");
 }, [state.config.exchangeRate, state.config.currency]);
 
   const handleExchangeRateChange = () => {
@@ -391,35 +394,74 @@ const purchaseReportData = useMemo(() => {
                   </button>
                 </div>
               ))}
-
-            <div className="flex flex-col gap-2 md:flex-row md:items-end md:gap-3">
-              <div className="min-w-[180px]">
-                <Label>{t("currency")}</Label>
-                <Select value={pendingCurrency} onValueChange={(v) => setPendingCurrency(v)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currencyOptions.map((cur) => (
-                      <SelectItem key={cur} value={cur}>
-                        {cur}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            </div>
+            <Button variant="outline" className="mb-3" onClick={() => setShowCurrencyPanel((v) => !v)}>
+              ?? ???? ????? ???????
+            </Button>
+            {showCurrencyPanel && (
+              <div className="flex flex-col gap-3 p-3 rounded-lg border border-blue-100 bg-blue-50/50">
+                <p className="text-sm text-gray-700">
+                  ?????? ???????? ????????? ?????????? ????? ??? ???? ??? ?????.
+                </p>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div>
+                    <Label>??? ?????? ????????</Label>
+                    <Select value={pendingPrimaryCurrency} onValueChange={(v) => setPendingPrimaryCurrency(v)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencyOptions.map((cur) => (
+                          <SelectItem key={cur} value={cur}>
+                            {cur}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>??? ?????? ?????????</Label>
+                    <Select value={pendingSecondaryCurrency} onValueChange={(v) => setPendingSecondaryCurrency(v)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencyOptions.map((cur) => (
+                          <SelectItem key={cur} value={cur}>
+                            {cur}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setPendingPrimaryCurrency(state.config.currency || "$");
+                      setPendingSecondaryCurrency(state.secondaryCurrency || "Bs");
+                      setShowCurrencyPanel(false);
+                    }}
+                  >
+                    {t("cancel")}
+                  </Button>
+                  <Button
+                    className="bg-gradient-to-r from-blue-500 to-purple-500"
+                    onClick={() => {
+                      const warn =
+                        t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
+                      if (!window.confirm(warn)) return;
+                      dispatch({ type: "SET_CURRENCY", payload: pendingPrimaryCurrency });
+                      dispatch({ type: "SET_SECONDARY_CURRENCY", payload: pendingSecondaryCurrency });
+                      setShowCurrencyPanel(false);
+                    }}
+                  >
+                    {t("save")}
+                  </Button>
+                </div>
               </div>
-              <Button
-                className="bg-gradient-to-r from-blue-500 to-purple-500"
-                onClick={() => {
-                  const warn = t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
-                  if (!window.confirm(warn)) return;
-                  dispatch({ type: "SET_CURRENCY", payload: pendingCurrency });
-                }}
-              >
-                {t("save")}
-              </Button>
-            </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
