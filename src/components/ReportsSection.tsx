@@ -396,16 +396,18 @@ const purchaseReportData = useMemo(() => {
               ))}
             </div>
             <Button variant="outline" className="mb-3" onClick={() => setShowCurrencyPanel((v) => !v)}>
-              {t("changeCurrencyButton") || "Change currency"}
+              {t("changeCurrencyButton", {
+                defaultValue: "\u0647\u0644 \u062a\u0631\u064a\u062f \u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0639\u0645\u0644\u0629\u061f",
+              })}
             </Button>
             {showCurrencyPanel && (
               <div className="flex flex-col gap-3 p-3 rounded-lg border border-blue-100 bg-blue-50/50">
                 <p className="text-sm text-gray-700">
-                  {t("currencyNote") || "Base currency is used for calculations; secondary is for display/comparison at the exchange rate."}
+                  {t("currencyNote", { defaultValue: "\u0627\u0644\u0639\u0645\u0644\u0629 \u0627\u0644\u0623\u0633\u0627\u0633\u064a\u0629 \u0644\u0644\u062d\u0633\u0627\u0628\u0627\u062a\u060c \u0648\u0627\u0644\u0645\u0639\u0627\u062f\u0650\u0644\u0629 \u0644\u0644\u0639\u0631\u0636 \u0623\u0648 \u0627\u0644\u0645\u0642\u0627\u0631\u0646\u0629 \u062d\u0633\u0628 \u0633\u0639\u0631 \u0627\u0644\u0635\u0631\u0641." })}
                 </p>
                 <div className="grid gap-3 md:grid-cols-2">
                   <div>
-                    <Label>{t("primaryCurrency") || "Base currency"}</Label>
+                    <Label>{t("primaryCurrency", { defaultValue: "������ ��������" })}</Label>
                     <Select value={pendingPrimaryCurrency} onValueChange={(v) => setPendingPrimaryCurrency(v)}>
                       <SelectTrigger>
                         <SelectValue />
@@ -420,7 +422,9 @@ const purchaseReportData = useMemo(() => {
                     </Select>
                   </div>
                   <div>
-                    <Label>{t("primaryCurrency") || "Base currency"}?</Label>
+                    <Label>
+                      {t("secondaryCurrency", { defaultValue: "\u0627\u0644\u0639\u0645\u0644\u0629 \u0627\u0644\u0645\u0639\u0627\u062f\u0650\u0644\u0629" })}
+                    </Label>
                     <Select value={pendingSecondaryCurrency} onValueChange={(v) => setPendingSecondaryCurrency(v)}>
                       <SelectTrigger>
                         <SelectValue />
