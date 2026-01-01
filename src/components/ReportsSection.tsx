@@ -26,7 +26,64 @@ const ReportsSection: React.FC = () => {
   const [devicesList, setDevicesList] = useState<{ id: string; name?: string; type?: string }[]>([]);
   const [devicesLimit, setDevicesLimit] = useState<number | null>(null);
   const [removingDeviceId, setRemovingDeviceId] = useState<string>("");
-  const currencyOptions = ["$", "\u20AC", "\u00A3", "\u00A5", "\u20B9", "\u20BA", "\u062F.\u0625", "\u20BD", "R$", "\u20A9", "\u20AA", "\u20AB"];
+  const currencyOptions = [
+    // أساسية
+    "$",
+    "€",
+    "£",
+    "¥",
+    "₹",
+    "₺",
+    "د.إ",
+    "₽",
+    "R$",
+    "₩",
+    "₪",
+    "₫",
+
+    // عالمية إضافية
+    "CHF",
+    "CAD $",
+    "AUD $",
+    "CNY ¥",
+
+    // الشرق الأوسط والخليج
+    "﷼",
+    "د.ك",
+    "د.ب",
+    "د.أ",
+    "د.ع",
+
+    // الشام
+    "ل.س",
+    "ل.ل",
+
+    // شمال أفريقيا
+    "د.ج",
+    "د.ت",
+    "د.م",
+    "E£",
+
+    // أمريكا اللاتينية
+    "Bs",
+    "ARS $",
+    "CLP $",
+    "COP $",
+    "S/",
+
+    // أفريقيا
+    "₦",
+    "KSh",
+    "Br",
+    "R",
+
+    // آسيا إضافية
+    "₨",
+    "৳",
+    "₱",
+    "฿",
+    "₮",
+  ];
    // مزامنة قيمة سعر الصرف في الواجهة مع القيمة في الـ store
 React.useEffect(() => {
   setNewRate(state.config.exchangeRate);
