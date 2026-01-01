@@ -551,7 +551,11 @@ const SalesInterface = ({ currentUser, userRole: userRoleProp }: SalesInterfaceP
       </span>
     </p>
     <p className="text-sm text-gray-500">
-      {t("exchangeRateInfo", { rate: config.exchangeRate, secondary: state.secondaryCurrency || "Bs" })}
+      {t("exchangeRateInfo", {
+        primary: config.currency,
+        rate: config.exchangeRate,
+        secondary: state.secondaryCurrency || "Bs",
+      })}
     </p>
   </div>
 )}

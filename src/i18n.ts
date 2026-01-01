@@ -179,7 +179,7 @@ const resources = {
       clearAll: "Borrar todo",
       checkout: "Finalizar venta",
       equivalentTo: "Equivalente a",
-      exchangeRateInfo: "Tasa de cambio actual: 1$ = {{rate}} {{secondary}}",
+      exchangeRateInfo: "Tasa de cambio actual: 1{{primary}} = {{rate}} {{secondary}}",
 
       // Purchase Invoices
       purchaseCreateTitle: "Crear factura de compras",
@@ -396,7 +396,7 @@ const resources = {
       clearAll: "تفريغ الكل",
       checkout: "إنهاء البيع",
       equivalentTo: "بما يعادل",
-      exchangeRateInfo: "سعر الصرف الحالي: 1$ = {{rate}} {{secondary}}",
+      exchangeRateInfo: "سعر الصرف الحالي: 1{{primary}} = {{rate}} {{secondary}}",
 
       // فواتير المشتريات
       purchaseCreateTitle: "إنشاء فاتورة مشتريات جديدة",
@@ -615,7 +615,7 @@ const resources = {
       clearAll: "Clear All",
       checkout: "Checkout",
       equivalentTo: "Equivalent to",
-      exchangeRateInfo: "Current exchange rate: 1$ = {{rate}} {{secondary}}",
+      exchangeRateInfo: "Current exchange rate: 1{{primary}} = {{rate}} {{secondary}}",
 
       // Purchase Invoices
       purchaseCreateTitle: "Create Purchase Invoice",

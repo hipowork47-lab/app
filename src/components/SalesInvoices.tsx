@@ -168,12 +168,17 @@ const SalesInvoices = () => {
     {invoice.total.toFixed(2)} {config.currency}
   </div>
 
-  {/* 💵 بما يعادل بالبوليفار */}
-  {config.currency === "$" && (
+  {/* Equivalent in secondary currency */}
+  {(invoice.exchangeRate ?? config.exchangeRate) && (
     <div className="text-sm text-gray-600">
-      💱 {(invoice.total * (invoice.exchangeRate ?? config.exchangeRate)).toFixed(2)} {state.secondaryCurrency || "Bs"}
+      💱 {t("equivalentTo")}{" "}
+      {(invoice.total * (invoice.exchangeRate ?? config.exchangeRate)).toFixed(2)} {state.secondaryCurrency || "Bs"}
       <div className="text-xs text-gray-400">
-        1$ = {invoice.exchangeRate ?? config.exchangeRate} {state.secondaryCurrency || "Bs"}
+        {t("exchangeRateInfo", {
+          primary: config.currency,
+          rate: invoice.exchangeRate ?? config.exchangeRate,
+          secondary: state.secondaryCurrency || "Bs",
+        })}
       </div>
     </div>
   )}
@@ -285,6 +290,7 @@ const SalesInvoices = () => {
                         </p>
                         <p className="text-xs text-gray-500">
                           {t("exchangeRateInfo", {
+                            primary: config.currency,
                             rate: selectedInvoice.exchangeRate ?? config.exchangeRate,
                             secondary: state.secondaryCurrency || "Bs",
                           })}
@@ -336,7 +342,7 @@ const SalesInvoices = () => {
                           <div>${t("mainCashier")}: ${selectedInvoice.cashier}</div>
                           <div>${t("paymentMethod")}: ${selectedInvoice.paymentMethod}</div>
                           <div>${t("invoiceTotal")}: ${selectedInvoice.total.toFixed(2)} ${config.currency}</div>
-                          <div>${t("exchangeRateInfo", { rate, secondary: state.secondaryCurrency || "Bs" })}</div>
+                          <div>${t("exchangeRateInfo", { primary: config.currency, rate, secondary: state.secondaryCurrency || "Bs" })}</div>
                           <div>💱 ${t("equivalentTo")} ${(selectedInvoice.total * rate).toFixed(2)} ${state.secondaryCurrency || "Bs"}</div>
                           <table>
                             <thead>
