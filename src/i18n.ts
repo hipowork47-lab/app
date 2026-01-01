@@ -40,6 +40,10 @@ const resources = {
       licenseDevicesCount: "{{used}} / {{max}} dispositivos",
       syncSuccess: "Sincronización completada",
       syncSuccessDesc: "Datos actualizados desde el servidor",
+      changeCurrencyButton: "¿Quieres cambiar la moneda?",
+      currencyNote: "La moneda base se usa para cálculos; la secundaria solo para mostrar al tipo de cambio.",
+      primaryCurrency: "Moneda base",
+      secondaryCurrency: "Moneda secundaria",
       syncFailed: "Error de sincronización",
       syncFailedDesc: "Verifica tu conexión e inténtalo de nuevo",
 
@@ -567,6 +571,10 @@ const resources = {
       exchangeRateSave: "Save",
       exchangeRateCancel: "Cancel",
       exchangeRateInvalid: "Enter a valid exchange rate",
+      changeCurrencyButton: "Do you want to change the currency?",
+      currencyNote: "Base currency is used for calculations; secondary is for display/comparison at the exchange rate.",
+      primaryCurrency: "Base currency",
+      secondaryCurrency: "Secondary currency",
       exchangeRateUpdated: "Exchange rate updated to {{rate}} Bs/$",
 
       // Settings

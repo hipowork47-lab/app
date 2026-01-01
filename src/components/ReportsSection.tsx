@@ -396,16 +396,16 @@ const purchaseReportData = useMemo(() => {
               ))}
             </div>
             <Button variant="outline" className="mb-3" onClick={() => setShowCurrencyPanel((v) => !v)}>
-              ?? ???? ????? ???????
+              {t("changeCurrencyButton") || "Change currency"}
             </Button>
             {showCurrencyPanel && (
               <div className="flex flex-col gap-3 p-3 rounded-lg border border-blue-100 bg-blue-50/50">
                 <p className="text-sm text-gray-700">
-                  ?????? ???????? ????????? ?????????? ????? ??? ???? ??? ?????.
+                  {t("currencyNote") || "Base currency is used for calculations; secondary is for display/comparison at the exchange rate."}
                 </p>
                 <div className="grid gap-3 md:grid-cols-2">
                   <div>
-                    <Label>??? ?????? ????????</Label>
+                    <Label>{t("primaryCurrency") || "Base currency"}</Label>
                     <Select value={pendingPrimaryCurrency} onValueChange={(v) => setPendingPrimaryCurrency(v)}>
                       <SelectTrigger>
                         <SelectValue />
@@ -420,7 +420,7 @@ const purchaseReportData = useMemo(() => {
                     </Select>
                   </div>
                   <div>
-                    <Label>??? ?????? ?????????</Label>
+                    <Label>{t("primaryCurrency") || "Base currency"}?</Label>
                     <Select value={pendingSecondaryCurrency} onValueChange={(v) => setPendingSecondaryCurrency(v)}>
                       <SelectTrigger>
                         <SelectValue />
