@@ -171,9 +171,9 @@ const SalesInvoices = () => {
   {/* 💵 بما يعادل بالبوليفار */}
   {config.currency === "$" && (
     <div className="text-sm text-gray-600">
-      💱 {(invoice.total * (invoice.exchangeRate ?? config.exchangeRate)).toFixed(2)} Bs
+      💱 {(invoice.total * (invoice.exchangeRate ?? config.exchangeRate)).toFixed(2)} {state.secondaryCurrency || "Bs"}
       <div className="text-xs text-gray-400">
-        1$ = {invoice.exchangeRate ?? config.exchangeRate} Bs
+        1$ = {invoice.exchangeRate ?? config.exchangeRate} {state.secondaryCurrency || "Bs"}
       </div>
     </div>
   )}
