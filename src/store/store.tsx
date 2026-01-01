@@ -90,7 +90,7 @@ function sanitizeProducts(products: Product[], sales: SaleInvoice[], purchases: 
 }
 const STORAGE_KEY = "pos_app_state_v1";
 
-function queueConfigUpdate(config: AppConfig) {
+function queueConfigUpdate(config: AppConfig, secondaryCurrency: string) {
   enqueueOperation({
     type: "UPDATE_CONFIG",
     payload: {
@@ -98,6 +98,7 @@ function queueConfigUpdate(config: AppConfig) {
       storeName: config.storeName,
       currency: config.currency,
       exchangeRate: config.exchangeRate,
+      secondaryCurrency,
     },
   });
 }
@@ -114,15 +115,16 @@ function reducer(state: State, action: Action): State {
     case "SET_CURRENCY":
       {
         const nextConfig = { ...state.config, currency: action.payload };
-        queueConfigUpdate(nextConfig);
+        queueConfigUpdate(nextConfig, state.secondaryCurrency);
         return { ...state, config: nextConfig };
       }
     case "SET_SECONDARY_CURRENCY":
+      queueConfigUpdate(state.config, action.payload);
       return { ...state, secondaryCurrency: action.payload };
     case "SET_EXCHANGE_RATE":
       {
         const nextConfig = { ...state.config, exchangeRate: action.payload };
-        queueConfigUpdate(nextConfig);
+        queueConfigUpdate(nextConfig, state.secondaryCurrency);
         return { ...state, config: nextConfig };
       }
     case "ADD_PRODUCT":

@@ -16,6 +16,7 @@ type Snapshot = {
   purchases?: any[];
   accounts?: any[];
   license?: { devices?: string[]; maxDevices?: number };
+  secondaryCurrency?: string | null;
 };
 
 async function safeFetch(url: string, opts: RequestInit = {}) {
@@ -69,8 +70,10 @@ export async function pullSnapshot(overrideLicenseKey?: string, registerDevice =
             storeName: raw.config.store_name ?? raw.config.storeName,
             currency: raw.config.currency,
             exchangeRate: raw.config.exchange_rate ?? raw.config.exchangeRate,
+            secondaryCurrency: raw.config.secondary_currency ?? raw.config.secondaryCurrency,
           }
         : raw?.config,
+      secondaryCurrency: raw?.config?.secondary_currency ?? raw?.config?.secondaryCurrency,
       products: (raw?.products || []).map((p: any) => ({
         ...p,
         categoryId: p.category_id ?? p.categoryId ?? "",
@@ -167,6 +170,7 @@ function mapOutbound(op: SyncOperation): SyncOperation {
         store_name: op.payload.storeName ?? "",
         currency: op.payload.currency ?? "",
         exchange_rate: op.payload.exchangeRate ?? null,
+        secondary_currency: op.payload.secondaryCurrency ?? op.payload.secondary_currency ?? null,
       };
       break;
     case "SELL_ITEMS":
