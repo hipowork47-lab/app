@@ -125,11 +125,11 @@ const resources = {
       soldQuantity: "Cantidad vendida",
       revenue: "Ingresos",
       exchangeRateLabel: "Tipo de cambio",
-      exchangeRateEdit: "Editar tipo de cambio (actualmente: {{rate}} {{secondary}}/$)",
+      exchangeRateEdit: "Editar tipo de cambio (actualmente: {{rate}} {{secondary}}/{{primary}})",
       exchangeRateSave: "Guardar",
       exchangeRateCancel: "Cancelar",
       exchangeRateInvalid: "Ingresa un valor válido para el tipo de cambio",
-      exchangeRateUpdated: "Tipo de cambio actualizado a {{rate}} {{secondary}}/$",
+      exchangeRateUpdated: "Tipo de cambio actualizado a {{rate}} {{secondary}}/{{primary}}",
 
       // Settings
       settings: "Configuraciones",
@@ -342,11 +342,11 @@ const resources = {
       soldQuantity: "الكمية المباعة",
       revenue: "الإيرادات",
       exchangeRateLabel: "سعر الصرف",
-      exchangeRateEdit: "تعديل سعر الصرف (حالياً: {{rate}} {{secondary}}/$)",
+      exchangeRateEdit: "تعديل سعر الصرف (حالياً: {{rate}} {{secondary}}/{{primary}})",
       exchangeRateSave: "حفظ",
       exchangeRateCancel: "إلغاء",
       exchangeRateInvalid: "الرجاء إدخال قيمة صحيحة لسعر الصرف",
-      exchangeRateUpdated: "تم تحديث سعر الصرف إلى {{rate}} {{secondary}}/$",
+      exchangeRateUpdated: "تم تحديث سعر الصرف إلى {{rate}} {{secondary}}/{{primary}}",
 
       // الإعدادات
       settings: "الإعدادات",
@@ -557,7 +557,7 @@ const resources = {
       soldQuantity: "Quantity sold",
       revenue: "Revenue",
       exchangeRateLabel: "Exchange rate",
-      exchangeRateEdit: "Edit exchange rate (currently: {{rate}} {{secondary}}/$)",
+      exchangeRateEdit: "Edit exchange rate (currently: {{rate}} {{secondary}}/{{primary}})",
       exchangeRateSave: "Save",
       exchangeRateCancel: "Cancel",
       exchangeRateInvalid: "Enter a valid exchange rate",
@@ -565,7 +565,7 @@ const resources = {
       currencyNote: "Base currency is used for calculations; secondary is for display/comparison at the exchange rate.",
       primaryCurrency: "Base currency",
       secondaryCurrency: "Secondary currency",
-      exchangeRateUpdated: "Exchange rate updated to {{rate}} {{secondary}}/$",
+      exchangeRateUpdated: "Exchange rate updated to {{rate}} {{secondary}}/{{primary}}",
 
       // Settings
       settings: "Settings",
