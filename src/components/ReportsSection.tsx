@@ -20,6 +20,7 @@ const ReportsSection: React.FC = () => {
   const [pendingPrimaryCurrency, setPendingPrimaryCurrency] = useState(state.config?.currency || "$");
   const [pendingSecondaryCurrency, setPendingSecondaryCurrency] = useState(state.secondaryCurrency || "Bs");
   const [showCurrencyPanel, setShowCurrencyPanel] = useState(false);
+  const [confirmCurrencyChange, setConfirmCurrencyChange] = useState(false);
   const [showRateInput, setShowRateInput] = useState(false);
   const [devicesLoading, setDevicesLoading] = useState(false);
   const [devicesError, setDevicesError] = useState("");
@@ -465,6 +466,11 @@ const purchaseReportData = useMemo(() => {
                 <p className="text-sm font-semibold text-red-600">
                   {t("currencyChangeWarning", { defaultValue: "\u0633\u064a\u062a\u0645 \u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0639\u0645\u0644\u0629 \u0627\u0644\u0623\u0633\u0627\u0633\u064a\u0629 \u0648\u0627\u0644\u0639\u0645\u0644\u0629 \u0627\u0644\u0645\u0639\u0627\u062f\u0650\u0644\u0629 \u0641\u064a \u0643\u0644 \u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c." })}
                 </p>
+                {confirmCurrencyChange && (
+                  <p className="text-sm font-semibold text-blue-700">
+                    {t("confirm") || "Confirm change"}
+                  </p>
+                )}
                 <div className="grid gap-3 md:grid-cols-2">
                   <div>
                     <Label>{t("primaryCurrency", { defaultValue: "������ ��������" })}</Label>
@@ -506,6 +512,7 @@ const purchaseReportData = useMemo(() => {
                       setPendingPrimaryCurrency(state.config.currency || "$");
                       setPendingSecondaryCurrency(state.secondaryCurrency || "Bs");
                       setShowCurrencyPanel(false);
+                      setConfirmCurrencyChange(false);
                     }}
                   >
                     {t("cancel")}
@@ -513,12 +520,17 @@ const purchaseReportData = useMemo(() => {
                   <Button
                     className="bg-gradient-to-r from-blue-500 to-purple-500"
                     onClick={() => {
+                      if (!confirmCurrencyChange) {
+                        setConfirmCurrencyChange(true);
+                        return;
+                      }
                       dispatch({ type: "SET_CURRENCY", payload: pendingPrimaryCurrency });
                       dispatch({ type: "SET_SECONDARY_CURRENCY", payload: pendingSecondaryCurrency });
                       setShowCurrencyPanel(false);
+                      setConfirmCurrencyChange(false);
                     }}
                   >
-                    {t("save")}
+                    {confirmCurrencyChange ? t("confirm") : t("save")}
                   </Button>
                 </div>
               </div>
