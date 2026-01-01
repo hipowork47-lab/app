@@ -125,11 +125,11 @@ const resources = {
       soldQuantity: "Cantidad vendida",
       revenue: "Ingresos",
       exchangeRateLabel: "Tipo de cambio",
-      exchangeRateEdit: "Editar tipo de cambio (actualmente: {{rate}} Bs/$)",
+      exchangeRateEdit: "Editar tipo de cambio (actualmente: {{rate}} {{secondary}}/$)",
       exchangeRateSave: "Guardar",
       exchangeRateCancel: "Cancelar",
       exchangeRateInvalid: "Ingresa un valor válido para el tipo de cambio",
-      exchangeRateUpdated: "Tipo de cambio actualizado a {{rate}} Bs/$",
+      exchangeRateUpdated: "Tipo de cambio actualizado a {{rate}} {{secondary}}/$",
 
       // Settings
       settings: "Configuraciones",
@@ -179,7 +179,7 @@ const resources = {
       clearAll: "Borrar todo",
       checkout: "Finalizar venta",
       equivalentTo: "Equivalente a",
-      exchangeRateInfo: "Tasa de cambio actual: 1$ = {{rate}} Bs",
+      exchangeRateInfo: "Tasa de cambio actual: 1$ = {{rate}} {{secondary}}",
 
       // Purchase Invoices
       purchaseCreateTitle: "Crear factura de compras",
@@ -199,7 +199,7 @@ const resources = {
       purchaseInvoiceNumberLabel: "Número de factura",
       purchaseSupplierLabel: "Proveedor",
       purchaseDateLabel: "Fecha",
-      purchaseRateNote: "Tipo de cambio {{rate}} Bs/$",
+      purchaseRateNote: "Tipo de cambio {{rate}} {{secondary}}/$",
       errorTitle: "Error",
       errorSupplierRequired: "Ingresa el nombre del proveedor",
       errorItemsRequired: "Agrega al menos una línea antes de guardar",
@@ -342,11 +342,11 @@ const resources = {
       soldQuantity: "الكمية المباعة",
       revenue: "الإيرادات",
       exchangeRateLabel: "سعر الصرف",
-      exchangeRateEdit: "تعديل سعر الصرف (حالياً: {{rate}} Bs/$)",
+      exchangeRateEdit: "تعديل سعر الصرف (حالياً: {{rate}} {{secondary}}/$)",
       exchangeRateSave: "حفظ",
       exchangeRateCancel: "إلغاء",
       exchangeRateInvalid: "الرجاء إدخال قيمة صحيحة لسعر الصرف",
-      exchangeRateUpdated: "تم تحديث سعر الصرف إلى {{rate}} Bs/$",
+      exchangeRateUpdated: "تم تحديث سعر الصرف إلى {{rate}} {{secondary}}/$",
 
       // الإعدادات
       settings: "الإعدادات",
@@ -396,7 +396,7 @@ const resources = {
       clearAll: "تفريغ الكل",
       checkout: "إنهاء البيع",
       equivalentTo: "بما يعادل",
-      exchangeRateInfo: "سعر الصرف الحالي: 1$ = {{rate}} Bs",
+      exchangeRateInfo: "سعر الصرف الحالي: 1$ = {{rate}} {{secondary}}",
 
       // فواتير المشتريات
       purchaseCreateTitle: "إنشاء فاتورة مشتريات جديدة",
@@ -416,7 +416,7 @@ const resources = {
       purchaseInvoiceNumberLabel: "رقم الفاتورة",
       purchaseSupplierLabel: "المورّد",
       purchaseDateLabel: "التاريخ",
-      purchaseRateNote: "سعر الصرف {{rate}} Bs/$",
+      purchaseRateNote: "سعر الصرف {{rate}} {{secondary}}/$",
       errorTitle: "خطأ",
       errorSupplierRequired: "يرجى إدخال اسم المورّد",
       errorItemsRequired: "أضف بنداً واحداً على الأقل قبل الحفظ",
@@ -557,7 +557,7 @@ const resources = {
       soldQuantity: "Quantity sold",
       revenue: "Revenue",
       exchangeRateLabel: "Exchange rate",
-      exchangeRateEdit: "Edit exchange rate (currently: {{rate}} Bs/$)",
+      exchangeRateEdit: "Edit exchange rate (currently: {{rate}} {{secondary}}/$)",
       exchangeRateSave: "Save",
       exchangeRateCancel: "Cancel",
       exchangeRateInvalid: "Enter a valid exchange rate",
@@ -565,7 +565,7 @@ const resources = {
       currencyNote: "Base currency is used for calculations; secondary is for display/comparison at the exchange rate.",
       primaryCurrency: "Base currency",
       secondaryCurrency: "Secondary currency",
-      exchangeRateUpdated: "Exchange rate updated to {{rate}} Bs/$",
+      exchangeRateUpdated: "Exchange rate updated to {{rate}} {{secondary}}/$",
 
       // Settings
       settings: "Settings",
@@ -615,7 +615,7 @@ const resources = {
       clearAll: "Clear All",
       checkout: "Checkout",
       equivalentTo: "Equivalent to",
-      exchangeRateInfo: "Current exchange rate: 1$ = {{rate}} Bs",
+      exchangeRateInfo: "Current exchange rate: 1$ = {{rate}} {{secondary}}",
 
       // Purchase Invoices
       purchaseCreateTitle: "Create Purchase Invoice",
@@ -635,7 +635,7 @@ const resources = {
       purchaseInvoiceNumberLabel: "Invoice number",
       purchaseSupplierLabel: "Supplier",
       purchaseDateLabel: "Date",
-      purchaseRateNote: "Exchange rate {{rate}} Bs/$",
+      purchaseRateNote: "Exchange rate {{rate}} {{secondary}}/$",
       errorTitle: "Error",
       errorSupplierRequired: "Please enter supplier name",
       errorItemsRequired: "Add at least one line item before saving",

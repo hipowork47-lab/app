@@ -332,7 +332,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
                 <div className="font-bold text-lg text-blue-800">
                   {t("purchaseTotal")}: {total.toFixed(2)} {state.config.currency}
                   <div className="text-sm text-gray-600">
-                    {(total * state.config.exchangeRate).toFixed(2)} Bs
+                    {(total * state.config.exchangeRate).toFixed(2)} {state.secondaryCurrency || "Bs"}
                   </div>
                 </div>
 
@@ -417,7 +417,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
                       {t("purchaseTotal")}: {p.total.toFixed(2)} {state.config.currency}
                     </div>
                     <div className="text-sm text-gray-600">
-                      {(p.total * (p.exchangeRate ?? state.config.exchangeRate)).toFixed(2)} Bs
+                      {(p.total * (p.exchangeRate ?? state.config.exchangeRate)).toFixed(2)} {state.secondaryCurrency || "Bs"}
                     </div>
                     {p.exchangeRate && (
                       <div className="text-xs text-gray-400">
