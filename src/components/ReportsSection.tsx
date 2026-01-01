@@ -17,6 +17,7 @@ const ReportsSection: React.FC = () => {
   const { state, dispatch } = useStore();
   const { t } = useTranslation();
   const [newRate, setNewRate] = useState(state.config?.exchangeRate || 45); // السعر الابتدائي بالبوليفار
+  const [pendingCurrency, setPendingCurrency] = useState(state.config?.currency || "$");
   const [showRateInput, setShowRateInput] = useState(false);
   const [devicesLoading, setDevicesLoading] = useState(false);
   const [devicesError, setDevicesError] = useState("");
@@ -27,7 +28,8 @@ const ReportsSection: React.FC = () => {
    // مزامنة قيمة سعر الصرف في الواجهة مع القيمة في الـ store
 React.useEffect(() => {
   setNewRate(state.config.exchangeRate);
-}, [state.config.exchangeRate]);
+  setPendingCurrency(state.config.currency || "$");
+}, [state.config.exchangeRate, state.config.currency]);
 
   const handleExchangeRateChange = () => {
     if (newRate > 0) {
@@ -460,7 +462,7 @@ const purchaseReportData = useMemo(() => {
 
             <div>
               <Label>{t("currency")}</Label>
-              <Select value={state.config.currency} onValueChange={(v) => dispatch({ type: "SET_CURRENCY", payload: v })}>
+              <Select value={pendingCurrency} onValueChange={(v) => setPendingCurrency(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -475,7 +477,16 @@ const purchaseReportData = useMemo(() => {
             </div>
 
             <div className="flex items-end">
-              <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500">{t("view")}</Button>
+              <Button
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500"
+                onClick={() => {
+                  const warn = t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
+                  if (!window.confirm(warn)) return;
+                  dispatch({ type: "SET_CURRENCY", payload: pendingCurrency });
+                }}
+              >
+                {t("view")}
+              </Button>
             </div>
           </div>
         </CardContent>
