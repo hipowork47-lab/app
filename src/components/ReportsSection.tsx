@@ -510,9 +510,6 @@ const purchaseReportData = useMemo(() => {
                   <Button
                     className="bg-gradient-to-r from-blue-500 to-purple-500"
                     onClick={() => {
-                      const warn =
-                        t("currencyChangeWarning") || "This will change the currency symbol everywhere in the app";
-                      if (!window.confirm(warn)) return;
                       dispatch({ type: "SET_CURRENCY", payload: pendingPrimaryCurrency });
                       dispatch({ type: "SET_SECONDARY_CURRENCY", payload: pendingSecondaryCurrency });
                       setShowCurrencyPanel(false);
