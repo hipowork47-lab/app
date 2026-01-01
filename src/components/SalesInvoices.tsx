@@ -283,7 +283,7 @@ const SalesInvoices = () => {
       </span>
     </p>
     <p className="text-xs text-gray-500">
-      {t("exchangeRateInfo", { rate: selectedInvoice.exchangeRate ?? config.exchangeRate })}
+      {t("exchangeRateInfo", { rate: selectedInvoice.exchangeRate ?? config.exchangeRate, secondary: state.secondaryCurrency || "Bs" })}
     </p>
   </div>
 )}
@@ -332,7 +332,7 @@ const SalesInvoices = () => {
                           <div>${t("mainCashier")}: ${selectedInvoice.cashier}</div>
                           <div>${t("paymentMethod")}: ${selectedInvoice.paymentMethod}</div>
                           <div>${t("invoiceTotal")}: ${selectedInvoice.total.toFixed(2)} ${config.currency}</div>
-                          <div>${t("exchangeRateInfo", { rate })}</div>
+                          <div>${t("exchangeRateInfo", { rate, secondary: state.secondaryCurrency || "Bs" })}</div>
                           <table>
                             <thead>
                               <tr>

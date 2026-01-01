@@ -421,7 +421,7 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
                     </div>
                     {p.exchangeRate && (
                       <div className="text-xs text-gray-400">
-                        ({t("purchaseRateNote", { rate: p.exchangeRate })})
+                        ({t("purchaseRateNote", { rate: p.exchangeRate, secondary: state.secondaryCurrency || "Bs" })})
                       </div>
                     )}
                   </div>

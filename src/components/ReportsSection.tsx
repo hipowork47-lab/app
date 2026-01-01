@@ -95,7 +95,7 @@ React.useEffect(() => {
     if (newRate > 0) {
       dispatch({ type: "SET_EXCHANGE_RATE", payload: newRate });
       setShowRateInput(false);
-      alert(t("exchangeRateUpdated", { rate: newRate }));
+      alert(t("exchangeRateUpdated", { rate: newRate, secondary: state.secondaryCurrency || "Bs" }));
     } else {
       alert(t("exchangeRateInvalid"));
     }
@@ -533,7 +533,7 @@ const purchaseReportData = useMemo(() => {
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
             onClick={() => setShowRateInput(true)}
           >
-           {t("exchangeRateEdit", { rate: state.config.exchangeRate })}
+           {t("exchangeRateEdit", { rate: state.config.exchangeRate, secondary: state.secondaryCurrency || "Bs" })}
 
           </button>
         ) : (
