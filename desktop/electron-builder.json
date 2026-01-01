@@ -1,6 +1,6 @@
 {
-  "appId": "com.easypos.desktop",
-  "productName": "Easy POS",
+  "appId": "com.pos.desktop",
+  "productName": "POS",
   "directories": {
     "output": "release",
     "buildResources": "desktop"

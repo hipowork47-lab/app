@@ -12,6 +12,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
+    title: "POS",
     webPreferences: {
       contextIsolation: true,
     },
