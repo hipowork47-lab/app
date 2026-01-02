@@ -31,8 +31,6 @@ import { clearLicense, getDeviceId, getLicenseKey, setLicenseKey, setCustomDevic
 type User = { username: string; role: "admin" | "employee" };
 // الصفحة الرئيسية للنظام
 const Index = () => {
-  const base = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "/");
-  const logoUrl = `${base}zentropos-logo.png`;
   const [activeTab, setActiveTab] = useState("sales");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t, i18n } = useTranslation();
@@ -260,18 +258,11 @@ const Index = () => {
               <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                 <Calculator className="w-6 h-6 text-white" />
               </div>
-                <div className="flex items-center gap-3">
-                  <img
-                    src={logoUrl}
-                    alt="ZentroPOS"
-                    className="h-12 w-12 rounded-md object-contain border border-purple-200 bg-white"
-                  />
-                  <div>
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                      ZentroPOS
-                    </h1>
-                    <p className="text-sm text-gray-600">{t("welcome")}</p>
-                  </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    ZentroPOS
+                  </h1>
+                  <p className="text-sm text-gray-600">{t("welcome")}</p>
                 </div>
             </div>
 
