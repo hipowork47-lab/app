@@ -31,7 +31,8 @@ import { clearLicense, getDeviceId, getLicenseKey, setLicenseKey, setCustomDevic
 type User = { username: string; role: "admin" | "employee" };
 // الصفحة الرئيسية للنظام
 const Index = () => {
-  const logoUrl = new URL("/zentropos-logo.png", import.meta.env.BASE_URL).href;
+  const base = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "/");
+  const logoUrl = `${base}zentropos-logo.png`;
   const [activeTab, setActiveTab] = useState("sales");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t, i18n } = useTranslation();
