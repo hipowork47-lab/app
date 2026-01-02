@@ -299,53 +299,60 @@ const ProductManagement = () => {
               <DialogHeader>
                 <DialogTitle>{t("giftHistoryTitle")}</DialogTitle>
               </DialogHeader>
-              {gifts?.length ? (
-                <div className="max-h-80 overflow-y-auto space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4 text-gray-400" />
-                    <Input
-                      value={giftSearch}
-                      onChange={(e) => setGiftSearch(e.target.value)}
-                      placeholder={t("searchPlaceholder")}
-                    />
-                  </div>
-                  {gifts
-                    .slice()
-                    .reverse()
-                    .filter((g) => {
-                      const term = giftSearch.toLowerCase();
-                      if (!term) return true;
-                      return (
-                        (g.productName || "").toLowerCase().includes(term) ||
-                        (g.recipient || "").toLowerCase().includes(term) ||
-                        (g.createdBy || "").toLowerCase().includes(term)
-                      );
-                    })
-                    .map((g) => (
-                      <div key={g.id} className="border rounded p-2 bg-gray-50">
-                        <div className="font-semibold">{g.productName}</div>
-                        <div>
-                          {t("giftQuantityLabel")}: {g.qty}
-                        </div>
-                        {g.recipient ? (
-                          <div>
-                            {t("giftRecipientInline")}: {g.recipient}
-                          </div>
-                        ) : null}
-                        {g.createdBy ? (
-                          <div>
-                            {t("createdByLabel")}: {g.createdBy}
-                          </div>
-                        ) : null}
-                        <div className="text-xs text-gray-500">
-                          {new Date(g.createdAt || Date.now()).toLocaleString()}
-                        </div>
-                      </div>
-                    ))}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Search className="w-4 h-4 text-gray-400" />
+                  <Input
+                    value={giftSearch}
+                    onChange={(e) => setGiftSearch(e.target.value)}
+                    placeholder={t("searchPlaceholder")}
+                  />
                 </div>
-              ) : (
-                <p className="text-sm text-gray-700">{t("giftHistoryEmpty")}</p>
-              )}
+
+                {gifts?.length ? (
+                  <div className="max-h-80 overflow-y-auto rounded-lg border border-gray-200">
+                    <div className="grid grid-cols-4 bg-gray-50 text-xs font-semibold text-gray-600 px-3 py-2">
+                      <span>{t("productName")}</span>
+                      <span>{t("giftQuantityLabel")}</span>
+                      <span>{t("giftRecipientInline")}</span>
+                      <span>{t("createdByLabel")}</span>
+                    </div>
+                    <div className="divide-y divide-gray-200 text-sm">
+                      {gifts
+                        .slice()
+                        .reverse()
+                        .filter((g) => {
+                          const term = giftSearch.toLowerCase();
+                          if (!term) return true;
+                          return (
+                            (g.productName || "").toLowerCase().includes(term) ||
+                            (g.recipient || "").toLowerCase().includes(term) ||
+                            (g.createdBy || "").toLowerCase().includes(term)
+                          );
+                        })
+                        .map((g) => (
+                          <div key={g.id} className="grid grid-cols-4 px-3 py-2 items-center">
+                            <div className="flex flex-col">
+                              <span className="font-semibold text-gray-800">{g.productName}</span>
+                              <span className="text-xs text-gray-500">
+                                {g.createdAt ? new Date(g.createdAt).toLocaleString() : ""}
+                              </span>
+                            </div>
+                            <div>
+                              <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
+                                {g.qty}
+                              </Badge>
+                            </div>
+                            <div className="truncate">{g.recipient || "—"}</div>
+                            <div className="truncate">{g.createdBy || "—"}</div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-700">{t("giftHistoryEmpty")}</p>
+                )}
+              </div>
             </DialogContent>
           </Dialog>
 
