@@ -153,7 +153,7 @@ const resources = {
       exchangeRateSave: "Guardar",
       exchangeRateCancel: "Cancelar",
       exchangeRateInvalid: "Ingresa un valor válido para el tipo de cambio",
-      exchangeRateUpdated: "Tipo de cambio actualizado a {{rate}} {{secondary}}/{{primary}}",
+      exchangeRateUpdated: "Tipo de cambio actualizado a {{rate}} {{secondary}}",
 
       // Settings
       settings: "Configuraciones",
@@ -393,7 +393,7 @@ const resources = {
       exchangeRateSave: "حفظ",
       exchangeRateCancel: "إلغاء",
       exchangeRateInvalid: "الرجاء إدخال قيمة صحيحة لسعر الصرف",
-      exchangeRateUpdated: "تم تحديث سعر الصرف إلى {{rate}} {{secondary}}/{{primary}}",
+      exchangeRateUpdated: "تم تحديث سعر الصرف إلى {{rate}} {{secondary}}",
 
       // الإعدادات
       settings: "الإعدادات",
@@ -634,7 +634,7 @@ const resources = {
       exchangeRateSave: "Save",
       exchangeRateCancel: "Cancel",
       exchangeRateInvalid: "Enter a valid exchange rate",
-      exchangeRateUpdated: "Exchange rate updated to {{rate}} {{secondary}}/{{primary}}",
+      exchangeRateUpdated: "Exchange rate updated to {{rate}} {{secondary}}",
 
       // Settings
       settings: "Settings",
