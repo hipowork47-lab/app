@@ -31,6 +31,7 @@ import { clearLicense, getDeviceId, getLicenseKey, setLicenseKey, setCustomDevic
 type User = { username: string; role: "admin" | "employee" };
 // الصفحة الرئيسية للنظام
 const Index = () => {
+  const logoUrl = new URL("/zentropos-logo.png", import.meta.env.BASE_URL).href;
   const [activeTab, setActiveTab] = useState("sales");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t, i18n } = useTranslation();
@@ -260,7 +261,7 @@ const Index = () => {
               </div>
                 <div className="flex items-center gap-3">
                   <img
-                    src="/zentropos-logo.png"
+                    src={logoUrl}
                     alt="ZentroPOS"
                     className="h-12 w-12 rounded-md object-contain border border-purple-200 bg-white"
                   />
