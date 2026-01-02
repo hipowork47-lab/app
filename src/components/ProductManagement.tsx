@@ -149,6 +149,11 @@ const ProductManagement = () => {
       return;
     }
     const updated = { ...product, stock: product.stock - qty };
+    const currentUser =
+      localStorage.getItem("username") ||
+      localStorage.getItem("currentUser") ||
+      localStorage.getItem("account") ||
+      "cashier";
     const giftRecord = {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       productId: product.id,
@@ -156,6 +161,7 @@ const ProductManagement = () => {
       qty,
       recipient: giftRecipient || null,
       createdAt: new Date().toISOString(),
+      createdBy: currentUser,
     };
 
     dispatch({ type: "UPDATE_PRODUCT", payload: updated });
@@ -295,6 +301,11 @@ const ProductManagement = () => {
                         {g.recipient ? (
                           <div>
                             {t("giftRecipientInline")}: {g.recipient}
+                          </div>
+                        ) : null}
+                        {g.createdBy ? (
+                          <div>
+                            {t("createdByLabel")}: {g.createdBy}
                           </div>
                         ) : null}
                         <div className="text-xs text-gray-500">

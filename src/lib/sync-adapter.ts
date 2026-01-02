@@ -99,6 +99,7 @@ export async function pullSnapshot(overrideLicenseKey?: string, registerDevice =
         qty: g.qty ?? g.quantity ?? 0,
         recipient: g.recipient ?? g.to ?? null,
         createdAt: g.created_at ?? g.createdAt ?? null,
+        createdBy: g.created_by ?? g.createdBy ?? null,
       })),
       accounts: (raw?.accounts || []).map((a: any) => ({
         ...a,
@@ -227,6 +228,7 @@ function mapOutbound(op: SyncOperation): SyncOperation {
         product_name: op.payload.productName ?? "",
         qty: op.payload.qty,
         recipient: op.payload.recipient ?? null,
+        created_by: op.payload.createdBy ?? null,
         created_at: op.payload.createdAt ?? null,
       };
       break;

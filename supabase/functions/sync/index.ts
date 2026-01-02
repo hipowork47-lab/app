@@ -241,7 +241,15 @@ serve(async (req) => {
       } else if (op.type === "DELETE_ACCOUNT") {
         resp = await supabase.from("accounts").delete().eq("username", op.payload.username);
       } else if (op.type === "ADD_GIFT") {
-        resp = await supabase.from("gifts").insert(op.payload);
+        resp = await supabase.from("gifts").insert({
+          id: op.payload.id,
+          product_id: op.payload.product_id ?? op.payload.productId,
+          product_name: op.payload.product_name ?? op.payload.productName ?? "",
+          qty: op.payload.qty,
+          recipient: op.payload.recipient ?? null,
+          created_by: op.payload.created_by ?? op.payload.createdBy ?? null,
+          created_at: op.payload.created_at ?? op.payload.createdAt ?? null,
+        });
       } else {
         continue;
       }

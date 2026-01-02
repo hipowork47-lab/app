@@ -49,6 +49,7 @@ export interface Gift {
   qty: number;
   recipient?: string | null;
   createdAt?: string;
+  createdBy?: string | null;
 }
 // حساب المستخدم
 export interface Account {

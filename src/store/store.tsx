@@ -4,7 +4,6 @@ import type { Product, Category, SaleItem, SaleInvoice, AppConfig, PurchaseInvoi
 import { enqueueOperation } from "@/lib/offline-sync";
 import { pushOutbox } from "@/lib/sync-adapter";
 
-// ÊØÈíÞ ÇáÍÇáÉ ÇáÚÇãÉ
 interface State {
   config: AppConfig;
   secondaryCurrency: string;
@@ -15,7 +14,6 @@ interface State {
   gifts: Gift[];
 }
 
-// ÃäæÇÚ ÇáÅÌÑÇÁÇÊ ÇáããßäÉ
  type Action =
   | { type: "SET_CURRENCY"; payload: string }
   | { type: "SET_SECONDARY_CURRENCY"; payload: string }
@@ -139,9 +137,7 @@ function reducer(state: State, action: Action): State {
       }
       return {
         ...state,
-        products: state.products.map((p) =>
-          p.id === action.payload.productId ? { ...p, price: action.payload.price } : p
-        ),
+        products: state.products.map((p) => (p.id === action.payload.productId ? { ...p, price: action.payload.price } : p)),
       };
     }
     case "ADD_CATEGORY":
