@@ -15,6 +15,7 @@ type Snapshot = {
   sales?: any[];
   purchases?: any[];
   accounts?: any[];
+  gifts?: any[];
   license?: { devices?: string[]; maxDevices?: number };
   secondaryCurrency?: string | null;
 };
@@ -90,6 +91,14 @@ export async function pullSnapshot(overrideLicenseKey?: string, registerDevice =
         invoiceNumber: p.invoice_number ?? p.invoiceNumber,
         exchangeRate: p.exchange_rate ?? p.exchangeRate,
         createdBy: p.created_by ?? p.createdBy ?? null,
+      })),
+      gifts: (raw?.gifts || []).map((g: any) => ({
+        id: g.id,
+        productId: g.product_id ?? g.productId,
+        productName: g.product_name ?? g.productName ?? "",
+        qty: g.qty ?? g.quantity ?? 0,
+        recipient: g.recipient ?? g.to ?? null,
+        createdAt: g.created_at ?? g.createdAt ?? null,
       })),
       accounts: (raw?.accounts || []).map((a: any) => ({
         ...a,
@@ -210,6 +219,16 @@ function mapOutbound(op: SyncOperation): SyncOperation {
       break;
     case "DELETE_ACCOUNT":
       cloned.payload = { username: op.payload.username ?? op.payload };
+      break;
+    case "ADD_GIFT":
+      cloned.payload = {
+        id: op.payload.id,
+        product_id: op.payload.productId,
+        product_name: op.payload.productName ?? "",
+        qty: op.payload.qty,
+        recipient: op.payload.recipient ?? null,
+        created_at: op.payload.createdAt ?? null,
+      };
       break;
     default:
       break;

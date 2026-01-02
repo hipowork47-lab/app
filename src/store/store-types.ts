@@ -41,6 +41,15 @@ export interface AppConfig {
   currency: string; // e.g. "$"
   exchangeRate: number;
 }
+
+export interface Gift {
+  id: string;
+  productId: string;
+  productName: string;
+  qty: number;
+  recipient?: string | null;
+  createdAt?: string;
+}
 // حساب المستخدم
 export interface Account {
   username: string;

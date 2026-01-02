@@ -193,13 +193,14 @@ serve(async (req) => {
   }
 
   if (req.method === "GET" && url.pathname === "/sync/snapshot") {
-    const [config, products, categories, sales, purchases, accounts] = await Promise.all([
+    const [config, products, categories, sales, purchases, accounts, gifts] = await Promise.all([
       supabase.from("config").select("*").single(),
       supabase.from("products").select("*"),
       supabase.from("categories").select("*"),
       supabase.from("sales").select("*"),
       supabase.from("purchases").select("*"),
       supabase.from("accounts").select("*"),
+      supabase.from("gifts").select("*"),
     ]);
 
     return new Response(
@@ -210,6 +211,7 @@ serve(async (req) => {
         sales: sales.data ?? [],
         purchases: purchases.data ?? [],
         accounts: accounts.data ?? [],
+        gifts: gifts.data ?? [],
         license: licenseCheck.license ?? null,
       }),
       { headers: { "Content-Type": "application/json", ...corsHeaders } },
@@ -238,6 +240,8 @@ serve(async (req) => {
         resp = await supabase.from("accounts").upsert(op.payload);
       } else if (op.type === "DELETE_ACCOUNT") {
         resp = await supabase.from("accounts").delete().eq("username", op.payload.username);
+      } else if (op.type === "ADD_GIFT") {
+        resp = await supabase.from("gifts").insert(op.payload);
       } else {
         continue;
       }

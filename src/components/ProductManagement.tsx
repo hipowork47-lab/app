@@ -23,7 +23,7 @@ interface ProductFormData {
 
 const ProductManagement = () => {
   const { state, dispatch } = useStore();
-  const { products, categories, config } = state;
+  const { products, categories, config, gifts } = state;
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -149,7 +149,17 @@ const ProductManagement = () => {
       return;
     }
     const updated = { ...product, stock: product.stock - qty };
+    const giftRecord = {
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      productId: product.id,
+      productName: product.name,
+      qty,
+      recipient: giftRecipient || null,
+      createdAt: new Date().toISOString(),
+    };
+
     dispatch({ type: "UPDATE_PRODUCT", payload: updated });
+    dispatch({ type: "ADD_GIFT", payload: giftRecord });
     const recipientSuffix = giftRecipient ? ` | ${t("giftRecipientInline")}: ${giftRecipient}` : "";
     toast({
       title: t("giftSuccessTitle"),
@@ -271,9 +281,31 @@ const ProductManagement = () => {
               <DialogHeader>
                 <DialogTitle>{t("giftHistoryTitle")}</DialogTitle>
               </DialogHeader>
-              <p className="text-sm text-gray-700">
-                {t("giftHistoryEmpty")}
-              </p>
+              {gifts?.length ? (
+                <div className="max-h-80 overflow-y-auto space-y-2 text-sm">
+                  {gifts
+                    .slice()
+                    .reverse()
+                    .map((g) => (
+                      <div key={g.id} className="border rounded p-2 bg-gray-50">
+                        <div className="font-semibold">{g.productName}</div>
+                        <div>
+                          {t("giftQuantityLabel")}: {g.qty}
+                        </div>
+                        {g.recipient ? (
+                          <div>
+                            {t("giftRecipientInline")}: {g.recipient}
+                          </div>
+                        ) : null}
+                        <div className="text-xs text-gray-500">
+                          {new Date(g.createdAt || Date.now()).toLocaleString()}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-700">{t("giftHistoryEmpty")}</p>
+              )}
             </DialogContent>
           </Dialog>
 

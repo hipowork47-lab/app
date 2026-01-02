@@ -1,28 +1,22 @@
 // src/store/store.tsx
-import React, { createContext, useContext, useEffect, useReducer } from "react";
-import type {
-  Product,
-  Category,
-  SaleItem,
-  SaleInvoice,
-  AppConfig,
-  PurchaseInvoice,
-} from "./store-types";
+import React, { createContext, useContext, useEffect, useReducer, useRef } from "react";
+import type { Product, Category, SaleItem, SaleInvoice, AppConfig, PurchaseInvoice, Gift } from "./store-types";
 import { enqueueOperation } from "@/lib/offline-sync";
 import { pushOutbox } from "@/lib/sync-adapter";
-import { useRef } from "react";
-// ØªØ¹Ø±ÙŠÙ Ù†ÙˆØ¹ Ø­Ø§Ù„Ø© Ø§Ù„ØªØ·Ø¨ÙŠÙ‚
-type State = {
+
+// ÊØÈíŞ ÇáÍÇáÉ ÇáÚÇãÉ
+interface State {
   config: AppConfig;
   secondaryCurrency: string;
   products: Product[];
   categories: Category[];
   sales: SaleInvoice[];
   purchases: PurchaseInvoice[];
-};
-// Ø£Ù†ÙˆØ§Ø¹ Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª Ø§Ù„Ù…Ù…ÙƒÙ†Ø© Ù„ØªØ­Ø¯ÙŠØ« Ø§Ù„Ø­Ø§Ù„Ø©
+  gifts: Gift[];
+}
 
-type Action =
+// ÃäæÇÚ ÇáÅÌÑÇÁÇÊ ÇáããßäÉ
+ type Action =
   | { type: "SET_CURRENCY"; payload: string }
   | { type: "SET_SECONDARY_CURRENCY"; payload: string }
   | { type: "SET_EXCHANGE_RATE"; payload: number }
@@ -33,6 +27,7 @@ type Action =
   | { type: "ADD_CATEGORY"; payload: Category }
   | { type: "UPDATE_CATEGORY"; payload: Category }
   | { type: "DELETE_CATEGORY"; payload: string }
+  | { type: "ADD_GIFT"; payload: Gift }
   | {
       type: "SELL_ITEMS";
       payload: {
@@ -58,19 +53,19 @@ type Action =
   | { type: "APPLY_SNAPSHOT"; payload: Partial<State> };
 
 const defaultCategories: Category[] = [];
-
 const defaultProducts: Product[] = [];
 
 const initialState: State = {
-  config: { storeName: "Ø§Ù„Ù…ØªØ¬Ø±", currency: "$", exchangeRate: 40 },
+  config: { storeName: "ÇáãÊÌÑ", currency: "$", exchangeRate: 40 },
   secondaryCurrency: "Bs",
   categories: [],
   products: [],
   sales: [],
   purchases: [],
+  gifts: [],
 };
 
-const PLACEHOLDER_PRODUCT_NAMES = ["Product Name", "Nombre del producto", "Ø§Ø³Ù… Ø§Ù„Ù…Ù†ØªØ¬", "Ä?Ä?Ä¯?Ä¯?"];
+const PLACEHOLDER_PRODUCT_NAMES = ["Product Name", "Nombre del producto", "ÇÓã ÇáãäÊÌ", "Product"];
 
 function sanitizeProducts(products: Product[], sales: SaleInvoice[], purchases: PurchaseInvoice[]) {
   if (!products?.length) return [];
@@ -112,21 +107,19 @@ function mergeById<T extends { id: string }>(current: T[], incoming: T[] = []): 
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case "SET_CURRENCY":
-      {
-        const nextConfig = { ...state.config, currency: action.payload };
-        queueConfigUpdate(nextConfig, state.secondaryCurrency);
-        return { ...state, config: nextConfig };
-      }
+    case "SET_CURRENCY": {
+      const nextConfig = { ...state.config, currency: action.payload };
+      queueConfigUpdate(nextConfig, state.secondaryCurrency);
+      return { ...state, config: nextConfig };
+    }
     case "SET_SECONDARY_CURRENCY":
       queueConfigUpdate(state.config, action.payload);
       return { ...state, secondaryCurrency: action.payload };
-    case "SET_EXCHANGE_RATE":
-      {
-        const nextConfig = { ...state.config, exchangeRate: action.payload };
-        queueConfigUpdate(nextConfig, state.secondaryCurrency);
-        return { ...state, config: nextConfig };
-      }
+    case "SET_EXCHANGE_RATE": {
+      const nextConfig = { ...state.config, exchangeRate: action.payload };
+      queueConfigUpdate(nextConfig, state.secondaryCurrency);
+      return { ...state, config: nextConfig };
+    }
     case "ADD_PRODUCT":
       enqueueOperation({ type: "ADD_PRODUCT", payload: action.payload });
       return { ...state, products: [...state.products, action.payload] };
@@ -139,15 +132,10 @@ function reducer(state: State, action: Action): State {
     case "DELETE_PRODUCT":
       enqueueOperation({ type: "DELETE_PRODUCT", payload: { id: action.payload } });
       return { ...state, products: state.products.filter((p) => p.id !== action.payload) };
-    case "UPDATE_PRODUCT_PRICE":
-      {
-        const existing = state.products.find((p) => p.id === action.payload.productId);
-        if (existing) {
-          enqueueOperation({
-            type: "UPDATE_PRODUCT",
-            payload: { ...existing, price: action.payload.price },
-          });
-        }
+    case "UPDATE_PRODUCT_PRICE": {
+      const existing = state.products.find((p) => p.id === action.payload.productId);
+      if (existing) {
+        enqueueOperation({ type: "UPDATE_PRODUCT", payload: { ...existing, price: action.payload.price } });
       }
       return {
         ...state,
@@ -155,6 +143,7 @@ function reducer(state: State, action: Action): State {
           p.id === action.payload.productId ? { ...p, price: action.payload.price } : p
         ),
       };
+    }
     case "ADD_CATEGORY":
       enqueueOperation({ type: "ADD_CATEGORY", payload: action.payload });
       return { ...state, categories: [...state.categories, action.payload] };
@@ -169,10 +158,12 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         categories: state.categories.filter((c) => c.id !== action.payload),
-        products: state.products.map((p) =>
-          p.categoryId === action.payload ? { ...p, categoryId: undefined } : p
-        ),
+        products: state.products.map((p) => (p.categoryId === action.payload ? { ...p, categoryId: undefined } : p)),
       };
+    case "ADD_GIFT": {
+      enqueueOperation({ type: "ADD_GIFT", payload: action.payload });
+      return { ...state, gifts: [...state.gifts, action.payload] };
+    }
     case "SELL_ITEMS": {
       const { items, cashier, paymentMethod, exchangeRate } = action.payload;
       const updatedProducts = state.products.map((p) => {
@@ -186,7 +177,7 @@ function reducer(state: State, action: Action): State {
         const prod = state.products.find((p) => p.id === it.productId);
         return {
           productId: it.productId,
-          name: prod?.name ?? "Ù…Ù†ØªØ¬",
+          name: prod?.name ?? "ãäÊÌ",
           price: prod?.price ?? 0,
           quantity: it.quantity,
         };
@@ -206,7 +197,6 @@ function reducer(state: State, action: Action): State {
       };
 
       enqueueOperation({ type: "SELL_ITEMS", payload: invoice });
-      // Also push stock updates for affected products.
       items.forEach((it) => {
         const updated = updatedProducts.find((p) => p.id === it.productId);
         if (updated) {
@@ -217,24 +207,22 @@ function reducer(state: State, action: Action): State {
     }
     case "ADD_PURCHASE": {
       const { supplier, items, invoiceNumber, date, time, createdBy, exchangeRate } = action.payload;
-
       const productsMap = new Map<string, Product>();
       state.products.forEach((p) => productsMap.set(p.id, p));
 
-    items.forEach((it) => {
-      if (!it.productId) return; // Ignore purchase lines without a selected product
-      const existing = productsMap.get(it.productId);
-      if (existing) {
-        productsMap.set(it.productId, {
-          ...existing,
-          stock: existing.stock + it.quantity,
-            // Keep existing price; do not override product price from purchase line.
+      items.forEach((it) => {
+        if (!it.productId) return; // Ignore purchase lines without a selected product
+        const existing = productsMap.get(it.productId);
+        if (existing) {
+          productsMap.set(it.productId, {
+            ...existing,
+            stock: existing.stock + it.quantity,
             name: it.name ?? existing.name,
           });
         } else {
           productsMap.set(it.productId, {
             id: it.productId,
-            name: it.name ?? "Ù…Ù†ØªØ¬",
+            name: it.name ?? "ãäÊÌ",
             price: it.price ?? 0,
             stock: it.quantity,
           });
@@ -264,7 +252,6 @@ function reducer(state: State, action: Action): State {
       };
 
       enqueueOperation({ type: "ADD_PURCHASE", payload: invoice });
-      // Push stock/price updates for affected products.
       purchaseItems.forEach((it) => {
         if (!it.productId) return;
         const updated = productsMap.get(it.productId);
@@ -283,6 +270,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         ...action.payload,
         secondaryCurrency: (action.payload as any).secondaryCurrency ?? state.secondaryCurrency,
+        gifts: (action.payload as any).gifts ?? state.gifts,
       };
     case "APPLY_SNAPSHOT":
       return {
@@ -292,6 +280,7 @@ function reducer(state: State, action: Action): State {
         products: mergeById(state.products, action.payload.products ?? []),
         sales: mergeById(state.sales, action.payload.sales ?? []),
         purchases: mergeById(state.purchases, action.payload.purchases ?? []),
+        gifts: mergeById(state.gifts, (action.payload as any).gifts ?? []),
       };
     default:
       return state;
@@ -317,6 +306,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           ...init,
           ...parsed,
           products: sanitizeProducts(parsed.products ?? [], parsed.sales ?? [], parsed.purchases ?? []),
+          gifts: parsed.gifts ?? [],
         };
       }
     } catch {
@@ -331,7 +321,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore storage write errors
     }
-    // Best-effort: debounce push to Supabase whenever state changes.
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(async () => {
       if (isPushing.current) return;
@@ -354,4 +343,3 @@ export function useStore() {
   if (!ctx) throw new Error("useStore must be used within StoreProvider");
   return ctx;
 }
-
