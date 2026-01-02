@@ -216,43 +216,49 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
         <CardContent className="space-y-6 mt-4">
           {/* الحقول */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              placeholder={t("supplierPlaceholder")}
-              value={supplier}
-              onChange={(e) => setSupplier(e.target.value)}
-              className="rounded-xl border-blue-200 focus:ring-2 focus:ring-blue-300"
-            />
-
-            <div className="flex flex-col">
-              <label className="text-sm text-gray-600 mb-1">{t("selectProductLabel")}</label>
-        <select
-  value={lineName}
-  onChange={(e) => setLineName(e.target.value)}
-  className="border rounded-xl p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none border-blue-200"
->
-  <option value="">{t("selectProductPlaceholder")}</option>
-  {(state.products ?? [])
-    .filter((p) => !p.deleted) // ✅ لا تعرض المنتجات المحذوفة
-    .map((p) => (
-      <option key={p.id} value={p.name}>
-        {p.name}
-      </option>
-    ))}
-</select>
-
+            <div className="p-3 rounded-xl border border-blue-100 bg-white/70 shadow-sm space-y-2">
+              <Label className="text-sm text-gray-600">{t("supplierPlaceholder")}</Label>
+              <Input
+                placeholder={t("supplierPlaceholder")}
+                value={supplier}
+                onChange={(e) => setSupplier(e.target.value)}
+                className="rounded-xl border-blue-200 focus:ring-2 focus:ring-blue-300"
+              />
             </div>
 
-            <Input
-              placeholder={t("itemNotePlaceholder")}
-              value={lineDesc}
-              onChange={(e) => setLineDesc(e.target.value)}
-              className="rounded-xl border-blue-200 focus:ring-2 focus:ring-blue-300"
-            />
+            <div className="p-3 rounded-xl border border-blue-100 bg-white/70 shadow-sm space-y-2">
+              <Label className="text-sm text-gray-600">{t("selectProductLabel")}</Label>
+              <select
+                value={lineName}
+                onChange={(e) => setLineName(e.target.value)}
+                className="w-full border rounded-xl p-2 focus:ring-2 focus:ring-blue-300 focus:outline-none border-blue-200"
+              >
+                <option value="">{t("selectProductPlaceholder")}</option>
+                {(state.products ?? [])
+                  .filter((p) => !p.deleted)
+                  .map((p) => (
+                    <option key={p.id} value={p.name}>
+                      {p.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div className="p-3 rounded-xl border border-blue-100 bg-white/70 shadow-sm space-y-2">
+              <Label className="text-sm text-gray-600">{t("itemNotePlaceholder")}</Label>
+              <Input
+                placeholder={t("itemNotePlaceholder")}
+                value={lineDesc}
+                onChange={(e) => setLineDesc(e.target.value)}
+                className="rounded-xl border-blue-200 focus:ring-2 focus:ring-blue-300"
+              />
+            </div>
           </div>
 
           {/* الكمية والسعر */}
-          <div className="flex flex-wrap gap-3 items-end">
-            <div className="flex-1 min-w-[150px]">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr,1fr,auto] gap-3 items-end">
+            <div className="p-3 rounded-xl border border-blue-100 bg-white/70 shadow-sm space-y-2">
+              <Label className="text-sm text-gray-600">{t("quantityPlaceholder")}</Label>
               <Input
                 type="number"
                 placeholder={t("quantityPlaceholder")}
@@ -261,7 +267,8 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
                 className="rounded-xl border-blue-200 focus:ring-2 focus:ring-blue-300"
               />
             </div>
-            <div className="flex-1 min-w-[150px]">
+            <div className="p-3 rounded-xl border border-blue-100 bg-white/70 shadow-sm space-y-2">
+              <Label className="text-sm text-gray-600">{t("unitPricePlaceholder")}</Label>
               <Input
                 type="number"
                 placeholder={t("unitPricePlaceholder")}
@@ -272,9 +279,9 @@ const PurchaseInvoices: React.FC<PurchaseInvoicesProps> = ({ currentUser = null 
             </div>
             <Button
               onClick={addLine}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-2 shadow-md transition"
+              className="h-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3 shadow-md transition"
             >
-              ➕ {t("addLine")}
+              + {t("addLine")}
             </Button>
           </div>
 
