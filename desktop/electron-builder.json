@@ -1,6 +1,6 @@
 {
   "appId": "com.pos.desktop",
-  "productName": "POS",
+  "productName": "ZentroPOS",
   "directories": {
     "output": "release",
     "buildResources": "desktop"

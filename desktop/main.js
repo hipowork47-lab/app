@@ -12,7 +12,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
-    title: "POS",
+    title: "ZentroPOS",
     webPreferences: {
       contextIsolation: true,
     },

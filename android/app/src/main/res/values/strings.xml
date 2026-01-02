@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">POS</string>
-    <string name="title_activity_main">POS</string>
+    <string name="app_name">ZentroPOS</string>
+    <string name="title_activity_main">ZentroPOS</string>
     <string name="package_name">com.easypos.mobile</string>
     <string name="custom_url_scheme">com.easypos.mobile</string>
 </resources>
