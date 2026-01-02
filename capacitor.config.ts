@@ -2,7 +2,7 @@ import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "com.easypos.mobile",
-  appName: "POS",
+  appName: "ZentroPOS",
   webDir: "dist",
   server: {
     androidScheme: "https",
