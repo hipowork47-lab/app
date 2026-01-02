@@ -134,24 +134,25 @@ const ProductManagement = () => {
 
   const handleGift = () => {
     if (!giftProductId) {
-      toast({ title: "خطأ", description: "يرجى اختيار المنتج", variant: "destructive" });
+      toast({ title: t("giftErrorSelectTitle"), description: t("giftErrorSelectDesc"), variant: "destructive" });
       return;
     }
     const qty = Math.max(1, parseInt(giftQty) || 0);
     const product = products.find((p) => p.id === giftProductId);
     if (!product) {
-      toast({ title: "خطأ", description: "المنتج غير موجود", variant: "destructive" });
+      toast({ title: t("giftErrorMissingTitle"), description: t("giftErrorMissingDesc"), variant: "destructive" });
       return;
     }
     if (product.stock < qty) {
-      toast({ title: "المخزون غير كافٍ", description: "الكمية المطلوبة أكبر من المخزون", variant: "destructive" });
+      toast({ title: t("giftErrorStockTitle"), description: t("giftErrorStockDesc"), variant: "destructive" });
       return;
     }
     const updated = { ...product, stock: product.stock - qty };
     dispatch({ type: "UPDATE_PRODUCT", payload: updated });
+    const recipientSuffix = giftRecipient ? ` | ${t("giftRecipientInline")}: ${giftRecipient}` : "";
     toast({
-      title: "تم الإهداء",
-      description: `${product.name} × ${qty}${giftRecipient ? ` | المهداة إلى: ${giftRecipient}` : ""}`,
+      title: t("giftSuccessTitle"),
+      description: t("giftSuccessDesc", { name: product.name, qty, recipient: recipientSuffix }),
       variant: "success",
     });
     setGiftOpen(false);
@@ -214,43 +215,47 @@ const ProductManagement = () => {
           <Dialog open={giftOpen} onOpenChange={setGiftOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
-                Gift
+                {t("giftButton")}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md max-w-[95vw]">
               <DialogHeader>
-                <DialogTitle>Record a gift</DialogTitle>
+                <DialogTitle>{t("giftDialogTitle")}</DialogTitle>
               </DialogHeader>
               <div className="space-y-3">
                 <div>
-                  <Label>Recipient (optional)</Label>
-                  <Input value={giftRecipient} onChange={(e) => setGiftRecipient(e.target.value)} placeholder="e.g. VIP customer" />
+                  <Label>{t("giftRecipientLabel")}</Label>
+                  <Input
+                    value={giftRecipient}
+                    onChange={(e) => setGiftRecipient(e.target.value)}
+                    placeholder={t("giftRecipientPlaceholder")}
+                  />
                 </div>
                 <div>
-                  <Label>Select product</Label>
+                  <Label>{t("giftProductLabel")}</Label>
                   <Select value={giftProductId} onValueChange={setGiftProductId}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Choose a product" />
+                      <SelectValue placeholder={t("giftProductPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {filteredProducts.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
-                          {p.name} - stock: {p.stock}
+                          {p.name} — {t("stock")}: {p.stock}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label>Quantity</Label>
+                  <Label>{t("giftQuantityLabel")}</Label>
                   <Input type="number" min={1} value={giftQty} onChange={(e) => setGiftQty(e.target.value)} placeholder="1" />
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button variant="outline" onClick={() => setGiftOpen(false)}>
-                    Cancel
+                    {t("cancel")}
                   </Button>
                   <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={handleGift}>
-                    Confirm
+                    {t("giftConfirm")}
                   </Button>
                 </div>
               </div>
