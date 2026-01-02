@@ -114,6 +114,9 @@ const resources = {
       giftRecipientInline: "Destinatario",
       giftSuccessTitle: "Regalo registrado",
       giftSuccessDesc: "{{name}} × {{qty}}{{recipient}}",
+      giftHistoryButton: "Facturas de regalos",
+      giftHistoryTitle: "Facturas de regalos",
+      giftHistoryEmpty: "Aún no hay facturas de regalos. Conéctalo a Supabase cuando esté listo.",
 
       // Reports
       reports: "Informes",
@@ -350,6 +353,9 @@ const resources = {
       giftRecipientInline: "المهداة إلى",
       giftSuccessTitle: "تم الإهداء",
       giftSuccessDesc: "{{name}} × {{qty}}{{recipient}}",
+      giftHistoryButton: "فواتير الهدايا",
+      giftHistoryTitle: "فواتير الهدايا",
+      giftHistoryEmpty: "لا توجد فواتير هدايا بعد. اربط مع Supabase عند توفر البيانات.",
 
       // التقارير
       reports: "التقارير",
@@ -587,6 +593,9 @@ const resources = {
       giftRecipientInline: "Recipient",
       giftSuccessTitle: "Gift recorded",
       giftSuccessDesc: "{{name}} × {{qty}}{{recipient}}",
+      giftHistoryButton: "Gift invoices",
+      giftHistoryTitle: "Gift invoices",
+      giftHistoryEmpty: "No gift invoices yet. Connect to Supabase when ready.",
 
       // Reports
       reports: "Reports",

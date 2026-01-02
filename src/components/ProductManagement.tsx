@@ -31,6 +31,7 @@ const ProductManagement = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [giftOpen, setGiftOpen] = useState(false);
+  const [giftHistoryOpen, setGiftHistoryOpen] = useState(false);
   const [giftRecipient, setGiftRecipient] = useState("");
   const [giftProductId, setGiftProductId] = useState("");
   const [giftQty, setGiftQty] = useState("1");
@@ -257,8 +258,22 @@ const ProductManagement = () => {
                   <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={handleGift}>
                     {t("giftConfirm")}
                   </Button>
+                  <Button variant="secondary" onClick={() => setGiftHistoryOpen(true)}>
+                    {t("giftHistoryButton")}
+                  </Button>
                 </div>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={giftHistoryOpen} onOpenChange={setGiftHistoryOpen}>
+            <DialogContent className="sm:max-w-lg max-w-[95vw]">
+              <DialogHeader>
+                <DialogTitle>{t("giftHistoryTitle")}</DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-gray-700">
+                {t("giftHistoryEmpty")}
+              </p>
             </DialogContent>
           </Dialog>
 
