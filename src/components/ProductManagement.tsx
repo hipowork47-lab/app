@@ -149,11 +149,22 @@ const ProductManagement = () => {
       return;
     }
     const updated = { ...product, stock: product.stock - qty };
-    const currentUser =
-      localStorage.getItem("username") ||
-      localStorage.getItem("currentUser") ||
-      localStorage.getItem("account") ||
-      "cashier";
+    let currentUser = "cashier";
+    try {
+      const stored = localStorage.getItem("pos_current_user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.username) currentUser = parsed.username;
+      } else {
+        currentUser =
+          localStorage.getItem("username") ||
+          localStorage.getItem("currentUser") ||
+          localStorage.getItem("account") ||
+          currentUser;
+      }
+    } catch {
+      /* ignore parse errors */
+    }
     const giftRecord = {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       productId: product.id,
