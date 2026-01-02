@@ -258,11 +258,18 @@ const Index = () => {
               <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
                 <Calculator className="w-6 h-6 text-white" />
               </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    {t("welcome")}
-                  </h1>
-                  <p className="text-sm text-gray-600">{t("welcome")}</p>
+                <div className="flex items-center gap-3">
+                  <img
+                    src="/zentropos-logo.png"
+                    alt="ZentroPOS"
+                    className="h-12 w-12 rounded-md object-contain border border-purple-200 bg-white"
+                  />
+                  <div>
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      ZentroPOS
+                    </h1>
+                    <p className="text-sm text-gray-600">{t("welcome")}</p>
+                  </div>
                 </div>
             </div>
 
