@@ -117,6 +117,7 @@ const resources = {
       giftHistoryButton: "Facturas de regalos",
       giftHistoryTitle: "Facturas de regalos",
       giftHistoryEmpty: "Aún no hay facturas de regalos. Conéctalo a Supabase cuando esté listo.",
+      createdByLabel: "Creado por",
 
       // Reports
       reports: "Informes",
@@ -356,6 +357,7 @@ const resources = {
       giftHistoryButton: "فواتير الهدايا",
       giftHistoryTitle: "فواتير الهدايا",
       giftHistoryEmpty: "لا توجد فواتير هدايا بعد. اربط مع Supabase عند توفر البيانات.",
+      createdByLabel: "تمت بواسطة",
 
       // التقارير
       reports: "التقارير",
@@ -596,6 +598,7 @@ const resources = {
       giftHistoryButton: "Gift invoices",
       giftHistoryTitle: "Gift invoices",
       giftHistoryEmpty: "No gift invoices yet. Connect to Supabase when ready.",
+      createdByLabel: "Created by",
 
       // Reports
       reports: "Reports",
