@@ -35,6 +35,7 @@ const ProductManagement = () => {
   const [giftRecipient, setGiftRecipient] = useState("");
   const [giftProductId, setGiftProductId] = useState("");
   const [giftQty, setGiftQty] = useState("1");
+  const [giftSearch, setGiftSearch] = useState("");
 
   const [formData, setFormData] = useState<ProductFormData>({
     name: "",
@@ -300,9 +301,26 @@ const ProductManagement = () => {
               </DialogHeader>
               {gifts?.length ? (
                 <div className="max-h-80 overflow-y-auto space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Search className="w-4 h-4 text-gray-400" />
+                    <Input
+                      value={giftSearch}
+                      onChange={(e) => setGiftSearch(e.target.value)}
+                      placeholder={t("searchPlaceholder")}
+                    />
+                  </div>
                   {gifts
                     .slice()
                     .reverse()
+                    .filter((g) => {
+                      const term = giftSearch.toLowerCase();
+                      if (!term) return true;
+                      return (
+                        (g.productName || "").toLowerCase().includes(term) ||
+                        (g.recipient || "").toLowerCase().includes(term) ||
+                        (g.createdBy || "").toLowerCase().includes(term)
+                      );
+                    })
                     .map((g) => (
                       <div key={g.id} className="border rounded p-2 bg-gray-50">
                         <div className="font-semibold">{g.productName}</div>
