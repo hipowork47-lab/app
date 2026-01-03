@@ -15,7 +15,6 @@ function createWindow() {
     width: 1280,
     height: 800,
     title: "ZentroPOS",
-    autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,
     },
@@ -28,8 +27,6 @@ function createWindow() {
     const indexPath = path.join(__dirname, "..", "dist", "index.html");
     mainWindow.loadFile(indexPath);
   }
-  // إخفاء شريط القائمة مع إبقاء الخيارات متاحة من قائمة التطبيق
-  mainWindow.setMenuBarVisibility(false);
 }
 
 app.whenReady().then(() => {
