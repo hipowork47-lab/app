@@ -74,19 +74,11 @@ const Index = () => {
 
   const handleSendLicenseRequest = () => {
     if (!customerName.trim() || !storeName.trim() || !email.trim() || !licenseType || !deviceCount || !usageType || !paymentMethod) {
-      toast({
-        title: "خطأ",
-        description: "يرجى ملء الحقول المطلوبة قبل الإرسال",
-        variant: "destructive",
-      });
+      toast({ title: t("buyRequiredError"), description: t("buyRequiredError"), variant: "destructive" });
       return;
     }
 
-    toast({
-      title: "تم إرسال الطلب",
-      description: "سيتم التواصل معك خلال 24 ساعة لإتمام التفعيل",
-      variant: "success",
-    });
+    toast({ title: t("buyLicenseTitle"), description: t("buySubmit"), variant: "success" });
     setBuyDialogOpen(false);
   };
   const userRole = currentUser?.role ?? null;
@@ -248,66 +240,62 @@ const Index = () => {
               <Dialog open={buyDialogOpen} onOpenChange={setBuyDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="whitespace-nowrap">
-                    شراء مفتاح
+                    {t("buyLicense")}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-lg max-w-[95vw]" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
                   <DialogHeader>
-                    <DialogTitle>شراء مفتاح</DialogTitle>
+                    <DialogTitle>{t("buyLicenseTitle")}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                     <div className="space-y-2">
-                      <h4 className="font-semibold">المعلومات الأساسية</h4>
-                      <Input placeholder="الاسم الكامل" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
-                      <Input placeholder="اسم المتجر / الشركة" value={storeName} onChange={(e) => setStoreName(e.target.value)} />
-                      <Input placeholder="رقم الهاتف (اختياري)" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                      <Input placeholder="البريد الإلكتروني" value={email} onChange={(e) => setEmail(e.target.value)} />
+                      <h4 className="font-semibold">{t("buyBasicInfo")}</h4>
+                      <Input placeholder={t("buyFullName")} value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+                      <Input placeholder={t("buyStoreName")} value={storeName} onChange={(e) => setStoreName(e.target.value)} />
+                      <Input placeholder={t("buyPhoneOptional")} value={phone} onChange={(e) => setPhone(e.target.value)} />
+                      <Input placeholder={t("buyEmail")} value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                      <h4 className="font-semibold">معلومات الترخيص</h4>
+                      <h4 className="font-semibold">{t("buyLicenseInfo")}</h4>
                       <Select value={licenseType} onValueChange={setLicenseType}>
-                        <SelectTrigger><SelectValue placeholder="نوع الترخيص" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder={t("buyLicenseType")} /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="trial">تجريبي</SelectItem>
-                          <SelectItem value="lifetime">مدى الحياة</SelectItem>
+                          <SelectItem value="trial">{t("buyLicenseTrial")}</SelectItem>
+                          <SelectItem value="lifetime">{t("buyLicenseLifetime")}</SelectItem>
                         </SelectContent>
                       </Select>
                       <Select value={deviceCount} onValueChange={setDeviceCount}>
-                        <SelectTrigger><SelectValue placeholder="عدد الأجهزة" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder={t("buyDeviceCount")} /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1">1 جهاز</SelectItem>
-                          <SelectItem value="2">2 أجهزة</SelectItem>
-                          <SelectItem value="3">3 أجهزة</SelectItem>
-                          <SelectItem value="4">4 أجهزة</SelectItem>
-                          <SelectItem value="5">5 أجهزة</SelectItem>
-                          <SelectItem value="6">6 أجهزة</SelectItem>
-                          <SelectItem value="7">7 أجهزة</SelectItem>
-                          <SelectItem value="8">8 أجهزة</SelectItem>
-                          <SelectItem value="9">9 أجهزة</SelectItem>
-                          <SelectItem value="unlimited">غير محدود</SelectItem>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((count) => (
+                            <SelectItem key={count} value={String(count)}>
+                              {t("buyDevicesOption", { count })}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value="unlimited">{t("buyDevicesUnlimited")}</SelectItem>
                         </SelectContent>
                       </Select>
                       <Select value={usageType} onValueChange={setUsageType}>
-                        <SelectTrigger><SelectValue placeholder="نوع الاستخدام" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder={t("buyUsageType")} /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="single">متجر واحد</SelectItem>
-                          <SelectItem value="multi">عدة فروع</SelectItem>
+                          <SelectItem value="single">{t("buyUsageSingle")}</SelectItem>
+                          <SelectItem value="multi">{t("buyUsageMulti")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <h4 className="font-semibold">معلومات الدفع</h4>
+                      <h4 className="font-semibold">{t("buyPaymentInfo")}</h4>
                       <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                        <SelectTrigger><SelectValue placeholder="طريقة الدفع" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder={t("buyPaymentMethod")} /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="manual">تحويل يدوي</SelectItem>
+                          <SelectItem value="manual">{t("buyPaymentManual")}</SelectItem>
                           <SelectItem value="paypal">PayPal</SelectItem>
                           <SelectItem value="usdt">USDT / Crypto</SelectItem>
-                          <SelectItem value="cash">نقدي</SelectItem>
+                          <SelectItem value="cash">{t("buyPaymentCash")}</SelectItem>
                         </SelectContent>
                       </Select>
                       <textarea
-                        placeholder="ملاحظات من العميل (اختياري)"
+                        placeholder={t("buyNotesOptional")}
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         className="w-full rounded-md border border-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
@@ -317,14 +305,15 @@ const Index = () => {
                   </div>
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setBuyDialogOpen(false)}>
-                      إلغاء
+                      {t("cancel")}
                     </Button>
                     <Button onClick={handleSendLicenseRequest}>
-                      إرسال الطلب
+                      {t("buySubmit")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
             </div>
             <div className="text-center space-y-1">
               <div className="text-sm font-semibold text-blue-700">{t("syncNow")}</div>
