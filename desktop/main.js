@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -26,6 +26,18 @@ function createWindow() {
     win.loadFile(indexPath);
   }
 }
+
+// Minimal menu with only zoom controls
+const menu = Menu.buildFromTemplate([
+  {
+    label: "View",
+    submenu: [
+      { role: "zoomIn", label: "Zoom In" },
+      { role: "zoomOut", label: "Zoom Out" },
+    ],
+  },
+]);
+Menu.setApplicationMenu(menu);
 
 app.whenReady().then(() => {
   createWindow();
