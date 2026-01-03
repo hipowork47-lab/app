@@ -239,7 +239,10 @@ const Index = () => {
               </Select>
               <Dialog open={buyDialogOpen} onOpenChange={setBuyDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="whitespace-nowrap">
+                  <Button
+                    size="sm"
+                    className="whitespace-nowrap bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 border-0 shadow-sm"
+                  >
                     {t("buyLicense")}
                   </Button>
                 </DialogTrigger>
