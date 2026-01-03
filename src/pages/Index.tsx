@@ -50,15 +50,6 @@ const Index = () => {
   const [licenseType, setLicenseType] = useState("trial");
   const [deviceCount, setDeviceCount] = useState("1");
   const [usageType, setUsageType] = useState("single");
-  const [osType, setOsType] = useState(
-    typeof navigator !== "undefined"
-      ? /mac/i.test(navigator.userAgent)
-        ? "macOS"
-        : /linux/i.test(navigator.userAgent)
-          ? "Linux"
-          : "Windows"
-      : "Windows",
-  );
   const [paymentMethod, setPaymentMethod] = useState("manual");
   const [notes, setNotes] = useState("");
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
@@ -251,7 +242,7 @@ const Index = () => {
                       <h4 className="font-semibold">المعلومات الأساسية</h4>
                       <Input placeholder="الاسم الكامل" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
                       <Input placeholder="اسم المتجر / الشركة" value={storeName} onChange={(e) => setStoreName(e.target.value)} />
-                      <Input placeholder="رقم الهاتف" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                      <Input placeholder="رقم الهاتف (اختياري)" value={phone} onChange={(e) => setPhone(e.target.value)} />
                       <Input placeholder="البريد الإلكتروني" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div className="space-y-2">
@@ -260,8 +251,6 @@ const Index = () => {
                         <SelectTrigger><SelectValue placeholder="نوع الترخيص" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="trial">تجريبي</SelectItem>
-                          <SelectItem value="monthly">شهري</SelectItem>
-                          <SelectItem value="yearly">سنوي</SelectItem>
                           <SelectItem value="lifetime">مدى الحياة</SelectItem>
                         </SelectContent>
                       </Select>
@@ -278,18 +267,6 @@ const Index = () => {
                         <SelectContent>
                           <SelectItem value="single">متجر واحد</SelectItem>
                           <SelectItem value="multi">عدة فروع</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="font-semibold">معلومات النظام</h4>
-                      <Input value={getDeviceId()} readOnly className="bg-gray-50" />
-                      <Select value={osType} onValueChange={setOsType}>
-                        <SelectTrigger><SelectValue placeholder="نظام التشغيل" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Windows">Windows</SelectItem>
-                          <SelectItem value="macOS">macOS</SelectItem>
-                          <SelectItem value="Linux">Linux</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
