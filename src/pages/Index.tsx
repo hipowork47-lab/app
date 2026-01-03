@@ -71,6 +71,24 @@ const Index = () => {
       /* ignore */
     }
   };
+
+  const handleSendLicenseRequest = () => {
+    if (!customerName.trim() || !storeName.trim() || !email.trim() || !licenseType || !deviceCount || !usageType || !paymentMethod) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء الحقول المطلوبة قبل الإرسال",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "تم إرسال الطلب",
+      description: "سيتم التواصل معك خلال 24 ساعة لإتمام التفعيل",
+      variant: "success",
+    });
+    setBuyDialogOpen(false);
+  };
   const userRole = currentUser?.role ?? null;
 
   // Persist login across refreshes
@@ -301,16 +319,7 @@ const Index = () => {
                     <Button variant="outline" onClick={() => setBuyDialogOpen(false)}>
                       إلغاء
                     </Button>
-                    <Button
-                      onClick={() => {
-                        toast({
-                          title: "تم إرسال الطلب",
-                          description: "سيتم التواصل معك خلال 24 ساعة لإتمام التفعيل",
-                          variant: "success",
-                        });
-                        setBuyDialogOpen(false);
-                      }}
-                    >
+                    <Button onClick={handleSendLicenseRequest}>
                       إرسال الطلب
                     </Button>
                   </DialogFooter>
