@@ -13,6 +13,12 @@
   "win": {
     "target": ["nsis", "portable"]
   },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
+  },
   "mac": {
     "target": ["dmg"]
   },
