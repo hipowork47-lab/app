@@ -259,6 +259,13 @@ const Index = () => {
                         <SelectContent>
                           <SelectItem value="1">1 جهاز</SelectItem>
                           <SelectItem value="2">2 أجهزة</SelectItem>
+                          <SelectItem value="3">3 أجهزة</SelectItem>
+                          <SelectItem value="4">4 أجهزة</SelectItem>
+                          <SelectItem value="5">5 أجهزة</SelectItem>
+                          <SelectItem value="6">6 أجهزة</SelectItem>
+                          <SelectItem value="7">7 أجهزة</SelectItem>
+                          <SelectItem value="8">8 أجهزة</SelectItem>
+                          <SelectItem value="9">9 أجهزة</SelectItem>
                           <SelectItem value="unlimited">غير محدود</SelectItem>
                         </SelectContent>
                       </Select>
