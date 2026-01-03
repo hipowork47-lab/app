@@ -42,6 +42,25 @@ const Index = () => {
   const [licenseError, setLicenseError] = useState("");
   const [licenseLoading, setLicenseLoading] = useState(false);
   const [customDeviceName, setCustomDeviceNameState] = useState("");
+  const [buyDialogOpen, setBuyDialogOpen] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [storeName, setStoreName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [licenseType, setLicenseType] = useState("trial");
+  const [deviceCount, setDeviceCount] = useState("1");
+  const [usageType, setUsageType] = useState("single");
+  const [osType, setOsType] = useState(
+    typeof navigator !== "undefined"
+      ? /mac/i.test(navigator.userAgent)
+        ? "macOS"
+        : /linux/i.test(navigator.userAgent)
+          ? "Linux"
+          : "Windows"
+      : "Windows",
+  );
+  const [paymentMethod, setPaymentMethod] = useState("manual");
+  const [notes, setNotes] = useState("");
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [newAccountUser, setNewAccountUser] = useState("");
   const [newAccountPass, setNewAccountPass] = useState("");
@@ -206,7 +225,7 @@ const Index = () => {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
           <div className="w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40 rounded-xl p-6 space-y-4">
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center gap-3">
               <Select value={currentLangKey} onValueChange={handleLangChange}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Lang" />
@@ -217,6 +236,102 @@ const Index = () => {
                   <SelectItem value="ar">العربية</SelectItem>
                 </SelectContent>
               </Select>
+              <Dialog open={buyDialogOpen} onOpenChange={setBuyDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="whitespace-nowrap">
+                    شراء مفتاح
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-lg max-w-[95vw]" dir={i18n.language === "ar" ? "rtl" : "ltr"}>
+                  <DialogHeader>
+                    <DialogTitle>شراء مفتاح</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">المعلومات الأساسية</h4>
+                      <Input placeholder="الاسم الكامل" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+                      <Input placeholder="اسم المتجر / الشركة" value={storeName} onChange={(e) => setStoreName(e.target.value)} />
+                      <Input placeholder="رقم الهاتف" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                      <Input placeholder="البريد الإلكتروني" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">معلومات الترخيص</h4>
+                      <Select value={licenseType} onValueChange={setLicenseType}>
+                        <SelectTrigger><SelectValue placeholder="نوع الترخيص" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="trial">تجريبي</SelectItem>
+                          <SelectItem value="monthly">شهري</SelectItem>
+                          <SelectItem value="yearly">سنوي</SelectItem>
+                          <SelectItem value="lifetime">مدى الحياة</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={deviceCount} onValueChange={setDeviceCount}>
+                        <SelectTrigger><SelectValue placeholder="عدد الأجهزة" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 جهاز</SelectItem>
+                          <SelectItem value="2">2 أجهزة</SelectItem>
+                          <SelectItem value="unlimited">غير محدود</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={usageType} onValueChange={setUsageType}>
+                        <SelectTrigger><SelectValue placeholder="نوع الاستخدام" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="single">متجر واحد</SelectItem>
+                          <SelectItem value="multi">عدة فروع</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">معلومات النظام</h4>
+                      <Input value={getDeviceId()} readOnly className="bg-gray-50" />
+                      <Select value={osType} onValueChange={setOsType}>
+                        <SelectTrigger><SelectValue placeholder="نظام التشغيل" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Windows">Windows</SelectItem>
+                          <SelectItem value="macOS">macOS</SelectItem>
+                          <SelectItem value="Linux">Linux</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">معلومات الدفع</h4>
+                      <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                        <SelectTrigger><SelectValue placeholder="طريقة الدفع" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="manual">تحويل يدوي</SelectItem>
+                          <SelectItem value="paypal">PayPal</SelectItem>
+                          <SelectItem value="usdt">USDT / Crypto</SelectItem>
+                          <SelectItem value="cash">نقدي</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <textarea
+                        placeholder="ملاحظات من العميل (اختياري)"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="w-full rounded-md border border-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setBuyDialogOpen(false)}>
+                      إلغاء
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        toast({
+                          title: "تم إرسال الطلب",
+                          description: "سيتم التواصل معك خلال 24 ساعة لإتمام التفعيل",
+                          variant: "success",
+                        });
+                        setBuyDialogOpen(false);
+                      }}
+                    >
+                      إرسال الطلب
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
             <div className="text-center space-y-1">
               <div className="text-sm font-semibold text-blue-700">{t("syncNow")}</div>
