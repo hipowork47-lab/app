@@ -53,6 +53,14 @@ const Index = () => {
     en: { text: "English" },
   };
   const currentLangKey = (i18n.language || "").slice(0, 2) as keyof typeof langLabel;
+  const handleLangChange = (lng: string) => {
+    i18n.changeLanguage(lng);
+    try {
+      localStorage.setItem("lang", lng);
+    } catch {
+      /* ignore */
+    }
+  };
   const userRole = currentUser?.role ?? null;
 
   // Persist login across refreshes
@@ -198,6 +206,18 @@ const Index = () => {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
           <div className="w-[360px] sm:w-[420px] max-w-full mx-auto bg-white/90 shadow-2xl backdrop-blur-lg border border-white/40 rounded-xl p-6 space-y-4">
+            <div className="flex justify-end">
+              <Select value={currentLangKey} onValueChange={handleLangChange}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Lang" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Español</SelectItem>
+                  <SelectItem value="ar">العربية</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="text-center space-y-1">
               <div className="text-sm font-semibold text-blue-700">{t("syncNow")}</div>
               <div className="text-xl font-bold text-slate-900">{t("licenseKey") || "License Key"}</div>
